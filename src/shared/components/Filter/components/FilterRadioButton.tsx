@@ -56,5 +56,5 @@ export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacy
 };
 FilterRadioButton.defaultProps = {
   onPrivacyFilterChange: () => { },
-  selectedValue: "all"
+  selectedValue: ""
 };

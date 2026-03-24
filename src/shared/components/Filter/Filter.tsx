@@ -106,6 +106,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [categoryError, setCategoryError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [showErrorBanner, setShowErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilterDetails[]>(DEFAULT_PRIVACY_FILTER);
+  const [localSelectedPrivacyFilter, setLocalSelectedPrivacyFilter] = useState<string>(selectedPrivacyFilter ?? "");  // local state like localSelectedCategories
 
 
   // eslint-disable-next-line no-unused-expressions
@@ -193,6 +194,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     setLocalSelectedDateRange(selectedDateRange);
     setLocalTagListArray(tagListArray);
     setLocalSelectedRelatedTo(selectedRelatedTo);
+    setLocalSelectedPrivacyFilter(selectedPrivacyFilter ?? "");
   }, [isOpen]);
 
   useBuildRefIdsEffect(selectedKey, localTagListArray, schoolData, isOpen, setRefId, setFilterEntities)
@@ -344,7 +346,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             relatedToError={relatedToError}
             onRelatedToChange={(key: string) => {
               setSelectedKey(key);
-              setSelectedPrivacyFilter?.("all");  
+              setLocalSelectedPrivacyFilter("");  
             }}
           />
 
@@ -405,8 +407,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             <FilterRadioButton
               t={t}
               privacyFilter={privacyFilter}
-              onPrivacyFilterChange={setSelectedPrivacyFilter}
-              selectedValue={selectedPrivacyFilter} 
+              onPrivacyFilterChange={setLocalSelectedPrivacyFilter}
+              selectedValue={localSelectedPrivacyFilter} 
             />
           ) : null}
 
@@ -428,25 +430,29 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
           <div className="dms-filter-dialog-buttons">
             <Button
               dataTestId={`${dataTestId}-clear-btn`}
-              onClick={() => clearAll({
-                setFromDate,
-                setToDate,
-                setFromDateError,
-                setToDateError,
-                setIsDateError,
-                setRelatedToError,
-                setSearchTerm,
-                setSuggestions,
-                setShowSearchError,
-                setLocalSelectedCategories,
-                setLocalSelectedDateRange,
-                setLocalTagListArray,
-                setLocalSelectedRelatedTo,
-                setCategoryError,
-                setRelatedToSelected,
-                setSearchSelectionError,
-                setRefId
-              })}
+              onClick={() => {
+                clearAll({
+                  setFromDate,
+                  setToDate,
+                  setFromDateError,
+                  setToDateError,
+                  setIsDateError,
+                  setRelatedToError,
+                  setSearchTerm,
+                  setSuggestions,
+                  setShowSearchError,
+                  setLocalSelectedCategories,
+                  setLocalSelectedDateRange,
+                  setLocalTagListArray,
+                  setLocalSelectedRelatedTo,
+                  setCategoryError,
+                  setRelatedToSelected,
+                  setSearchSelectionError,
+                  setRefId
+                });
+                setLocalSelectedPrivacyFilter("");  
+                setSelectedPrivacyFilter?.("");     
+              }}
               color={ButtonColor.Secondary}
               size={ButtonSize.Small}
             >
@@ -478,8 +484,9 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                   refId,
                   filterEntities,
                   setWasApplied,
-                  selectedPrivacyFilter
+                  selectedPrivacyFilter: localSelectedPrivacyFilter,
                 });
+                setSelectedPrivacyFilter?.(localSelectedPrivacyFilter); 
               }}
               color={ButtonColor.Primary}
               size={ButtonSize.Small}
@@ -497,7 +504,7 @@ FilterDialog.defaultProps = {
   dataTestId: "dms-filter-dialog",
   isLoading: false,
   setReferenceExternalIds: () => { },
-  selectedPrivacyFilter: "all",
+  selectedPrivacyFilter: "",
   setSelectedPrivacyFilter: () => { }
 };
 

@@ -3,11 +3,11 @@ import { useLocation } from "react-router-dom";
 import { Grid, useMediaQuery, ISelectedItem } from "@essnextgen/ui-kit"
 import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData, getTitleConfirmation, prepareDownload } from "../logic/DocumentManagementServer.logic"
 import "../style.scss"
-import { pageSizeNumber } from "../../../../public/Constants"
+import { pageSizeNumber, privacyFilterOptions } from "../../../../public/Constants"
 import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, mapTableData, mapPrivateTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, mapTableData, mapPrivateTableData, hasDMSDeletePermission, refreshAfterClose, getPrivacyTag } from "../logic/DocumentManagementServer.utils";
 import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, usePrivateDocumentFetchingEffect, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
@@ -99,10 +99,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
   const categoryArr: any[] = getCategoryArr(selectedFormats);
   const dateTagArr: any[] = getDateTag(dateRange);
+  const privacyTagArr: any[] = getPrivacyTag(selectedPrivacyFilter, privacyFilterOptions);
+
   const searchTagListRaw: any[] = [
     ...categoryArr,
-    ...dateTagArr
+    ...dateTagArr,
+    ...privacyTagArr
   ];
+
+
   const messages: string[] = getDeleteDialogMessages({
     t, restrictedFileCount, availableFileCount, docData, alreadyDeletedFileCount, excludedCheckBoxIds, isHeaderBoxChecked
   });
@@ -225,7 +230,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       setDateRange,
       setIsDateError,
       setSelectedCategories,
-      setSelectedFormats
+      setSelectedFormats,
+      setSelectedPrivacyFilter,
+      setDocumentStatusIds
     });
     setCurrentPage(1);
   };
