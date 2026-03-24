@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react-hooks";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { getDialogConfig } from "../logic/DocumentManagementServer.dialog.config";
 import { useSidePanelViewDownloadEffect, usePrivateDocumentFetchingEffect } from "../hooks/useDocumentManagementEffects";
-import { mapRelatedArr, mapTableData } from "../logic/DocumentManagementServer.utils";
+import { getPrivacyTag, mapRelatedArr, mapTableData } from "../logic/DocumentManagementServer.utils";
 import { fetchPrivateDocumentDetails } from "../api/ApiService";
 
 jest.mock("../api/ApiService", () => ({
@@ -814,5 +814,71 @@ describe("usePrivateDocumentFetchingEffect", () => {
     });
 
     expect(mockFetch.mock.calls.length).toBeGreaterThan(firstCallCount);
+  });
+});
+
+describe("getPrivacyTag", () => {
+  const privacyFilterOptions: { value: string; label: string }[] = [
+    { value: "1", label: "Standard" },
+    { value: "3", label: "Confidential" }
+  ];
+
+  it("returns empty array when selectedPrivacyFilter is empty string", () => {
+    expect(getPrivacyTag("", privacyFilterOptions)).toEqual([]);
+  });
+
+  it("returns empty array when selectedPrivacyFilter is undefined/falsy", () => {
+    expect(getPrivacyTag(undefined as any, privacyFilterOptions)).toEqual([]);
+  });
+
+
+  it("returns empty array when no matching option found", () => {
+    expect(getPrivacyTag("99", privacyFilterOptions)).toEqual([]);
+  });
+
+  it("returns Standard tag when selectedPrivacyFilter is '1'", () => {
+    expect(getPrivacyTag("1", privacyFilterOptions)).toEqual([
+      {
+        text: "Standard",
+        categoryName: "Privacy",
+        closeObj: {
+          name: "Standard",
+          id: "privacyFilter"
+        }
+      }
+    ]);
+  });
+
+  it("returns Confidential tag when selectedPrivacyFilter is '3'", () => {
+    expect(getPrivacyTag("3", privacyFilterOptions)).toEqual([
+      {
+        text: "Confidential",
+        categoryName: "Privacy",
+        closeObj: {
+          name: "Confidential",
+          id: "privacyFilter"
+        }
+      }
+    ]);
+  });
+
+  it("returns empty array when privacyFilterOptions is empty", () => {
+    expect(getPrivacyTag("1", [])).toEqual([]);
+  });
+
+  it("returns correct tag with custom options", () => {
+    const customOptions: { value: string; label: string }[] = [
+      { value: "5", label: "Custom" }
+    ];
+    expect(getPrivacyTag("5", customOptions)).toEqual([
+      {
+        text: "Custom",
+        categoryName: "Privacy",
+        closeObj: {
+          name: "Custom",
+          id: "privacyFilter"
+        }
+      }
+    ]);
   });
 });
