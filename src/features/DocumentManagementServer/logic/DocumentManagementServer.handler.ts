@@ -698,7 +698,7 @@ interface NotificationMsgBannerParams {
   availableFileCount: number;
   setShowDeleteErrorBanner: (v: boolean) => void;
   setShowDeleteAbortBanner: (v: boolean) => void;
-  privateRawData?: any;
+  privateData?: any;
 }
 
 interface NotificationMsgBanner {
@@ -725,7 +725,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
     availableFileCount,
     setShowDeleteErrorBanner,
     setShowDeleteAbortBanner,
-    privateRawData
+    privateData
   }: NotificationMsgBannerParams = params;
   return [
     {
@@ -763,7 +763,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       autoclose: false
     },
     {
-      isShow: (DMSPrivateDocument && privateRawData?.totalRecords > 0) ?? false,
+      isShow: (DMSPrivateDocument && privateData?.totalRecords > 0) ?? false,
       variant: "warning",
       title: t("DocumentManagementServer.privateFilesBannerTitle"),
       message: getBannerMessageWithLink(t("DocumentManagementServer.privateFilesBannerDescription"), t("DocumentManagementServer.learnMoreKnowledgeBase")) ,

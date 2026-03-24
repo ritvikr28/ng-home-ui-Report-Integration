@@ -72,8 +72,9 @@ export function useDocumentManagementState() {
   const [selectedRelatedTo, setSelectedRelatedTo]: [ISelectedItem | undefined, React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>] = useState<ISelectedItem | undefined>(undefined);
   const [tagListArray, setTagListArray]: [SelectedItem[], React.Dispatch<React.SetStateAction<SelectedItem[]>>] = useState<SelectedItem[]>([]);
   const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const [privateRawData, setPrivateRawData]: [any, React.Dispatch<React.SetStateAction<any>>] = useState<any>(null);
+  const [privateData, setPrivateData]: [any, React.Dispatch<React.SetStateAction<any>>] = useState<any>(null);
   const [isPrivateDocError, setIsPrivateDocError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isPrivateLoading, setIsPrivateLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [sidePanelSortBy, setSidePanelSortBy]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("DateAdded");
   const [sidePanelSortDirection, setSidePanelSortDirection]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("Desc");
   const [sidePanelCurrentPage, setSidePanelCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
@@ -148,8 +149,9 @@ export function useDocumentManagementState() {
     selectedRelatedTo, setSelectedRelatedTo,
     tagListArray, setTagListArray,
     isViewDownloadError, setIsViewDownloadError,
-    privateRawData, setPrivateRawData,
+    privateData, setPrivateData,
     isPrivateDocError, setIsPrivateDocError,
+    isPrivateLoading, setIsPrivateLoading,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
     sidePanelCurrentPage, setSidePanelCurrentPage,

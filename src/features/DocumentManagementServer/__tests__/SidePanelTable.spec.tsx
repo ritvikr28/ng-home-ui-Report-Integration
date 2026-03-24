@@ -45,7 +45,8 @@ const defaultProps = {
   onSortChange: jest.fn(),
   onDownloadError: jest.fn(),
   totalRecords: 1,
-  onPageChange: jest.fn()
+  onPageChange: jest.fn(),
+  isLoading: false
 };
 
 describe("SidePanelTable - handleDocumentClick", () => {

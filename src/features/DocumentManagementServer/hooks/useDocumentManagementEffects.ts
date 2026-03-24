@@ -17,8 +17,15 @@ export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelO
 }
 
 
-export function useScrollToTopOnPageChange(currentPage: number): void {
+export function useScrollToTopOnPageChange(currentPage: number, containerClass?: string): void {
   useEffect(() => {
+    if (containerClass) {
+      const container = document.querySelector(containerClass) as HTMLElement | null;
+      if (container && typeof container.scrollTo === "function") {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
     let scrolled = false;
     const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement | null;
     if (mainPanel && typeof mainPanel.scrollTo === "function" && mainPanel.offsetParent !== null) {
@@ -355,22 +362,26 @@ export function useApplySummaryTagClassOnDocDataChange(
 
 export function usePrivateDocumentFetchingEffect(
   props: PrivateDocumentManagementServerProps,
-  setPrivateRawData: (data: any) => void,
-  setIsPrivateDocError: (error: boolean) => void
+  setPrivateData: (data: any) => void,
+  setIsPrivateDocError: (error: boolean) => void,
+  setIsPrivateLoading: (loading: boolean) => void
 ): void {
   useEffect(() => {
     async function fetchData(): Promise<void> {
+      setIsPrivateLoading(true);
       try {
         const response: any = await fetchPrivateDocumentDetails(props);
         const isError = !response || (response as any)?.status === 500 || !(response as any)?.data;
         if (isError) {
           setIsPrivateDocError(true);
         } else {
-          setPrivateRawData(response);
+          setPrivateData(response);
           setIsPrivateDocError(false);
         }
       } catch {
         setIsPrivateDocError(true);
+      } finally {
+        setIsPrivateLoading(false);
       }
     }
     fetchData();

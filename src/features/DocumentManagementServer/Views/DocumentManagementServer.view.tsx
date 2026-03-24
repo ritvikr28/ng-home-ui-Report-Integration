@@ -85,8 +85,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     selectedRelatedTo, setSelectedRelatedTo,
     tagListArray, setTagListArray,
     isViewDownloadError, setIsViewDownloadError,
-    privateRawData, setPrivateRawData,
+    privateData, setPrivateData,
     isPrivateDocError, setIsPrivateDocError,
+    isPrivateLoading, setIsPrivateLoading,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
     sidePanelCurrentPage, setSidePanelCurrentPage,
@@ -115,7 +116,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   const searchTagList: any[] = getVisibleTagsWithSummary(searchTagListRaw, 3);
   const allRegistrationIds: number[] = getAllRegistrationIds(selectedFormats);
  const tableData: any[] = mapTableData(docData, showSearchError);
-  const privateDocData: any[] = mapPrivateTableData(privateRawData);
+  const privateDocData: any[] = mapPrivateTableData(privateData);
   
 
   const onPageChange: (event: unknown, page: number) => void = (event: unknown, page: number): void =>
@@ -251,7 +252,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     availableFileCount,
     setShowDeleteErrorBanner,
     setShowDeleteAbortBanner,
-    privateRawData,
+    privateData,
   });
   useSearchTermEffect({
     searchTerm, selectedFormats, selectedDateRange, showSearchError, isSearchTriggered, handleSearchChange,
@@ -360,8 +361,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       sortBy: sidePanelSortBy,
       sortDirection: sidePanelSortDirection
     },
-    setPrivateRawData,
-    setIsPrivateDocError
+    setPrivateData,
+    setIsPrivateDocError,
+    setIsPrivateLoading
   )
 
   const handleSidePanelSortChange: (columnName: string) => void = (columnName: string): void => {
@@ -579,8 +581,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   privateDocData={privateDocData}
                   isPrivateDocError={isPrivateDocError}
                   onSidePanelSortChange={handleSidePanelSortChange}
-                  privateTotalRecords={privateRawData?.totalRecords ?? 0}
+                  privateTotalRecords={privateData?.totalRecords ?? 0}
                   onSidePanelPageChange={setSidePanelCurrentPage}
+                  isPrivateLoading={isPrivateLoading}
                 />
               )
             }}

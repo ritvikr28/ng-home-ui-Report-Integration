@@ -722,10 +722,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     mockFetch.mockResolvedValueOnce(response);
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
       );
     });
 
@@ -737,10 +738,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     mockFetch.mockResolvedValueOnce(null);
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
       );
     });
 
@@ -752,10 +754,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     mockFetch.mockResolvedValueOnce({ status: 500 });
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
       );
     });
 
@@ -767,10 +770,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     mockFetch.mockResolvedValueOnce({ status: 200, data: null });
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
       );
     });
 
@@ -782,10 +786,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
       );
     });
 
@@ -798,11 +803,12 @@ describe("usePrivateDocumentFetchingEffect", () => {
     mockFetch.mockResolvedValue(response);
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
 
     let rerender: (props: any) => void;
     await act(async () => {
       ({ rerender } = renderHook(
-        (props: any) => usePrivateDocumentFetchingEffect(props, setPrivateRawData, setIsPrivateDocError),
+        (props: any) => usePrivateDocumentFetchingEffect(props, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading),
         { initialProps: baseProps as any }
       ));
     });

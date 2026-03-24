@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextgen/ui-kit";
 import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions, createHandleDocumentClick, createHandleSorting } from "./sidePanelTable.logic";
 import { pageSizeNumber } from "../../../../../public/Constants";
+import { useScrollToTopOnPageChange } from "../../hooks/useDocumentManagementEffects";
 
 interface SidePanelTableProps {
   tableBodyData: any[];
@@ -9,11 +10,14 @@ interface SidePanelTableProps {
   onDownloadError: (hasError: boolean) => void;
   totalRecords: number;
   onPageChange: (page: number) => void;
+  isLoading: boolean;
 }
 
-export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError, totalRecords, onPageChange }) => {
+export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError, totalRecords, onPageChange, isLoading }) => {
   const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
   const [isInitialLoad, setIsInitialLoad]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
+
+  useScrollToTopOnPageChange(currentPage, '.essui-side-panel-content');
 
   useEffect(() => {
     setIsInitialLoad(false);
@@ -67,6 +71,7 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
       sortAscFirst={!isInitialLoad}
       sortByDefault={false}
       sortingOnClickEvent={handleSorting}
+      dynamicTableLoader={isLoading}
       isIconRightAligned={true}
       onClickOverflowItem={() => {}}
       emptyStateMsg="No documents found"
