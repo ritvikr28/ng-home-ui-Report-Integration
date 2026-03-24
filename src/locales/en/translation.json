@@ -631,7 +631,7 @@
     "documentColumn": "Document",
     "relatedColumn": "Related to",
     "categoryColumn": "Category",
-    "privacyColumn": "Privacy status",
+    "privacyColumn": "Privacy",
     "addedByColumn": "Added by",
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
