@@ -35,6 +35,7 @@ interface DmsSidePanelProps {
   onSidePanelSortChange: (columnName: string) => void;
   privateTotalRecords: number;
   onSidePanelPageChange: (page: number) => void;
+  isPrivateLoading: boolean;
 }
 
 
@@ -65,10 +66,11 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   isPrivateDocError,
   onSidePanelSortChange,
   privateTotalRecords,
-  onSidePanelPageChange
+  onSidePanelPageChange,
+  isPrivateLoading
 }) => {
   if (sidePanelOpenReason === "manage") {
-    return (<ManageDocumentsSidePanel t={t} privateDocData={privateDocData} isPrivateDocError={isPrivateDocError} onSortChange={onSidePanelSortChange} totalRecords={privateTotalRecords} onPageChange={onSidePanelPageChange} />);
+    return (<ManageDocumentsSidePanel t={t} privateDocData={privateDocData} isPrivateDocError={isPrivateDocError} onSortChange={onSidePanelSortChange} totalRecords={privateTotalRecords} onPageChange={onSidePanelPageChange} isLoading={isPrivateLoading} />);
   }
   // Default to view
   return (

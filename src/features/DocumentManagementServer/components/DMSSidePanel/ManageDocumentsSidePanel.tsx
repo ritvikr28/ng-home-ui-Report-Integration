@@ -10,6 +10,7 @@ interface ManageDocumentsSidePanelProps {
   onSortChange: (columnName: string) => void;
   totalRecords: number;
   onPageChange: (page: number) => void;
+  isLoading: boolean;
 }
 
 const Description: React.FC<{ t: any }> = ({ t }) => (
@@ -46,7 +47,7 @@ const ConvertDocButton: React.FC<{ t: any }> = ({ t }) => (
   </Button>
 );
 
-export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t, privateDocData = [], isPrivateDocError = false, onSortChange, totalRecords, onPageChange }) => {
+export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t, privateDocData = [], isPrivateDocError = false, onSortChange, totalRecords, onPageChange, isLoading }) => {
   const [isDownloadError, setIsDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
   return (
     <div className="manage-documents-side-panel">
@@ -58,7 +59,7 @@ export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> =
       <HelpText t={t} />
       <ConvertDocButton t={t} />
       <div className="manage-documents-table">
-        <SidePanelTable tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} totalRecords={totalRecords} onPageChange={onPageChange} />
+        <SidePanelTable tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} totalRecords={totalRecords} onPageChange={onPageChange} isLoading={isLoading} />
       </div>
     </div>
 );

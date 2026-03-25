@@ -17,8 +17,15 @@ export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelO
 }
 
 
-export function useScrollToTopOnPageChange(currentPage: number): void {
+export function useScrollToTopOnPageChange(currentPage: number, containerClass?: string): void {
   useEffect(() => {
+    if (containerClass) {
+      const container = document.querySelector(containerClass) as HTMLElement | null;
+      if (container && typeof container.scrollTo === "function") {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
     let scrolled = false;
     const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement | null;
     if (mainPanel && typeof mainPanel.scrollTo === "function" && mainPanel.offsetParent !== null) {
@@ -353,27 +360,55 @@ export function useApplySummaryTagClassOnDocDataChange(
   
 }
 
-export function usePrivateDocumentFetchingEffect(
-  props: PrivateDocumentManagementServerProps,
-  setPrivateRawData: (data: any) => void,
-  setIsPrivateDocError: (error: boolean) => void
+export function useResetOnManagePanelOpen(
+  isSidePanelOpen: boolean,
+  sidePanelOpenReason: string | null,
+  setSidePanelCurrentPage: (page: number) => void,
+  setSidePanelRefreshKey: (updater: (prev: number) => number) => void
 ): void {
   useEffect(() => {
+    if (isSidePanelOpen && sidePanelOpenReason === "manage") {
+      setSidePanelCurrentPage(1);
+      setSidePanelRefreshKey((prev: number) => prev + 1);
+    }
+  }, [isSidePanelOpen, sidePanelOpenReason]);
+}
+
+export function usePrivateDocumentFetchingEffect(
+  props: PrivateDocumentManagementServerProps,
+  setPrivateData: (data: any) => void,
+  setIsPrivateDocError: (error: boolean) => void,
+  setIsPrivateLoading: (loading: boolean) => void,
+  setIsPrivateGridError: (error: boolean) => void
+): void {
+  useEffect(() => {
+    const isInitialLoad = (props.refreshKey ?? 0) === 0;
+
+    const handleError = (): void => {
+      setPrivateData([]);
+      setIsPrivateGridError(false);
+      setIsPrivateDocError(!isInitialLoad);
+    };
+
     async function fetchData(): Promise<void> {
+      setIsPrivateLoading(true);
       try {
         const response: any = await fetchPrivateDocumentDetails(props);
         const isError = !response || (response as any)?.status === 500 || !(response as any)?.data;
         if (isError) {
-          setIsPrivateDocError(true);
+          handleError();
         } else {
-          setPrivateRawData(response);
+          setPrivateData(response);
           setIsPrivateDocError(false);
+          setIsPrivateGridError(false);
         }
       } catch {
-        setIsPrivateDocError(true);
+        handleError();
+      } finally {
+        setIsPrivateLoading(false);
       }
     }
     fetchData();
-  }, [props.pageNumber, props.sortBy, props.sortDirection]);
+  }, [props.pageNumber, props.sortBy, props.sortDirection, props.refreshKey]);
 }
   

@@ -90,6 +90,7 @@ export interface PrivateDocumentManagementServerProps {
   userId: string;
   sortBy?: string;
   sortDirection?: string;
+  refreshKey?: number;
 }
 
 

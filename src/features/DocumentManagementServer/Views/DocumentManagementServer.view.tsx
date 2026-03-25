@@ -8,7 +8,7 @@ import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/Api
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
 import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, mapTableData, mapPrivateTableData, hasDMSDeletePermission, refreshAfterClose, getPrivacyTag } from "../logic/DocumentManagementServer.utils";
-import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, usePrivateDocumentFetchingEffect, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
+import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, usePrivateDocumentFetchingEffect, useResetOnManagePanelOpen, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
@@ -85,11 +85,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     selectedRelatedTo, setSelectedRelatedTo,
     tagListArray, setTagListArray,
     isViewDownloadError, setIsViewDownloadError,
-    privateRawData, setPrivateRawData,
+    privateData, setPrivateData,
     isPrivateDocError, setIsPrivateDocError,
+    isPrivateGridError, setIsPrivateGridError,
+    isPrivateLoading, setIsPrivateLoading,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
     sidePanelCurrentPage, setSidePanelCurrentPage,
+    sidePanelRefreshKey, setSidePanelRefreshKey,
     isOpen, setIsOpen,
     documentStatusIds, setDocumentStatusIds,
     selectedPrivacyFilter, setSelectedPrivacyFilter
@@ -120,7 +123,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   const searchTagList: any[] = getVisibleTagsWithSummary(searchTagListRaw, 3);
   const allRegistrationIds: number[] = getAllRegistrationIds(selectedFormats);
  const tableData: any[] = mapTableData(docData, showSearchError);
-  const privateDocData: any[] = mapPrivateTableData(privateRawData);
+  const privateDocData: any[] = mapPrivateTableData(privateData);
   
 
   const onPageChange: (event: unknown, page: number) => void = (event: unknown, page: number): void =>
@@ -258,7 +261,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     availableFileCount,
     setShowDeleteErrorBanner,
     setShowDeleteAbortBanner,
-    privateRawData,
+    privateData,
+    isPrivateDocError,
+    isPrivateGridError,
   });
   useSearchTermEffect({
     searchTerm, selectedFormats, selectedDateRange, showSearchError, isSearchTriggered, handleSearchChange,
@@ -365,11 +370,16 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       pageSize: pageSizeNumber,
       userId: "",
       sortBy: sidePanelSortBy,
-      sortDirection: sidePanelSortDirection
+      sortDirection: sidePanelSortDirection,
+      refreshKey: sidePanelRefreshKey
     },
-    setPrivateRawData,
-    setIsPrivateDocError
+    setPrivateData,
+    setIsPrivateDocError,
+    setIsPrivateLoading,
+    setIsPrivateGridError
   )
+
+  useResetOnManagePanelOpen(isSidePanelOpen, sidePanelOpenReason, setSidePanelCurrentPage, setSidePanelRefreshKey);
 
   const handleSidePanelSortChange: (columnName: string) => void = (columnName: string): void => {
     handleSorting(columnName, sidePanelSortBy, setSidePanelSortBy, sidePanelSortDirection, setSidePanelSortDirection, t);
@@ -586,8 +596,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   privateDocData={privateDocData}
                   isPrivateDocError={isPrivateDocError}
                   onSidePanelSortChange={handleSidePanelSortChange}
-                  privateTotalRecords={privateRawData?.totalRecords ?? 0}
+                  privateTotalRecords={privateData?.totalRecords ?? 0}
                   onSidePanelPageChange={setSidePanelCurrentPage}
+                  isPrivateLoading={isPrivateLoading}
                 />
               )
             }}
