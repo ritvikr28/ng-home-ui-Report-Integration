@@ -82,7 +82,7 @@ export function useDocumentManagementState() {
   const [sidePanelRefreshKey, setSidePanelRefreshKey]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
   const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [documentStatusIds, setDocumentStatusIds]: [number[], React.Dispatch<React.SetStateAction<number[]>>] = useState<number[]>([]);
-  const [selectedPrivacyFilter, setSelectedPrivacyFilter]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("all");
+  const [selectedPrivacyFilter, setSelectedPrivacyFilter]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
 
   return {
     t,

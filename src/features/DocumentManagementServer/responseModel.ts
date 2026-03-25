@@ -424,6 +424,8 @@ export interface HandleTagCloseLogicParams {
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
+  setSelectedPrivacyFilter?: React.Dispatch<React.SetStateAction<string>>; 
+  setDocumentStatusIds?: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 export interface PrivacyFilterDetails {

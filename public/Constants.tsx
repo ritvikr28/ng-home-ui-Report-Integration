@@ -18,3 +18,9 @@ export const DEFAULT_PRIVACY_FILTER: PrivacyFilterDetails[] = [
   { documentStatusId: 1, status: "PUBLIC", ngStatus: "STANDARD" },
   { documentStatusId: 3, status: "CONFIDENTIAL", ngStatus: "CONFIDENTIAL" }
 ];
+
+export const privacyFilterOptions = [
+    { value: "1", label: "Standard" },
+    { value: "3", label: "Confidential" },
+    { value: "all", label: "All privacy statuses" }
+  ];
