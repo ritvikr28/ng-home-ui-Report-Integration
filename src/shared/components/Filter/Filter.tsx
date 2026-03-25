@@ -14,7 +14,7 @@ import {
   NotificationStatus
 } from "@essnextgen/ui-kit";
 import { useTranslation, TFunction } from "@essnextgen/ui-intl-kit";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { CategoryData, PrivacyFilterDetails } from "../../../features/DocumentManagementServer/responseModel";
 import { DEFAULT_PRIVACY_FILTER, relatedToEnum } from "../../../../public/Constants";
