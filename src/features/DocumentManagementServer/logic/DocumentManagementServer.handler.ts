@@ -161,12 +161,20 @@ export const handleTagCloseLogic: (params: HandleTagCloseLogicParams) => void = 
   setDateRange,
   setIsDateError,
   setSelectedCategories,
-  setSelectedFormats
+  setSelectedFormats,
+  setSelectedPrivacyFilter,
+  setDocumentStatusIds
 }: HandleTagCloseLogicParams): void => {
   if (isDateRangeTag(closeObj.name, closeObj.id)) {
     setSelectedDateRange({ fromDate: "", toDate: "" });
     setDateRange({ fromDate: "", toDate: "" });
     setIsDateError(false);
+  }
+
+    if (closeObj.id === "privacyFilter") {
+    setSelectedPrivacyFilter?.("");   
+    setDocumentStatusIds?.([]);        
+    return;
   }
 
   setSelectedCategories(prev =>

@@ -623,3 +623,24 @@ export const refreshAfterClose: any = (params: RefreshAfterCloseParams): void =>
   }
   setTableKey((prev: number) => prev + 1);
 };
+
+export const getPrivacyTag = (
+  selectedPrivacyFilter: string,
+  privacyFilterOptions: { value: string; label: string }[]
+): any[] => {
+  if (!selectedPrivacyFilter || selectedPrivacyFilter === "") return [];
+
+  const matched = privacyFilterOptions.find(opt => opt.value === selectedPrivacyFilter);
+  if (!matched) return [];
+
+  return [
+    {
+      text: matched.label,
+      categoryName: "Privacy",
+      closeObj: {
+        name: matched.label,
+        id: "privacyFilter"
+      }
+    }
+  ];
+};
