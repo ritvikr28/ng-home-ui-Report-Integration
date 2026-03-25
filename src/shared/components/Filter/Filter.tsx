@@ -219,7 +219,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     data: { key }
   }));
 
-  const handleSearchChangeForSection = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearchChange({
       t,
       e,
@@ -234,7 +234,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
       documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
       setResetFilterSearch: undefined
     });
-  }, [localSelectedRelatedTo, selectedCategories, selectedDateRange, t]);
+  }
 
 
   const handleRemoveTagForSection: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: any) => void = (
