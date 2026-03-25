@@ -219,7 +219,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     data: { key }
   }));
 
-  const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChangeForSection: (e: React.ChangeEvent<HTMLInputElement>) => void = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearchChange({
       t,
       e,
