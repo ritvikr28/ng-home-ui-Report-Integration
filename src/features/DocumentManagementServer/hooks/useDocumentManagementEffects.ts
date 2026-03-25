@@ -360,31 +360,55 @@ export function useApplySummaryTagClassOnDocDataChange(
   
 }
 
+export function useResetOnManagePanelOpen(
+  isSidePanelOpen: boolean,
+  sidePanelOpenReason: string | null,
+  setSidePanelCurrentPage: (page: number) => void,
+  setSidePanelRefreshKey: (updater: (prev: number) => number) => void
+): void {
+  useEffect(() => {
+    if (isSidePanelOpen && sidePanelOpenReason === "manage") {
+      setSidePanelCurrentPage(1);
+      setSidePanelRefreshKey((prev: number) => prev + 1);
+    }
+  }, [isSidePanelOpen, sidePanelOpenReason]);
+}
+
 export function usePrivateDocumentFetchingEffect(
   props: PrivateDocumentManagementServerProps,
   setPrivateData: (data: any) => void,
   setIsPrivateDocError: (error: boolean) => void,
-  setIsPrivateLoading: (loading: boolean) => void
+  setIsPrivateLoading: (loading: boolean) => void,
+  setIsPrivateGridError: (error: boolean) => void
 ): void {
   useEffect(() => {
+    const isInitialLoad = (props.refreshKey ?? 0) === 0;
+
+    const handleError = (): void => {
+      setPrivateData([]);
+      setIsPrivateGridError(false);
+      setIsPrivateDocError(!isInitialLoad);
+    };
+
     async function fetchData(): Promise<void> {
       setIsPrivateLoading(true);
       try {
         const response: any = await fetchPrivateDocumentDetails(props);
         const isError = !response || (response as any)?.status === 500 || !(response as any)?.data;
         if (isError) {
-          setIsPrivateDocError(true);
+          handleError();
         } else {
           setPrivateData(response);
           setIsPrivateDocError(false);
+          setIsPrivateGridError(false);
         }
       } catch {
-        setIsPrivateDocError(true);
+        handleError();
       } finally {
         setIsPrivateLoading(false);
       }
     }
     fetchData();
-  }, [props.pageNumber, props.sortBy, props.sortDirection]);
+  }, [props.pageNumber, props.sortBy, props.sortDirection, props.refreshKey]);
 }
   

@@ -1,6 +1,6 @@
 import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
-import { useSidePanelTableSelection } from "../components/DMSSidePanel/sidePanelTable.logic";
+import { useSidePanelTableSelection, getPaginatedData, createHandlePageChange, createHandleSorting } from "../components/DMSSidePanel/sidePanelTable.logic";
 
 const mockData: any[] = [
   { id: "1" },
@@ -94,5 +94,106 @@ describe("useSidePanelTableSelection", () => {
       result.current.setSelectedIds(["1", "3"]);
     });
     expect(result.current.selectedIds).toEqual(["1", "3"]);
+  });
+});
+
+describe("getPaginatedData", () => {
+  const data: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  it("returns items for the first page", () => {
+    expect(getPaginatedData(data, 1, 3)).toEqual([1, 2, 3]);
+  });
+
+  it("returns items for a middle page", () => {
+    expect(getPaginatedData(data, 2, 3)).toEqual([4, 5, 6]);
+  });
+
+  it("returns items for the last page (partial)", () => {
+    expect(getPaginatedData(data, 4, 3)).toEqual([10]);
+  });
+
+  it("returns empty array when page is beyond available data", () => {
+    expect(getPaginatedData(data, 5, 3)).toEqual([]);
+  });
+
+  it("returns all items when itemsPerPage exceeds data length", () => {
+    expect(getPaginatedData(data, 1, 20)).toEqual(data);
+  });
+
+  it("returns empty array for empty input", () => {
+    expect(getPaginatedData([], 1, 5)).toEqual([]);
+  });
+});
+
+describe("createHandlePageChange", () => {
+  it("calls setCurrentPage with the provided page number", () => {
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandlePageChange(setCurrentPage);
+    handler({} as React.ChangeEvent<unknown>, 3);
+    expect(setCurrentPage).toHaveBeenCalledWith(3);
+  });
+
+  it("calls setCurrentPage with page 1", () => {
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandlePageChange(setCurrentPage);
+    handler({} as React.ChangeEvent<unknown>, 1);
+    expect(setCurrentPage).toHaveBeenCalledWith(1);
+  });
+
+  it("is called exactly once per invocation", () => {
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandlePageChange(setCurrentPage);
+    handler({} as React.ChangeEvent<unknown>, 7);
+    expect(setCurrentPage).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("createHandleSorting", () => {
+  it("calls setIsInitialLoad(true), onSortChange with columnName, and setCurrentPage(1)", () => {
+    const setIsInitialLoad: jest.Mock = jest.fn();
+    const onSortChange: jest.Mock = jest.fn();
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandleSorting(setIsInitialLoad, onSortChange, setCurrentPage);
+
+    handler({} as React.ChangeEvent<unknown>, "FileName");
+
+    expect(setIsInitialLoad).toHaveBeenCalledWith(true);
+    expect(onSortChange).toHaveBeenCalledWith("FileName");
+    expect(setCurrentPage).toHaveBeenCalledWith(1);
+  });
+
+  it("resets page to 1 regardless of the column sorted", () => {
+    const setIsInitialLoad: jest.Mock = jest.fn();
+    const onSortChange: jest.Mock = jest.fn();
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandleSorting(setIsInitialLoad, onSortChange, setCurrentPage);
+
+    handler({} as React.ChangeEvent<unknown>, "DateAdded");
+
+    expect(setCurrentPage).toHaveBeenCalledWith(1);
+  });
+
+  it("calls each setter exactly once per invocation", () => {
+    const setIsInitialLoad: jest.Mock = jest.fn();
+    const onSortChange: jest.Mock = jest.fn();
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandleSorting(setIsInitialLoad, onSortChange, setCurrentPage);
+
+    handler({} as React.ChangeEvent<unknown>, "FileSize");
+
+    expect(setIsInitialLoad).toHaveBeenCalledTimes(1);
+    expect(onSortChange).toHaveBeenCalledTimes(1);
+    expect(setCurrentPage).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes the correct column name to onSortChange", () => {
+    const setIsInitialLoad: jest.Mock = jest.fn();
+    const onSortChange: jest.Mock = jest.fn();
+    const setCurrentPage: jest.Mock = jest.fn();
+    const handler = createHandleSorting(setIsInitialLoad, onSortChange, setCurrentPage);
+
+    handler({} as React.ChangeEvent<unknown>, "DocumentType");
+
+    expect(onSortChange).toHaveBeenCalledWith("DocumentType");
   });
 });

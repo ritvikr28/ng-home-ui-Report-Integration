@@ -699,6 +699,8 @@ interface NotificationMsgBannerParams {
   setShowDeleteErrorBanner: (v: boolean) => void;
   setShowDeleteAbortBanner: (v: boolean) => void;
   privateData?: any;
+  isPrivateDocError?: boolean;
+  isPrivateGridError?: boolean;
 }
 
 interface NotificationMsgBanner {
@@ -725,11 +727,12 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
     availableFileCount,
     setShowDeleteErrorBanner,
     setShowDeleteAbortBanner,
-    privateData
+    privateData,
+    isPrivateGridError
   }: NotificationMsgBannerParams = params;
   return [
     {
-      isShow: showErrorBanner || showSearchError,
+      isShow: showErrorBanner || showSearchError || !!isPrivateGridError,
       variant: "warning",
       title: t("DocumentManagementServer.informationUnavailable"),
       message: t("DocumentManagementServer.technicalIssueMessage"),

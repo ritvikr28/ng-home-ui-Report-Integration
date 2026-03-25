@@ -74,10 +74,12 @@ export function useDocumentManagementState() {
   const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [privateData, setPrivateData]: [any, React.Dispatch<React.SetStateAction<any>>] = useState<any>(null);
   const [isPrivateDocError, setIsPrivateDocError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isPrivateGridError, setIsPrivateGridError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [isPrivateLoading, setIsPrivateLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [sidePanelSortBy, setSidePanelSortBy]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("DateAdded");
   const [sidePanelSortDirection, setSidePanelSortDirection]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("Desc");
   const [sidePanelCurrentPage, setSidePanelCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
+  const [sidePanelRefreshKey, setSidePanelRefreshKey]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
   const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [documentStatusIds, setDocumentStatusIds]: [number[], React.Dispatch<React.SetStateAction<number[]>>] = useState<number[]>([]);
   const [selectedPrivacyFilter, setSelectedPrivacyFilter]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("all");
@@ -151,10 +153,12 @@ export function useDocumentManagementState() {
     isViewDownloadError, setIsViewDownloadError,
     privateData, setPrivateData,
     isPrivateDocError, setIsPrivateDocError,
+    isPrivateGridError, setIsPrivateGridError,
     isPrivateLoading, setIsPrivateLoading,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
     sidePanelCurrentPage, setSidePanelCurrentPage,
+    sidePanelRefreshKey, setSidePanelRefreshKey,
     isOpen, setIsOpen,
     documentStatusIds, setDocumentStatusIds,
     selectedPrivacyFilter, setSelectedPrivacyFilter

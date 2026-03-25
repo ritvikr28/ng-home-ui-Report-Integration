@@ -723,10 +723,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
     const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
       );
     });
 
@@ -734,20 +735,62 @@ describe("usePrivateDocumentFetchingEffect", () => {
     expect(setIsPrivateDocError).toHaveBeenCalledWith(false);
   });
 
+  // Initial load error tests (refreshKey absent/0 → isInitialLoad=true → silent fail, no error shown)
+  it("silently fails on initial load when response is null — no error banner shown", async () => {
+    mockFetch.mockResolvedValueOnce(null);
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
+      );
+    });
+
+    expect(setIsPrivateGridError).toHaveBeenCalledWith(false);
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(false);
+    expect(setPrivateRawData).toHaveBeenCalledWith([]);
+  });
+
+  it("silently fails on initial load when fetchPrivateDocumentDetails throws — no error banner shown", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+    const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
+      );
+    });
+
+    expect(setIsPrivateGridError).toHaveBeenCalledWith(false);
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(false);
+    expect(setPrivateRawData).toHaveBeenCalledWith([]);
+  });
+
+  // Side panel error tests (refreshKey=1 → isInitialLoad=false → setIsPrivateDocError gets the error)
+  const sidePanelProps = { ...{ pageNumber: 1, pageSize: 10, userId: "user1", sortBy: "DateAdded", sortDirection: "Desc" }, refreshKey: 1 };
+
   it("calls setIsPrivateDocError(true) when response is null — covers !response branch", async () => {
     mockFetch.mockResolvedValueOnce(null);
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
     const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
+        usePrivateDocumentFetchingEffect(sidePanelProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
       );
     });
 
     expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
-    expect(setPrivateRawData).not.toHaveBeenCalled();
+    expect(setIsPrivateGridError).toHaveBeenCalledWith(false);
+    expect(setPrivateRawData).toHaveBeenCalledWith([]);
   });
 
   it("calls setIsPrivateDocError(true) when response.status === 500 — covers status===500 branch", async () => {
@@ -755,15 +798,17 @@ describe("usePrivateDocumentFetchingEffect", () => {
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
     const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
+        usePrivateDocumentFetchingEffect(sidePanelProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
       );
     });
 
     expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
-    expect(setPrivateRawData).not.toHaveBeenCalled();
+    expect(setIsPrivateGridError).toHaveBeenCalledWith(false);
+    expect(setPrivateRawData).toHaveBeenCalledWith([]);
   });
 
   it("calls setIsPrivateDocError(true) when response has no data — covers !response.data branch", async () => {
@@ -771,15 +816,17 @@ describe("usePrivateDocumentFetchingEffect", () => {
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
     const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
+        usePrivateDocumentFetchingEffect(sidePanelProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
       );
     });
 
     expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
-    expect(setPrivateRawData).not.toHaveBeenCalled();
+    expect(setIsPrivateGridError).toHaveBeenCalledWith(false);
+    expect(setPrivateRawData).toHaveBeenCalledWith([]);
   });
 
   it("calls setIsPrivateDocError(true) when fetchPrivateDocumentDetails throws — covers catch branch", async () => {
@@ -787,15 +834,17 @@ describe("usePrivateDocumentFetchingEffect", () => {
     const setPrivateRawData = jest.fn();
     const setIsPrivateDocError = jest.fn();
     const setIsPrivateLoading = jest.fn();
+    const setIsPrivateGridError = jest.fn();
 
     await act(async () => {
       renderHook(() =>
-        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading)
+        usePrivateDocumentFetchingEffect(sidePanelProps as any, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError)
       );
     });
 
     expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
-    expect(setPrivateRawData).not.toHaveBeenCalled();
+    expect(setIsPrivateGridError).toHaveBeenCalledWith(false);
+    expect(setPrivateRawData).toHaveBeenCalledWith([]);
   });
 
   it("re-runs effect when sortBy changes", async () => {
@@ -805,10 +854,11 @@ describe("usePrivateDocumentFetchingEffect", () => {
     const setIsPrivateDocError = jest.fn();
     const setIsPrivateLoading = jest.fn();
 
+    const setIsPrivateGridError = jest.fn();
     let rerender: (props: any) => void;
     await act(async () => {
       ({ rerender } = renderHook(
-        (props: any) => usePrivateDocumentFetchingEffect(props, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading),
+        (props: any) => usePrivateDocumentFetchingEffect(props, setPrivateRawData, setIsPrivateDocError, setIsPrivateLoading, setIsPrivateGridError),
         { initialProps: baseProps as any }
       ));
     });
