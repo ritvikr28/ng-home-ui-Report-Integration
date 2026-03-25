@@ -14,7 +14,7 @@ import {
   NotificationStatus
 } from "@essnextgen/ui-kit";
 import { useTranslation, TFunction } from "@essnextgen/ui-intl-kit";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./style.scss";
 import { CategoryData, PrivacyFilterDetails } from "../../../features/DocumentManagementServer/responseModel";
 import { DEFAULT_PRIVACY_FILTER, relatedToEnum } from "../../../../public/Constants";
@@ -184,7 +184,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     setShowSearchError,
     setIsSearchLoading,
     localSelectedRelatedTo,
-    t
+    t,
+    relatedToEnum
   })
 
   useEffect(() => {
@@ -218,7 +219,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     data: { key }
   }));
 
-  const handleSearchChangeForSection: (e: React.ChangeEvent<HTMLInputElement>) => void = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChangeForSection = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearchChange({
       t,
       e,
@@ -233,7 +234,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
       documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
       setResetFilterSearch: undefined
     });
-  }
+  }, [localSelectedRelatedTo, selectedCategories, selectedDateRange, t]);
+
 
   const handleRemoveTagForSection: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: any) => void = (
     e: React.SyntheticEvent<Element, Event>,
@@ -352,6 +354,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
           {["Pupil", "Staff"].includes(selectedDisplayKey) && (
             <SearchSection
+              key={localTagListArray.length + searchKey + (localSelectedRelatedTo?.value?.toString() ?? "")}
               dataTestId={dataTestId}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
