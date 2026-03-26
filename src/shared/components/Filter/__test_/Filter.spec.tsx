@@ -45,7 +45,7 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
   })
 }));
 
-jest.mock("../../../../Layout", () => ({
+jest.mock("../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic", () => ({
   DMSPrivateDocument: true
 }));
 
