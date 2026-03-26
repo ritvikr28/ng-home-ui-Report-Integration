@@ -7,7 +7,7 @@ import gtmAnalytics from "../../../shared/utils/analytics";
 import { pageSizeNumber } from "../../../../public/Constants";
 import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
-import { DMSPrivateDocument } from "../../../Layout";
+import { isOrganisationInVariantForAnyOrAll } from "../../../shared/utils/flagr-utils";
 
 const renderSingleValue = (
   value: string | undefined,
@@ -859,5 +859,7 @@ export const fileDownloadById: (fileId: string, fileName: string) => Promise<voi
   }
 };
 
+export const isDMSPrivateDocument: () => boolean = () => 
+  isOrganisationInVariantForAnyOrAll("DmsManagePrivateDocument");
 
-
+export const DMSPrivateDocument: boolean = isDMSPrivateDocument();
