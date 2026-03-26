@@ -28,7 +28,7 @@ import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect, usePrivacyFilterEffect } from "./hook/useFilterDialogLogic";
 import { FilterRadioButton } from "./components/FilterRadioButton";
-import { DMSPrivateDocument } from "../../../Layout";
+import { DMSPrivateDocument } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
 
 export interface FilterDialogProps {
   dataTestId?: string;
