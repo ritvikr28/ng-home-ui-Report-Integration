@@ -7,6 +7,7 @@ import {
 } from "@essnextgen/ui-kit";
 import {
   debouncedFetchSuggestions,
+  DMSPrivateDocument,
   mapToBulkDeletePayload
 } from "./DocumentManagementServer.logic";
 import { relatedToEnum } from "../../../../public/Constants";
@@ -14,7 +15,6 @@ import gtmAnalytics from "../../../shared/utils/analytics";
 import { isValidDate } from "../../../shared/utils/commonFunctions";
 import { HandleSearchChangeParams, HandleTagCloseLogicParams } from "../responseModel";
 import { getBannerMessageWithLink } from "../Views/DMSLayout";
-import { DMSPrivateDocument } from "../../../Layout";
 
 /* ------------------------------------------------------------------ */
 /* Page & Search                                                       */

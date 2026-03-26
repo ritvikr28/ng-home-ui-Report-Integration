@@ -74,10 +74,6 @@ const AdminConsole: LazyExoticComponent<FC<{}>> = lazy(
 
 const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pages/SIMSIDAdminPage/SIMSIDAdminPage.view"));
 
-export const DMSPrivateDocument: boolean = isOrganisationInVariantForAnyOrAll(
-  "DmsManagePrivateDocument"
-);
-
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
