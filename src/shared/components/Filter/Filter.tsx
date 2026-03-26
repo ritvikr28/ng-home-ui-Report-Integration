@@ -28,7 +28,7 @@ import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect, usePrivacyFilterEffect } from "./hook/useFilterDialogLogic";
 import { FilterRadioButton } from "./components/FilterRadioButton";
-import { DMSPrivateDocument } from "../../../Layout";
+import { DMSPrivateDocument } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
 
 export interface FilterDialogProps {
   dataTestId?: string;
@@ -184,7 +184,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     setShowSearchError,
     setIsSearchLoading,
     localSelectedRelatedTo,
-    t
+    t,
+    relatedToEnum
   })
 
   useEffect(() => {
@@ -234,6 +235,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
       setResetFilterSearch: undefined
     });
   }
+
 
   const handleRemoveTagForSection: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: any) => void = (
     e: React.SyntheticEvent<Element, Event>,
@@ -352,6 +354,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
           {["Pupil", "Staff"].includes(selectedDisplayKey) && (
             <SearchSection
+              key={localTagListArray.length + searchKey + (localSelectedRelatedTo?.value?.toString() ?? "")}
               dataTestId={dataTestId}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}

@@ -368,9 +368,13 @@ export async function handleApplyWrapper(params: HandleApplyWrapperParams): Prom
   params.setSelectedRelatedTo(params.localSelectedRelatedTo);
   params.setDocumentRelatedTo(Number(params.localSelectedRelatedTo?.value));
 
+  const parsedValue = Number(params.selectedPrivacyFilter);
   const documentStatusIds: number[] =
-    params.selectedPrivacyFilter && params.selectedPrivacyFilter !== "all"
-      ? [Number(params.selectedPrivacyFilter)]
+    params.selectedPrivacyFilter !== "" &&
+    params.selectedPrivacyFilter !== "all" &&
+    params.selectedPrivacyFilter !== undefined &&
+    !Number.isNaN(parsedValue)
+      ? [parsedValue]
       : [];
 
   params.handleApply(params.refId, params.localSelectedCategories, params.filterEntities, documentStatusIds);
