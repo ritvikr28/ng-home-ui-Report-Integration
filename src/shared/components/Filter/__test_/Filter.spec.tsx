@@ -45,9 +45,6 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
   })
 }));
 
-jest.mock("../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic", () => ({
-  DMSPrivateDocument: true
-}));
 
 const mockHandleApply: jest.Mock = jest.fn();
 const mockOnClose: jest.Mock = jest.fn();
@@ -139,7 +136,8 @@ jest.mock("../../../../features/DocumentManagementServer/logic/DocumentManagemen
   ...jest.requireActual("../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic"),
   getAllRegistrationIds: jest.fn(() => []),
   fetchDocumentCategoryData: jest.fn(() => Promise.resolve([])),
-  handleSearchChange: jest.fn()
+  handleSearchChange: jest.fn(),
+  DMSPrivateDocument: true
 }));
 
 const renderComponent: (props?: any) => ReturnType<typeof render> = (props = {}) =>
