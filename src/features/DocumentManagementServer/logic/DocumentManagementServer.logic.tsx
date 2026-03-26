@@ -859,6 +859,7 @@ export const fileDownloadById: (fileId: string, fileName: string) => Promise<voi
   }
 };
 
-export const DMSPrivateDocument: boolean = isOrganisationInVariantForAnyOrAll(
-  "DmsManagePrivateDocument"
-);
+export const isDMSPrivateDocument: () => boolean = () => 
+  isOrganisationInVariantForAnyOrAll("DmsManagePrivateDocument");
+
+export const DMSPrivateDocument: boolean = isDMSPrivateDocument();
