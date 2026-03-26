@@ -1,9 +1,7 @@
-import { Button, ButtonSize, Notification, NotificationStatus, Icon, IconColor, IconSize } from "@essnextgen/ui-kit";
-import React, { useEffect, useRef, useState } from "react";
-// import { updateDocumentStatus } from "../../api/ApiService";
+import { Button, ButtonSize, Icon, IconColor, IconSize } from "@essnextgen/ui-kit";
+import React, { useState } from "react";
 import { SidePanelTable } from "./SidePanelTable";
 import { PrivateDocErrorNotification, DownloadErrorNotification } from "./sidePanelTable.logic";
-// import { getBannerMessageWithLink } from "../../Views/DMSLayout";
 
 interface ManageDocumentsSidePanelProps {
   t: any;
@@ -68,7 +66,7 @@ export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> =
       <HelpText t={t} />
       <ConvertDocButton t={t} />
       <div className="manage-documents-table">
-        <SidePanelTable t={t} tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} totalRecords={totalRecords} onPageChange={onPageChange} isLoading={isLoading} isPrivateDocError={isPrivateDocError} />
+        <SidePanelTable  tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} totalRecords={totalRecords} onPageChange={onPageChange} isLoading={isLoading} isPrivateDocError={isPrivateDocError} />
       </div>
     </div>
   );

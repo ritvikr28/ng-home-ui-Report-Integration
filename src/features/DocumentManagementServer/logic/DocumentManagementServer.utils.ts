@@ -312,10 +312,10 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
 };
 
 
-export const getSidePanelEmptyStateMsg = (isPrivateDocError: boolean, t: TFunction<"translation", undefined>): string => {
-  if (isPrivateDocError) return t("DocumentManagementServer.informationUnavailable");
-  return t("DocumentManagementServer.noDataToDisplay");
-};
+// export const getSidePanelEmptyStateMsg = (isPrivateDocError: boolean, t: TFunction<"translation", undefined>): string => {
+//   if (isPrivateDocError) return t("DocumentManagementServer.informationUnavailable");
+//   return t("DocumentManagementServer.noDataToDisplay");
+// };
 
 export const getEmptyStateMsg: any = (showErrorBanner: boolean, searchText: string, isSearchTriggered: boolean, showSearchError: boolean, issearchDataLoading: boolean, isSearchLoading: boolean, t: TFunction<"translation", undefined>) => {
   if (showErrorBanner || ((searchText || !isSearchTriggered) && showSearchError)) return t("DocumentManagementServer.informationUnavailable");

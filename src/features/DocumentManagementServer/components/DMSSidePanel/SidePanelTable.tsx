@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { ControlledList, DialogTemplate, CheckBoxSelectedState, TableRowType, ResponseCode } from "@essnextgen/ui-kit";
+import { ControlledList, DialogTemplate, CheckBoxSelectedState, ResponseCode } from "@essnextgen/ui-kit";
 import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions, createHandleDocumentClick, createHandleSorting } from "./sidePanelTable.logic";
 import { pageSizeNumber } from "../../../../../public/Constants";
 import { useScrollToTopOnPageChange } from "../../hooks/useDocumentManagementEffects";
-import { getSidePanelEmptyStateMsg } from "../../logic/DocumentManagementServer.utils";
 
 interface SidePanelTableProps {
-  t: any;
   tableBodyData: any[];
   onSortChange: (columnName: string) => void;
   onDownloadError: (hasError: boolean) => void;
   totalRecords: number;
   onPageChange: (page: number) => void;
   isLoading: boolean;
-  isPrivateDocError?: boolean;
+  isPrivateDocError: boolean;
 }
 
 export const SidePanelTable: React.FC<SidePanelTableProps> = ({
-  t,
   tableBodyData,
   onSortChange,
   onDownloadError,
   totalRecords,
   onPageChange,
   isLoading,
-  isPrivateDocError = false,
+  isPrivateDocError,
 }) => {
   const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
   const [isInitialLoad, setIsInitialLoad]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
@@ -86,9 +83,7 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({
       dynamicTableLoader={isLoading}
       isIconRightAligned={true}
       onClickOverflowItem={() => {}}
-      emptyStateMsg={getSidePanelEmptyStateMsg(isPrivateDocError, t)}
       dynamictableIconName={isPrivateDocError ? "warning--alt" : "information"}
-      emptyRowType={isPrivateDocError ? TableRowType.Error : TableRowType.Info}
       emptyRowResponseCode={isPrivateDocError ? ResponseCode.Error : ResponseCode.Info}
       emptybtnTitle="Add Document"
       filterDDLlabel="Added by"
