@@ -184,7 +184,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     setShowSearchError,
     setIsSearchLoading,
     localSelectedRelatedTo,
-    t
+    t,
+    relatedToEnum
   })
 
   useEffect(() => {
@@ -234,6 +235,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
       setResetFilterSearch: undefined
     });
   }
+
 
   const handleRemoveTagForSection: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: any) => void = (
     e: React.SyntheticEvent<Element, Event>,
@@ -352,6 +354,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
           {["Pupil", "Staff"].includes(selectedDisplayKey) && (
             <SearchSection
+              key={localTagListArray.length + searchKey + (localSelectedRelatedTo?.value?.toString() ?? "")}
               dataTestId={dataTestId}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
