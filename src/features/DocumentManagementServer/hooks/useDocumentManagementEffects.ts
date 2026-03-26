@@ -364,11 +364,15 @@ export function useResetOnManagePanelOpen(
   isSidePanelOpen: boolean,
   sidePanelOpenReason: string | null,
   setSidePanelCurrentPage: (page: number) => void,
-  setSidePanelRefreshKey: (updater: (prev: number) => number) => void
+  setSidePanelRefreshKey: (updater: (prev: number) => number) => void,
+  setSidePanelSortBy: (sortBy: string) => void,
+  setSidePanelSortDirection: (sortDirection: string) => void
 ): void {
   useEffect(() => {
     if (isSidePanelOpen && sidePanelOpenReason === "manage") {
       setSidePanelCurrentPage(1);
+      setSidePanelSortBy("DateAdded");
+      setSidePanelSortDirection("Desc");
       setSidePanelRefreshKey((prev: number) => prev + 1);
     }
   }, [isSidePanelOpen, sidePanelOpenReason]);

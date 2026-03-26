@@ -379,7 +379,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     setIsPrivateGridError
   )
 
-  useResetOnManagePanelOpen(isSidePanelOpen, sidePanelOpenReason, setSidePanelCurrentPage, setSidePanelRefreshKey);
+  useResetOnManagePanelOpen(isSidePanelOpen, sidePanelOpenReason, setSidePanelCurrentPage, setSidePanelRefreshKey, setSidePanelSortBy, setSidePanelSortDirection);
 
   const handleSidePanelSortChange: (columnName: string) => void = (columnName: string): void => {
     handleSorting(columnName, sidePanelSortBy, setSidePanelSortBy, sidePanelSortDirection, setSidePanelSortDirection, t);

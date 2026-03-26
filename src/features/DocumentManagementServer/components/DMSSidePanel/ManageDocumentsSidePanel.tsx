@@ -1,7 +1,9 @@
-import { Button, ButtonSize } from "@essnextgen/ui-kit";
-import React, { useState } from "react";
+import { Button, ButtonSize, Notification, NotificationStatus, Icon, IconColor, IconSize } from "@essnextgen/ui-kit";
+import React, { useEffect, useRef, useState } from "react";
+// import { updateDocumentStatus } from "../../api/ApiService";
 import { SidePanelTable } from "./SidePanelTable";
 import { PrivateDocErrorNotification, DownloadErrorNotification } from "./sidePanelTable.logic";
+// import { getBannerMessageWithLink } from "../../Views/DMSLayout";
 
 interface ManageDocumentsSidePanelProps {
   t: any;
@@ -26,8 +28,15 @@ const Highlight: React.FC<{ t: any }> = ({ t }) => (
   </div>
 );
 
-const TotalCount: React.FC<{ count: number }> = ({ count }) => (
-  <span className="total-count">{count}</span>
+const TotalCount: React.FC<{ count: number; isPrivateDocError: boolean; t: any }> = ({ count, isPrivateDocError, t }) => (
+  isPrivateDocError
+    ? (
+      <span className="total-count total-count--error">
+        <Icon name="warning--alt" size={IconSize.Medium} color={IconColor.Warning500} />
+        <span>{t("DocumentManagementServer.informationUnavailable")}</span>
+      </span>
+    )
+    : <span className="total-count">{count}</span>
 );
 
 const HelpText: React.FC<{ t: any }> = ({ t }) => (
@@ -55,12 +64,12 @@ export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> =
       {isDownloadError && <DownloadErrorNotification t={t} />}
       <Description t={t} />
       <Highlight t={t} />
-      <TotalCount count={totalRecords} />
+      <TotalCount count={totalRecords} isPrivateDocError={isPrivateDocError} t={t} />
       <HelpText t={t} />
       <ConvertDocButton t={t} />
       <div className="manage-documents-table">
-        <SidePanelTable tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} totalRecords={totalRecords} onPageChange={onPageChange} isLoading={isLoading} />
+        <SidePanelTable t={t} tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} totalRecords={totalRecords} onPageChange={onPageChange} isLoading={isLoading} isPrivateDocError={isPrivateDocError} />
       </div>
     </div>
-);
+  );
 };
