@@ -50,14 +50,14 @@ const ReportDesigner: React.FC = () => {
   useEffect(() => {
     try {
       const token = authService.getAuthTokens();
-      if (token) {
-        fetchSetup.fetchSettings = {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        };
-      }
+      
+      // Configure fetchSetup for DevExpress API calls
+      fetchSetup.fetchSettings = {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          'Content-Type': 'application/json'
+        }
+      };
       
       // Log configuration for debugging
       console.log('[ReportDesigner] Initializing with config:', {
@@ -65,15 +65,23 @@ const ReportDesigner: React.FC = () => {
         reportUrl,
         hasToken: !!token,
         getDesignerModelAction,
-        getLocalizationAction
+        getLocalizationAction,
+        fullDesignerModelUrl: `${hostUrl}/${getDesignerModelAction}`
       });
+      
+      // Verify backend is accessible
+      if (hostUrl) {
+        console.log('[ReportDesigner] Backend URL configured:', hostUrl);
+      } else {
+        console.warn('[ReportDesigner] WARNING: No REPORTING_API_URL configured!');
+      }
       
       setIsReady(true);
     } catch (err) {
       console.error('[ReportDesigner] Initialization error:', err);
       setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [hostUrl, reportUrl]);
+  }, [hostUrl, reportUrl, getDesignerModelAction, getLocalizationAction]);
 
   /**
    * BeforeRender callback - fires before the DevExpress designer makes any HTTP requests.
@@ -81,15 +89,16 @@ const ReportDesigner: React.FC = () => {
    */
   const onBeforeRender = useCallback((sender: any) => {
     console.log('[ReportDesigner] BeforeRender callback triggered');
+    console.log('[ReportDesigner] Sender object:', sender);
+    
     const token = authService.getAuthTokens();
-    if (token) {
-      fetchSetup.fetchSettings = {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      };
-    }
+    fetchSetup.fetchSettings = {
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        'Content-Type': 'application/json'
+      }
+    };
+    console.log('[ReportDesigner] Fetch settings configured with token:', !!token);
   }, []);
 
   /**
@@ -97,13 +106,33 @@ const ReportDesigner: React.FC = () => {
    */
   const onCustomizeLocalization = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeLocalization callback triggered');
+    console.log('[ReportDesigner] About to load designer model...');
+  }, []);
+
+  /**
+   * ComponentDidMount callback - fires when the designer component is fully mounted
+   */
+  const onComponentDidMount = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] ComponentDidMount - Designer loaded successfully');
+  }, []);
+
+  /**
+   * OnServerError callback - handles server-side errors
+   */
+  const onServerError = useCallback((sender: any, args: any) => {
+    console.error('[ReportDesigner] Server Error:', args);
+    const errorMessage = args?.errorMessage || args?.message || 'Unknown server error';
+    console.error('[ReportDesigner] Error details:', {
+      errorMessage,
+      args: JSON.stringify(args)
+    });
   }, []);
 
   /**
    * Error callback - handles errors from the designer
    */
   const onError = useCallback((sender: any, args: any) => {
-    console.error('[ReportDesigner] Error:', args);
+    console.error('[ReportDesigner] Error callback triggered:', args);
     setError(`Designer error: ${JSON.stringify(args)}`);
   }, []);
 
@@ -158,6 +187,8 @@ const ReportDesigner: React.FC = () => {
         <Callbacks
           BeforeRender={onBeforeRender}
           CustomizeLocalization={onCustomizeLocalization}
+          ComponentDidMount={onComponentDidMount}
+          OnServerError={onServerError}
         />
       </DxReportDesigner>
     </div>
