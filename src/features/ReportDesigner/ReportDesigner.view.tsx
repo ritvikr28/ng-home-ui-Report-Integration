@@ -33,9 +33,11 @@ const ReportDesigner: React.FC = () => {
   const reportUrl: string = queryParams.get('reportUrl') ?? 'TestReport';
   
   // Get the reporting API base URL from environment config
-  const hostUrl: string = envConfig.REPORTING_API_URL || envConfig.BASE_URL || '';
+  // Ensure the URL has a trailing slash for proper URL construction
+  const rawHostUrl: string = envConfig.REPORTING_API_URL || envConfig.BASE_URL || '';
+  const hostUrl: string = rawHostUrl.endsWith('/') ? rawHostUrl.slice(0, -1) : rawHostUrl;
   
-  // DevExpress endpoint paths
+  // DevExpress endpoint paths (no leading slash - DevExpress adds it)
   const getDesignerModelAction = 'DXXRD/GetDesignerModel';
   const getLocalizationAction = 'DXXRD/GetLocalization';
 
@@ -62,16 +64,36 @@ const ReportDesigner: React.FC = () => {
       // Log configuration for debugging
       console.log('[ReportDesigner] Initializing with config:', {
         hostUrl,
+        rawHostUrl,
         reportUrl,
         hasToken: !!token,
         getDesignerModelAction,
         getLocalizationAction,
-        fullDesignerModelUrl: `${hostUrl}/${getDesignerModelAction}`
+        fullDesignerModelUrl: `${hostUrl}/${getDesignerModelAction}`,
+        fullLocalizationUrl: `${hostUrl}/${getLocalizationAction}`
       });
       
       // Verify backend is accessible
       if (hostUrl) {
         console.log('[ReportDesigner] Backend URL configured:', hostUrl);
+        
+        // Test the backend connectivity with a simple fetch
+        fetch(`${hostUrl}/${getLocalizationAction}`, {
+          method: 'GET',
+          headers: {
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          console.log('[ReportDesigner] Test fetch response status:', response.status);
+          if (!response.ok) {
+            console.warn('[ReportDesigner] Backend responded with non-OK status:', response.status);
+          }
+        })
+        .catch(err => {
+          console.error('[ReportDesigner] Backend connectivity test failed:', err);
+        });
       } else {
         console.warn('[ReportDesigner] WARNING: No REPORTING_API_URL configured!');
       }
@@ -81,7 +103,7 @@ const ReportDesigner: React.FC = () => {
       console.error('[ReportDesigner] Initialization error:', err);
       setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [hostUrl, reportUrl, getDesignerModelAction, getLocalizationAction]);
+  }, [hostUrl, rawHostUrl, reportUrl, getDesignerModelAction, getLocalizationAction]);
 
   /**
    * BeforeRender callback - fires before the DevExpress designer makes any HTTP requests.
@@ -89,7 +111,8 @@ const ReportDesigner: React.FC = () => {
    */
   const onBeforeRender = useCallback((sender: any) => {
     console.log('[ReportDesigner] BeforeRender callback triggered');
-    console.log('[ReportDesigner] Sender object:', sender);
+    console.log('[ReportDesigner] Sender type:', sender?.constructor?.name);
+    console.log('[ReportDesigner] Sender GetCurrentTab:', sender?.GetCurrentTab?.());
     
     const token = authService.getAuthTokens();
     fetchSetup.fetchSettings = {
@@ -102,11 +125,20 @@ const ReportDesigner: React.FC = () => {
   }, []);
 
   /**
+   * Init callback - fires when the designer model is fully initialized
+   */
+  const onInit = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] Init callback triggered - Designer model is ready');
+    console.log('[ReportDesigner] Init sender:', sender);
+    console.log('[ReportDesigner] Init args:', args);
+  }, []);
+
+  /**
    * CustomizeLocalization callback - can be used to override localization strings.
    */
   const onCustomizeLocalization = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeLocalization callback triggered');
-    console.log('[ReportDesigner] About to load designer model...');
+    console.log('[ReportDesigner] Localization args:', args);
   }, []);
 
   /**
@@ -114,6 +146,7 @@ const ReportDesigner: React.FC = () => {
    */
   const onComponentDidMount = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] ComponentDidMount - Designer loaded successfully');
+    console.log('[ReportDesigner] ComponentDidMount sender:', sender);
   }, []);
 
   /**
@@ -126,6 +159,13 @@ const ReportDesigner: React.FC = () => {
       errorMessage,
       args: JSON.stringify(args)
     });
+  }, []);
+
+  /**
+   * CustomizeMenuActions callback - fires when menu is being configured
+   */
+  const onCustomizeMenuActions = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] CustomizeMenuActions callback triggered');
   }, []);
 
   /**
@@ -178,6 +218,7 @@ const ReportDesigner: React.FC = () => {
       <DxReportDesigner
         reportUrl={reportUrl}
         height={designerHeight}
+        developmentMode={true}
       >
         <RequestOptions
           host={hostUrl}
@@ -186,7 +227,9 @@ const ReportDesigner: React.FC = () => {
         />
         <Callbacks
           BeforeRender={onBeforeRender}
+          Init={onInit}
           CustomizeLocalization={onCustomizeLocalization}
+          CustomizeMenuActions={onCustomizeMenuActions}
           ComponentDidMount={onComponentDidMount}
           OnServerError={onServerError}
         />
