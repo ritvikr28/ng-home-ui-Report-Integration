@@ -235,7 +235,7 @@ describe("DmsSidePanel", () => {
 
 it("shows PrivateDocErrorNotification when isPrivateDocError is true", () => {
     render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" isPrivateDocError={true} onSidePanelSortChange={jest.fn()} />);
-    expect(screen.getByText("Information Unavailable")).toBeInTheDocument();
+    expect(screen.getAllByText("Information Unavailable").length).toBeGreaterThanOrEqual(1);
   });
 
   it("does not show PrivateDocErrorNotification when isPrivateDocError is false", () => {

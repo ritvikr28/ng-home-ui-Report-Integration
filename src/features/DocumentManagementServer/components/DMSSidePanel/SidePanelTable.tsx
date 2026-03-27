@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextgen/ui-kit";
+import { ControlledList, DialogTemplate, CheckBoxSelectedState, ResponseCode } from "@essnextgen/ui-kit";
 import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions, createHandleDocumentClick, createHandleSorting } from "./sidePanelTable.logic";
 import { pageSizeNumber } from "../../../../../public/Constants";
 import { useScrollToTopOnPageChange } from "../../hooks/useDocumentManagementEffects";
@@ -11,9 +11,18 @@ interface SidePanelTableProps {
   totalRecords: number;
   onPageChange: (page: number) => void;
   isLoading: boolean;
+  isPrivateDocError: boolean;
 }
 
-export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError, totalRecords, onPageChange, isLoading }) => {
+export const SidePanelTable: React.FC<SidePanelTableProps> = ({
+  tableBodyData,
+  onSortChange,
+  onDownloadError,
+  totalRecords,
+  onPageChange,
+  isLoading,
+  isPrivateDocError,
+}) => {
   const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
   const [isInitialLoad, setIsInitialLoad]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
 
@@ -74,7 +83,8 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
       dynamicTableLoader={isLoading}
       isIconRightAligned={true}
       onClickOverflowItem={() => {}}
-      emptyStateMsg="No documents found"
+      dynamictableIconName={isPrivateDocError ? "warning--alt" : "information"}
+      emptyRowResponseCode={isPrivateDocError ? ResponseCode.Error : ResponseCode.Info}
       emptybtnTitle="Add Document"
       filterDDLlabel="Added by"
       filterDDLOptions={filterDDLOptions}

@@ -192,6 +192,15 @@
     .essui-side-panel-content{
       margin: 9px !important;
     }
+    
+    .total-count--error {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      span {
+        color: #a86500; // Warning500 - matches icon color
+      }
+    }
   }
 
   #search-autocomplete.with-suggestions #suggestions-wrapper .suggestion-box {
