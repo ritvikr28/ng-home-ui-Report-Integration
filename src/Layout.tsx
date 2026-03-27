@@ -71,6 +71,9 @@ const NotificationsLogic: LazyExoticComponent<FC<{}>> = lazy(
 const AdminConsole: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./features/AdminConsole/AdminConsole.view")
 );
+const ReportDesigner: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./features/ReportDesigner")
+);
 
 const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pages/SIMSIDAdminPage/SIMSIDAdminPage.view"));
 
@@ -432,6 +435,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 <Redirect to="/unauthorized" />
               )
             }
+          />
+          <ProtectedRoute
+            exact
+            path="/reportdesigner"
+            component={ReportDesigner}
           />
           <AdminConsoleandSystemStatusRoutes
             hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}

@@ -19,3 +19,5 @@ window.REFRESH_INTERVAL = 60000;
 window.CLASSVIEW_BASE_URL = "https://dev.home.sims.co.uk/seatingplans/classview";
 window.CLASSVIEW_BANNER_URL = "https://dev.home.sims.co.uk/seatingplans/classview";
 window.INVITE_USERS_URL = "";
+// DevExpress Reporting API URL - backend API for report designer
+window.REPORTING_API_URL = "http://localhost:5100";
