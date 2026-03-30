@@ -119,6 +119,22 @@ const webpackDevServerSettings = {
       target: "http://openlibrary.org/",
       changeOrigin: true,
       pathRewrite: { "^/api": "" }
+    },
+    // DevExpress Reporting API proxy - avoids CORS issues with the .NET backend
+    "/DXXRD": {
+      target: "https://localhost:44369",
+      changeOrigin: true,
+      secure: false // Allow self-signed certificates in development
+    },
+    "/DXXQB": {
+      target: "https://localhost:44369",
+      changeOrigin: true,
+      secure: false
+    },
+    "/DXXRDV": {
+      target: "https://localhost:44369",
+      changeOrigin: true,
+      secure: false
     }
   },
   client: {
