@@ -18,7 +18,8 @@ export const envConfig: any = {
   REFRESH_INTERVAL: (window as any).REFRESH_INTERVAL,
   CLASSVIEW_BASE_URL: (window as any).CLASSVIEW_BASE_URL,
   CLASSVIEW_BANNER_URL: (window as any).CLASSVIEW_BANNER_URL,
-  INVITE_USERS_URL: (window as any).INVITE_USERS_URL
+  INVITE_USERS_URL: (window as any).INVITE_USERS_URL,
+  REPORTING_API_URL: (window as any).REPORTING_API_URL
 };
 
 export const UpdateEnvConfig:any = ({
@@ -38,7 +39,8 @@ export const UpdateEnvConfig:any = ({
   REFRESH_INTERVAL,
   CLASSVIEW_BASE_URL,
   CLASSVIEW_BANNER_URL,
-  INVITE_USERS_URL
+  INVITE_USERS_URL,
+  REPORTING_API_URL
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -57,4 +59,5 @@ export const UpdateEnvConfig:any = ({
   envConfig.CLASSVIEW_BASE_URL = CLASSVIEW_BASE_URL;
   envConfig.CLASSVIEW_BANNER_URL = CLASSVIEW_BANNER_URL;
   envConfig.INVITE_USERS_URL= INVITE_USERS_URL;
+  envConfig.REPORTING_API_URL = REPORTING_API_URL;
 };

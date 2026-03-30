@@ -1,0 +1,80 @@
+/**
+ * DevExpress Report Designer Styles
+ * 
+ * These styles import the required DevExpress CSS libraries and provide
+ * custom styling for the Report Designer container.
+ */
+
+/* DevExpress Core Styles - Using node_modules paths for v24.2.x */
+@import '~devextreme/dist/css/dx.light.css';
+@import '~@devexpress/analytics-core/dist/css/dx-analytics.common.css';
+@import '~@devexpress/analytics-core/dist/css/dx-analytics.light.css';
+@import '~@devexpress/analytics-core/dist/css/dx-querybuilder.css';
+@import '~devexpress-reporting/dist/css/dx-webdocumentviewer.css';
+@import '~devexpress-reporting/dist/css/dx-reportdesigner.css';
+
+/* Container for the Report Designer component */
+.report-designer-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px);
+  width: 100%;
+  overflow: hidden;
+
+  /* Ensure the designer fills the container */
+  > div {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+/* Selected data sources banner (when navigating from DataSourceSelector) */
+.selected-sources-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+  border-radius: 0;
+  background-color: #e3f2fd;
+  border-bottom: 1px solid #90caf9;
+
+  .badge {
+    font-size: 0.85em;
+    margin-right: 4px;
+  }
+
+  .text-muted {
+    font-size: 0.9em;
+  }
+
+  .btn-outline-secondary {
+    margin-left: auto;
+  }
+}
+
+/* Override some DevExpress styles for better integration */
+.dx-reportdesigner {
+  /* Ensure proper z-index stacking */
+  position: relative;
+  z-index: 1;
+}
+
+/* Toolbar adjustments */
+.dxrd-toolbar {
+  background-color: #f5f5f5;
+}
+
+/* Property grid styling */
+.dx-propertygrid {
+  background-color: #ffffff;
+}
+
+/* Field list styling */
+.dxrd-field-list {
+  background-color: #fafafa;
+}
+
+/* Preview panel styling */
+.dxrd-preview-wrapper {
+  background-color: #f0f0f0;
+}
