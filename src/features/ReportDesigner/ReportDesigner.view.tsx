@@ -38,8 +38,8 @@ const ReportDesigner: React.FC = () => {
   const hostUrl: string = rawHostUrl.endsWith('/') ? rawHostUrl.slice(0, -1) : rawHostUrl;
   
   // DevExpress endpoint paths (no leading slash - DevExpress adds it)
-  const getDesignerModelAction = 'DXXRD/GetDesignerModel';
-  const getLocalizationAction = 'DXXRD/GetLocalization';
+  const getDesignerModelAction = '/DXXRD/GetDesignerModel';
+  const getLocalizationAction = '/DXXRD/GetLocalization';
 
   /**
    * Calculate designer height to fit the viewport minus navigation
