@@ -63,40 +63,16 @@ const ReportDesigner: React.FC = () => {
       
       // Log configuration for debugging
       console.log('[ReportDesigner] Initializing with config:', {
-        hostUrl,
+        hostUrl: hostUrl || '(using webpack proxy)',
         rawHostUrl,
         reportUrl,
         hasToken: !!token,
         getDesignerModelAction,
-        getLocalizationAction,
-        fullDesignerModelUrl: `${hostUrl}/${getDesignerModelAction}`,
-        fullLocalizationUrl: `${hostUrl}/${getLocalizationAction}`
+        getLocalizationAction
       });
       
-      // Verify backend is accessible
-      if (hostUrl) {
-        console.log('[ReportDesigner] Backend URL configured:', hostUrl);
-        
-        // Test the backend connectivity with a simple fetch
-        fetch(`${hostUrl}/${getLocalizationAction}`, {
-          method: 'GET',
-          headers: {
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => {
-          console.log('[ReportDesigner] Test fetch response status:', response.status);
-          if (!response.ok) {
-            console.warn('[ReportDesigner] Backend responded with non-OK status:', response.status);
-          }
-        })
-        .catch(err => {
-          console.error('[ReportDesigner] Backend connectivity test failed:', err);
-        });
-      } else {
-        console.warn('[ReportDesigner] WARNING: No REPORTING_API_URL configured!');
-      }
+      // Note: DevExpress handles the API calls internally.
+      // With empty hostUrl, requests go through webpack proxy to avoid CORS issues.
       
       setIsReady(true);
     } catch (err) {
