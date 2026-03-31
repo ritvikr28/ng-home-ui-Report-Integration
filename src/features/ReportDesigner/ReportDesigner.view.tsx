@@ -9,7 +9,6 @@ import { fetchSetup } from '@devexpress/analytics-core/analytics-utils';
 import { useLocation, useHistory } from 'react-router-dom';
 import { authService } from '@essnextgen/auth-ui';
 import { envConfig } from '../../shared/utils';
-import { reportingService } from '../../shared/services/reportingService';
 import { ReportState } from '../../types/Report';
 import './ReportDesigner.scss';
 
@@ -253,50 +252,72 @@ const ReportDesigner: React.FC = () => {
 
   /**
    * Handle actual save operation from modal
+   * Uses DevExpress native save action which calls /DXXRD/SaveReport endpoint
    */
   const handleSave = useCallback(async (saveAs: boolean, newName?: string) => {
     try {
       setIsSaving(true);
       
-      // Variable to hold the report layout data
-      let reportData: string | null = null;
+      console.log('[ReportDesigner] Saving report:', {
+        reportUrl,
+        saveAs,
+        newName
+      });
+
+      // Get the DevExpress designer instance
+      const designer = designerRef.current;
       
-      // Try to get the report layout as XML/JSON
-      if (designerRef.current) {
-        const designer = designerRef.current;
-        if (designer.GetReportLayoutJson) {
-          reportData = designer.GetReportLayoutJson();
-        } else if (designer.GetCurrentReport) {
-          const report = designer.GetCurrentReport();
-          if (report && report.serialize) {
-            reportData = report.serialize();
+      if (!designer) {
+        setIsSaving(false);
+        setError('Designer not initialized. Please wait and try again.');
+        return;
+      }
+
+      // For SaveAs, we need to update the report URL before saving
+      if (saveAs && newName) {
+        // Try to use the SaveAs functionality if available
+        if (designer.SaveAs) {
+          await designer.SaveAs(newName);
+        } else if (designer.saveReportAs) {
+          await designer.saveReportAs(newName);
+        } else if (designer.SaveReport) {
+          // Update the report URL and then save
+          designer.reportUrl = newName;
+          await designer.SaveReport();
+        } else if (designer.saveReport) {
+          designer.reportUrl = newName;
+          await designer.saveReport();
+        } else {
+          // Fallback: Try to find and execute the save action from the action list
+          const saveAction = designer.GetAction?.('dxxrd-save') || designer.getAction?.('dxxrd-save');
+          if (saveAction && saveAction.clickAction) {
+            // Update URL first for SaveAs
+            if (designer.model?.reportUrl) {
+              designer.model.reportUrl(newName);
+            }
+            saveAction.clickAction();
+          } else {
+            throw new Error('Save functionality not available on designer instance');
+          }
+        }
+      } else {
+        // Regular save - use native DevExpress save
+        if (designer.SaveReport) {
+          await designer.SaveReport();
+        } else if (designer.saveReport) {
+          await designer.saveReport();
+        } else {
+          // Fallback: Try to find and execute the save action from the action list
+          const saveAction = designer.GetAction?.('dxxrd-save') || designer.getAction?.('dxxrd-save');
+          if (saveAction && saveAction.clickAction) {
+            saveAction.clickAction();
+          } else {
+            throw new Error('Save functionality not available on designer instance');
           }
         }
       }
 
-      // Validate that we have report data
-      if (!reportData) {
-        setIsSaving(false);
-        setError('Unable to retrieve report data. Please try again.');
-        return;
-      }
-
-      console.log('[ReportDesigner] Saving report:', {
-        reportUrl,
-        saveAs,
-        newName,
-        hasReportData: !!reportData
-      });
-
-      // Call the save API
-      const response = await reportingService.saveReportWithOptions({
-        reportUrl,
-        newReportName: saveAs ? newName : undefined,
-        reportData,
-        saveAs
-      });
-
-      console.log('[ReportDesigner] Save successful:', response);
+      console.log('[ReportDesigner] Save initiated successfully');
 
       // Close modal
       setShowSaveModal(false);
