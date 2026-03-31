@@ -6,7 +6,7 @@ window.REACT_REDIRECT_URI = "http://localhost:3000/auth";
 window.REACT_ENVIRONMENT = "localhost";
 window.REACT_GA_TRACKING_ID = "GTM-5LBSRF3";
 window.AppInsightsConnectionString = "";
-window.AUTH_API_URL = "http://localhost:5013/api";
+window.AUTH_API_URL = "http://localhost:5011/api";
 window.APPLICATION = "Home";
 window.IS_NEWHOMEPAGE_ACCESSIBLE = "True";
 window.SCHOOL_BASE_URL="";
@@ -20,4 +20,4 @@ window.CLASSVIEW_BASE_URL = "https://dev.home.sims.co.uk/seatingplans/classview"
 window.CLASSVIEW_BANNER_URL = "https://dev.home.sims.co.uk/seatingplans/classview";
 window.INVITE_USERS_URL = "";
 // DevExpress Reporting API URL - backend API for report designer
-window.REPORTING_API_URL = "http://localhost:5100";
+window.REPORTING_API_URL = "https://localhost:44369/";
