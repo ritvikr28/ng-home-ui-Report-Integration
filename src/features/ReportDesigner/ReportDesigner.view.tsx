@@ -39,7 +39,7 @@ const ReportDesigner: React.FC = () => {
   
   // DevExpress endpoint paths (no leading slash - DevExpress adds it)
   const getDesignerModelAction = '/DXXRD/GetDesignerModel';
-  const getLocalizationAction = 'DXXRD/GetLocalization';
+  const getLocalizationAction = '/DXXRD/GetLocalization';
 
   /**
    * Calculate designer height to fit the viewport minus navigation
@@ -63,7 +63,7 @@ const ReportDesigner: React.FC = () => {
       
       // Log configuration for debugging
       console.log('[ReportDesigner] Initializing with config:', {
-        hostUrl: hostUrl || '(using webpack proxy)',
+        hostUrl,
         rawHostUrl,
         reportUrl,
         hasToken: !!token,
@@ -91,7 +91,6 @@ const ReportDesigner: React.FC = () => {
     console.log('[ReportDesigner] Sender GetCurrentTab:', sender?.GetCurrentTab?.());
     
     const token = authService.getAuthTokens();
-    console.log(token)
     fetchSetup.fetchSettings = {
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -99,7 +98,6 @@ const ReportDesigner: React.FC = () => {
       }
     };
     console.log('[ReportDesigner] Fetch settings configured with token:', !!token);
-    
   }, []);
 
   /**
