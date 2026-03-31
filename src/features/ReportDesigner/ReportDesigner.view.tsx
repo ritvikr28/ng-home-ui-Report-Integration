@@ -291,55 +291,32 @@ const ReportDesigner: React.FC = () => {
       console.log('[ReportDesigner] Sender type:', typeof sender);
       console.log('[ReportDesigner] Sender keys:', sender ? Object.keys(sender).slice(0, 30) : 'null');
       console.log('[ReportDesigner] sender.SaveReport:', typeof sender.SaveReport);
+      console.log('[ReportDesigner] sender.SaveNewReport:', typeof sender.SaveNewReport);
       console.log('[ReportDesigner] sender.GetDesignerModel:', typeof sender.GetDesignerModel);
 
-      // Method 1: SaveReport on sender (JSReportDesigner) - the correct DevExpress way
-      if (typeof sender.SaveReport === 'function') {
-        console.log('[ReportDesigner] Found SaveReport on sender (JSReportDesigner)');
-        
-        // For SaveAs, update the reportUrl on the designerModel before saving
-        if (saveAs && newName && typeof sender.GetDesignerModel === 'function') {
-          const designerModel = sender.GetDesignerModel();
-          if (designerModel) {
-            console.log('[ReportDesigner] SaveAs mode - setting new reportUrl:', newName);
-            // The reportUrl is typically a knockout observable on the model
-            if (designerModel.reportUrl && typeof designerModel.reportUrl === 'function') {
-              designerModel.reportUrl(newName);
-            } else if (designerModel.model && designerModel.model.reportUrl && typeof designerModel.model.reportUrl === 'function') {
-              designerModel.model.reportUrl(newName);
-            }
-          }
+      // Method 1: DevExpress JSReportDesigner API - the correct way
+      // For SaveAs: use SaveNewReport(url) to save with a different URL
+      // For Save: use SaveReport() to save with the original URL
+      if (saveAs && newName) {
+        // SaveAs - need to use SaveNewReport(newName) to save under a different URL
+        if (typeof sender.SaveNewReport === 'function') {
+          console.log('[ReportDesigner] SaveAs mode - using SaveNewReport with new name:', newName);
+          await sender.SaveNewReport(newName);
+          console.log('[ReportDesigner] SaveNewReport completed successfully');
+        } else {
+          console.error('[ReportDesigner] SaveNewReport method not found on sender');
+          console.error('[ReportDesigner] Available methods:', Object.keys(sender).filter(k => typeof sender[k] === 'function').slice(0, 30));
+          throw new Error('SaveNewReport method not found. SaveAs functionality requires DevExpress JSReportDesigner.SaveNewReport() method.');
         }
-        
-        console.log('[ReportDesigner] Calling sender.SaveReport()');
+      } else if (typeof sender.SaveReport === 'function') {
+        // Regular Save - use SaveReport() to save with original URL
+        console.log('[ReportDesigner] Save mode - using SaveReport()');
         await sender.SaveReport();
         console.log('[ReportDesigner] SaveReport completed successfully');
-      }
-      // Method 2: Try accessing SaveReport via global DevExpress object
-      else if ((window as any).DevExpress?.Reporting?.Designer) {
-        const globalDesigner = (window as any).DevExpress.Reporting.Designer;
-        console.log('[ReportDesigner] Checking global DevExpress.Reporting.Designer');
-        console.log('[ReportDesigner] Global designer keys:', Object.keys(globalDesigner).slice(0, 20));
-        
-        if (typeof globalDesigner.SaveReport === 'function') {
-          console.log('[ReportDesigner] Using global DevExpress.Reporting.Designer.SaveReport');
-          await globalDesigner.SaveReport();
-        } else if (typeof globalDesigner.saveReport === 'function') {
-          console.log('[ReportDesigner] Using global DevExpress.Reporting.Designer.saveReport');
-          await globalDesigner.saveReport();
-        } else {
-          throw new Error('No SaveReport method found on global DevExpress object');
-        }
-      }
-      // If nothing works, log what we have for debugging
-      else {
-        console.error('[ReportDesigner] Could not find SaveReport method.');
-        console.error('[ReportDesigner] sender structure:', {
-          senderKeys: typeof sender === 'object' ? Object.keys(sender).slice(0, 30) : typeof sender,
-          senderMethods: typeof sender === 'object' ? Object.keys(sender).filter(k => typeof sender[k] === 'function').slice(0, 30) : 'N/A',
-          hasGetDesignerModel: typeof sender?.GetDesignerModel === 'function'
-        });
-        throw new Error('SaveReport method not found. Please check browser console for details.');
+      } else {
+        console.error('[ReportDesigner] Neither SaveReport nor SaveNewReport found on sender');
+        console.error('[ReportDesigner] Available methods:', Object.keys(sender).filter(k => typeof sender[k] === 'function').slice(0, 30));
+        throw new Error('SaveReport method not found on designer instance.');
       }
 
       console.log('[ReportDesigner] Save initiated successfully');
@@ -438,6 +415,7 @@ const ReportDesigner: React.FC = () => {
       // Log the structure to understand what methods are available
       console.log('[ReportDesigner] ComponentDidMount sender.GetCurrentReport:', typeof sender.GetCurrentReport);
       console.log('[ReportDesigner] ComponentDidMount sender.SaveReport:', typeof sender.SaveReport);
+      console.log('[ReportDesigner] ComponentDidMount sender.SaveNewReport:', typeof sender.SaveNewReport);
       console.log('[ReportDesigner] ComponentDidMount sender.model:', sender.model);
       console.log('[ReportDesigner] ComponentDidMount sender.commands:', sender.commands);
       console.log('[ReportDesigner] ComponentDidMount sender.designer:', sender.designer);
@@ -472,14 +450,15 @@ const ReportDesigner: React.FC = () => {
     console.log('[ReportDesigner] CustomizeMenuActions sender type:', typeof sender);
     console.log('[ReportDesigner] CustomizeMenuActions sender keys:', sender ? Object.keys(sender).slice(0, 30) : 'null');
     console.log('[ReportDesigner] CustomizeMenuActions sender.SaveReport:', typeof sender?.SaveReport);
+    console.log('[ReportDesigner] CustomizeMenuActions sender.SaveNewReport:', typeof sender?.SaveNewReport);
     console.log('[ReportDesigner] CustomizeMenuActions sender.GetDesignerModel:', typeof sender?.GetDesignerModel);
     console.log('[ReportDesigner] CustomizeMenuActions args keys:', args ? Object.keys(args).slice(0, 20) : 'null');
     
-    // Store the sender (JSReportDesigner) as it contains SaveReport() method
+    // Store the sender (JSReportDesigner) as it contains SaveReport() and SaveNewReport() methods
     if (sender) {
-      // Check if this sender has the SaveReport method we need for custom save
-      if (typeof sender.SaveReport === 'function') {
-        console.log('[ReportDesigner] Storing sender with SaveReport method');
+      // Check if this sender has the SaveReport/SaveNewReport methods we need for custom save
+      if (typeof sender.SaveReport === 'function' || typeof sender.SaveNewReport === 'function') {
+        console.log('[ReportDesigner] Storing sender with SaveReport/SaveNewReport methods');
         designerRef.current = sender;
         setDesignerInitialized(true);
       } else if (typeof sender.GetDesignerModel === 'function') {
