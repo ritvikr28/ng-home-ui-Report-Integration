@@ -258,6 +258,9 @@ const ReportDesigner: React.FC = () => {
     try {
       setIsSaving(true);
       
+      // Variable to hold the report layout data
+      let reportData: string | null = null;
+      
       // Try to get the report layout as XML/JSON
       if (designerRef.current) {
         const designer = designerRef.current;
