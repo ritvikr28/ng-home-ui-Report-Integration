@@ -176,10 +176,27 @@ class ReportingService {
   private axiosInstance: AxiosInstance | null = null;
 
   /**
+   * Get the base URL for the reporting API
+   * Falls back to window variables if envConfig values are stale
+   * (handles deferred config.js loading)
+   */
+  private getBaseUrl(): string {
+    // Try envConfig first
+    let baseUrl = envConfig.REPORTING_API_URL || envConfig.BASE_URL;
+    
+    // If envConfig values are empty, read directly from window
+    if (!baseUrl) {
+      baseUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
+    }
+    
+    return baseUrl;
+  }
+
+  /**
    * Initialize the reporting service with configuration
    */
   init(): void {
-    const baseUrl = envConfig.REPORTING_API_URL || envConfig.BASE_URL;
+    const baseUrl = this.getBaseUrl();
     this.axiosInstance = createReportingAxiosInstance({
       baseUrl,
       getAuthToken: () => authService.getAuthTokens()

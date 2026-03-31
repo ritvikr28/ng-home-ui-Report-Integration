@@ -196,9 +196,8 @@ const ReportDesigner: React.FC = () => {
   // Get report metadata from location state (passed from ReportSelection screen)
   const isPredefined: boolean = location.state?.isPredefined ?? false;
   
-  // Get the reporting API base URL from environment config
-  const rawHostUrl: string = envConfig.REPORTING_API_URL || envConfig.BASE_URL || '';
-  const hostUrl: string = rawHostUrl.endsWith('/') ? rawHostUrl.slice(0, -1) : rawHostUrl;
+  // State to track the resolved host URL (handles deferred config.js loading)
+  const [resolvedHostUrl, setResolvedHostUrl] = useState<string>('');
   
   // DevExpress endpoint paths
   const getDesignerModelAction = '/DXXRD/GetDesignerModel';
@@ -210,13 +209,75 @@ const ReportDesigner: React.FC = () => {
   const designerHeight = `calc(100vh - ${NAVBAR_HEIGHT + CUSTOM_TOOLBAR_HEIGHT}px)`;
 
   /**
+   * Helper function to get the host URL from available sources
+   * Tries envConfig first, then falls back to window variables directly
+   * This handles the case where config.js loads with defer attribute
+   */
+  const getHostUrl = useCallback((): string => {
+    // Try envConfig first (may be stale if captured before config.js loaded)
+    let rawUrl = envConfig.REPORTING_API_URL || envConfig.BASE_URL;
+    
+    // If envConfig values are empty, read directly from window
+    // (config.js with defer may have set these after module import)
+    if (!rawUrl) {
+      rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
+    }
+    
+    // Remove trailing slash for consistency
+    return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+  }, []);
+
+  /**
+   * Poll for config availability since config.js may load with defer
+   * This ensures we wait for the configuration to be available before rendering
+   */
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout | null = null;
+    let pollCount = 0;
+    const maxPolls = 50; // Max 5 seconds (50 * 100ms)
+    
+    const checkConfig = () => {
+      const url = getHostUrl();
+      if (url) {
+        console.log('[ReportDesigner] Host URL resolved:', url);
+        setResolvedHostUrl(url);
+        if (pollInterval) {
+          clearInterval(pollInterval);
+        }
+      } else if (pollCount >= maxPolls) {
+        console.error('[ReportDesigner] Config not available after timeout');
+        setError('Configuration not available. Please refresh the page.');
+        if (pollInterval) {
+          clearInterval(pollInterval);
+        }
+      }
+      pollCount++;
+    };
+    
+    // Check immediately
+    checkConfig();
+    
+    // If not available, start polling
+    if (!getHostUrl()) {
+      console.log('[ReportDesigner] Config not yet available, starting polling...');
+      pollInterval = setInterval(checkConfig, 100);
+    }
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [getHostUrl]);
+
+  /**
    * Initialize fetch settings with auth token before component renders
    * Only mark as ready when we have a valid hostUrl (required for API calls)
    */
   useEffect(() => {
     // Guard: Don't proceed if hostUrl is not yet available
     // This prevents the designer from rendering before config is loaded
-    if (!hostUrl) {
+    if (!resolvedHostUrl) {
       console.log('[ReportDesigner] Waiting for hostUrl to be available...');
       return;
     }
@@ -234,7 +295,7 @@ const ReportDesigner: React.FC = () => {
       
       // Log configuration for debugging
       console.log('[ReportDesigner] Initializing with config:', {
-        hostUrl,
+        hostUrl: resolvedHostUrl,
         reportUrl,
         isPredefined,
         hasToken: !!token
@@ -245,7 +306,7 @@ const ReportDesigner: React.FC = () => {
       console.error('[ReportDesigner] Initialization error:', err);
       setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [hostUrl, reportUrl, isPredefined]);
+  }, [resolvedHostUrl, reportUrl, isPredefined]);
 
   /**
    * Reset designer state when reportUrl changes
@@ -565,7 +626,7 @@ const ReportDesigner: React.FC = () => {
         </div>
         <div className="loading-container">
           <div>
-            {hostUrl ? 'Loading Report Designer...' : 'Initializing configuration...'}
+            {resolvedHostUrl ? 'Loading Report Designer...' : 'Initializing configuration...'}
           </div>
         </div>
       </div>
@@ -591,13 +652,13 @@ const ReportDesigner: React.FC = () => {
       {/* DevExpress Report Designer */}
       <div className="designer-wrapper">
         <DxReportDesigner
-          key={`${hostUrl}-${reportUrl}`}  // Force remount when reportUrl or hostUrl changes
+          key={`${resolvedHostUrl}-${reportUrl}`}  // Force remount when reportUrl or hostUrl changes
           reportUrl={reportUrl}
           height={designerHeight}
           developmentMode={true}
         >
           <RequestOptions
-            host={hostUrl}
+            host={resolvedHostUrl}
             getLocalizationAction={getLocalizationAction}
             getDesignerModelAction={getDesignerModelAction}
           />

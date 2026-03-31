@@ -31,14 +31,13 @@ const ReportPreview: React.FC = () => {
   const [showViewer, setShowViewer] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // State to track the resolved host URL (handles deferred config.js loading)
+  const [resolvedHostUrl, setResolvedHostUrl] = useState<string>('');
 
   // Get report info from location state or query params
   const queryParams = new URLSearchParams(location.search);
   const reportName = location.state?.reportName || queryParams.get('reportUrl') || 'TestReport';
-
-  // Get the reporting API base URL
-  const rawHostUrl: string = envConfig.REPORTING_API_URL || envConfig.BASE_URL || '';
-  const hostUrl: string = rawHostUrl.endsWith('/') ? rawHostUrl.slice(0, -1) : rawHostUrl;
 
   // DevExpress endpoint paths
   const getViewerModelAction = '/DXXRDV/GetViewerModel';
@@ -50,9 +49,69 @@ const ReportPreview: React.FC = () => {
   const viewerHeight = `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT}px)`;
 
   /**
+   * Helper function to get the host URL from available sources
+   * Tries envConfig first, then falls back to window variables directly
+   */
+  const getHostUrl = useCallback((): string => {
+    let rawUrl = envConfig.REPORTING_API_URL || envConfig.BASE_URL;
+    
+    // If envConfig values are empty, read directly from window
+    if (!rawUrl) {
+      rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
+    }
+    
+    return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+  }, []);
+
+  /**
+   * Poll for config availability since config.js may load with defer
+   */
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout | null = null;
+    let pollCount = 0;
+    const maxPolls = 50;
+    
+    const checkConfig = () => {
+      const url = getHostUrl();
+      if (url) {
+        console.log('[ReportPreview] Host URL resolved:', url);
+        setResolvedHostUrl(url);
+        if (pollInterval) {
+          clearInterval(pollInterval);
+        }
+      } else if (pollCount >= maxPolls) {
+        console.error('[ReportPreview] Config not available after timeout');
+        setError('Configuration not available. Please refresh the page.');
+        if (pollInterval) {
+          clearInterval(pollInterval);
+        }
+      }
+      pollCount++;
+    };
+    
+    checkConfig();
+    
+    if (!getHostUrl()) {
+      console.log('[ReportPreview] Config not yet available, starting polling...');
+      pollInterval = setInterval(checkConfig, 100);
+    }
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [getHostUrl]);
+
+  /**
    * Initialize fetch settings with auth token
    */
   useEffect(() => {
+    if (!resolvedHostUrl) {
+      console.log('[ReportPreview] Waiting for hostUrl to be available...');
+      return;
+    }
+
     try {
       const token = authService.getAuthTokens();
       
@@ -64,7 +123,7 @@ const ReportPreview: React.FC = () => {
       };
 
       console.log('[ReportPreview] Initialized with config:', {
-        hostUrl,
+        hostUrl: resolvedHostUrl,
         reportName,
         hasToken: !!token
       });
@@ -74,7 +133,7 @@ const ReportPreview: React.FC = () => {
       console.error('[ReportPreview] Initialization error:', err);
       setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [hostUrl, reportName]);
+  }, [resolvedHostUrl, reportName]);
 
   /**
    * Handle back button - return to report selection
@@ -173,11 +232,12 @@ const ReportPreview: React.FC = () => {
       ) : (
         <div className="report-viewer-wrapper">
           <DxReportViewer
+            key={`${resolvedHostUrl}-${reportName}`}
             reportUrl={reportName}
             height={viewerHeight}
           >
             <RequestOptions
-              host={hostUrl}
+              host={resolvedHostUrl}
               getLocalizationAction={getLocalizationAction}
               getViewerModelAction={getViewerModelAction}
             />
