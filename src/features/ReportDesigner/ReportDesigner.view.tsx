@@ -264,57 +264,95 @@ const ReportDesigner: React.FC = () => {
         newName
       });
 
-      // Get the DevExpress designer instance
-      const designer = designerRef.current;
+      // Get the DevExpress designer instance from ref
+      const sender = designerRef.current;
       
-      if (!designer) {
+      console.log('[ReportDesigner] Designer ref:', sender ? 'exists' : 'null');
+      
+      if (!sender) {
         setIsSaving(false);
         setError('Designer not initialized. Please wait and try again.');
         return;
       }
 
-      // For SaveAs, we need to update the report URL before saving
-      if (saveAs && newName) {
-        // Try to use the SaveAs functionality if available
-        if (designer.SaveAs) {
-          await designer.SaveAs(newName);
-        } else if (designer.saveReportAs) {
-          await designer.saveReportAs(newName);
-        } else if (designer.SaveReport) {
-          // Update the report URL and then save
-          designer.reportUrl = newName;
-          await designer.SaveReport();
-        } else if (designer.saveReport) {
-          designer.reportUrl = newName;
-          await designer.saveReport();
-        } else {
-          // Fallback: Try to find and execute the save action from the action list
-          const saveAction = designer.GetAction?.('dxxrd-save') || designer.getAction?.('dxxrd-save');
-          if (saveAction && saveAction.clickAction) {
-            // Update URL first for SaveAs
-            if (designer.model?.reportUrl) {
-              designer.model.reportUrl(newName);
-            }
-            saveAction.clickAction();
+      // DevExpress stores the actual designer in different places depending on the callback
+      // Try to find the designer model that has save capability
+      const designer = sender.reportDesigner || sender.model || sender;
+      
+      console.log('[ReportDesigner] Designer object:', designer ? Object.keys(designer).slice(0, 20) : 'null');
+
+      // The DevExpress Report Designer's save method is typically accessed via the model
+      // Try different approaches to trigger save
+      
+      // Method 1: Direct SaveReport method
+      if (typeof designer.SaveReport === 'function') {
+        console.log('[ReportDesigner] Using designer.SaveReport()');
+        if (saveAs && newName) {
+          // Update report URL for SaveAs
+          if (typeof designer.reportUrl === 'function') {
+            designer.reportUrl(newName);
           } else {
-            throw new Error('Save functionality not available on designer instance');
+            designer.reportUrl = newName;
           }
         }
-      } else {
-        // Regular save - use native DevExpress save
-        if (designer.SaveReport) {
-          await designer.SaveReport();
-        } else if (designer.saveReport) {
-          await designer.saveReport();
-        } else {
-          // Fallback: Try to find and execute the save action from the action list
-          const saveAction = designer.GetAction?.('dxxrd-save') || designer.getAction?.('dxxrd-save');
-          if (saveAction && saveAction.clickAction) {
-            saveAction.clickAction();
+        await designer.SaveReport();
+      } 
+      // Method 2: saveReport (lowercase)
+      else if (typeof designer.saveReport === 'function') {
+        console.log('[ReportDesigner] Using designer.saveReport()');
+        if (saveAs && newName) {
+          if (typeof designer.reportUrl === 'function') {
+            designer.reportUrl(newName);
           } else {
-            throw new Error('Save functionality not available on designer instance');
+            designer.reportUrl = newName;
           }
         }
+        await designer.saveReport();
+      }
+      // Method 3: GetAction to find save action
+      else if (typeof designer.GetAction === 'function') {
+        console.log('[ReportDesigner] Using designer.GetAction("dxxrd-save")');
+        const saveAction = designer.GetAction('dxxrd-save');
+        if (saveAction && saveAction.clickAction) {
+          if (saveAs && newName && designer.model?.reportUrl) {
+            designer.model.reportUrl(newName);
+          }
+          saveAction.clickAction();
+        } else {
+          throw new Error('Save action not found');
+        }
+      }
+      // Method 4: Look for save in the actions array
+      else if (designer.actions) {
+        console.log('[ReportDesigner] Looking in designer.actions');
+        const saveAction = designer.actions().find((a: any) => 
+          a.id?.toLowerCase().includes('save') && !a.id?.toLowerCase().includes('saveas')
+        );
+        if (saveAction && saveAction.clickAction) {
+          if (saveAs && newName && designer.model?.reportUrl) {
+            designer.model.reportUrl(newName);
+          }
+          saveAction.clickAction();
+        } else {
+          throw new Error('Save action not found in actions');
+        }
+      }
+      // Method 5: Try accessing via global DevExpress object
+      else if ((window as any).DevExpress?.Reporting?.Designer?.saveReport) {
+        console.log('[ReportDesigner] Using global DevExpress.Reporting.Designer.saveReport');
+        (window as any).DevExpress.Reporting.Designer.saveReport();
+      }
+      // If nothing works, log what we have for debugging
+      else {
+        console.error('[ReportDesigner] Could not find save method. Available on designer:', 
+          typeof designer === 'object' ? Object.keys(designer) : typeof designer);
+        console.error('[ReportDesigner] sender structure:', {
+          hasModel: !!sender.model,
+          hasReportDesigner: !!sender.reportDesigner,
+          senderType: typeof sender,
+          senderKeys: typeof sender === 'object' ? Object.keys(sender).slice(0, 30) : []
+        });
+        throw new Error('Save functionality not available. Please check browser console for details.');
       }
 
       console.log('[ReportDesigner] Save initiated successfully');
@@ -358,10 +396,21 @@ const ReportDesigner: React.FC = () => {
   /**
    * Init callback - fires when the designer model is fully initialized
    * Store reference to designer for accessing report data later
+   * In DevExpress, the sender is a ReportDesignerInitializeArgs containing the model
    */
   const onInit = useCallback((sender: any) => {
     console.log('[ReportDesigner] Init callback triggered - Designer model is ready');
+    console.log('[ReportDesigner] sender keys:', sender ? Object.keys(sender) : 'null');
+    
+    // The sender contains the designer model with GetCurrentReport, SaveReport, etc.
+    // Store the sender which should contain the model
     designerRef.current = sender;
+    
+    // Log available methods for debugging
+    if (sender) {
+      console.log('[ReportDesigner] sender.model:', sender.model);
+      console.log('[ReportDesigner] sender.reportDesigner:', sender.reportDesigner);
+    }
   }, []);
 
   /**
@@ -373,10 +422,21 @@ const ReportDesigner: React.FC = () => {
 
   /**
    * ComponentDidMount callback - fires when the designer component is fully mounted
+   * Store the full sender object which contains the designer instance
    */
   const onComponentDidMount = useCallback((sender: any) => {
     console.log('[ReportDesigner] ComponentDidMount - Designer loaded successfully');
-    designerRef.current = sender;
+    console.log('[ReportDesigner] ComponentDidMount sender keys:', sender ? Object.keys(sender) : 'null');
+    
+    // Store the sender - it may contain the report designer
+    if (sender) {
+      designerRef.current = sender;
+      
+      // Log the structure to understand what methods are available
+      console.log('[ReportDesigner] ComponentDidMount sender.GetCurrentReport:', typeof sender.GetCurrentReport);
+      console.log('[ReportDesigner] ComponentDidMount sender.SaveReport:', typeof sender.SaveReport);
+      console.log('[ReportDesigner] ComponentDidMount sender.model:', sender.model);
+    }
   }, []);
 
   /**
