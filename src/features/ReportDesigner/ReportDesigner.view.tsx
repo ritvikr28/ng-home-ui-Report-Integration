@@ -269,122 +269,108 @@ const ReportDesigner: React.FC = () => {
       });
 
       // Get the DevExpress designer instance from ref
-      const sender = designerRef.current;
+      const refValue = designerRef.current;
       
-      console.log('[ReportDesigner] Designer ref:', sender ? 'exists' : 'null');
+      console.log('[ReportDesigner] Designer ref:', refValue ? 'exists' : 'null');
       console.log('[ReportDesigner] Designer initialized state:', designerInitialized);
       
-      if (!sender || !designerInitialized) {
+      if (!refValue || !designerInitialized) {
         setIsSaving(false);
         setError('Designer not initialized. Please wait for the designer to fully load and try again.');
         return;
       }
 
-      // DevExpress stores the actual designer in different places depending on the callback
-      // Try to find the designer model that has save capability
-      const designer = sender.reportDesigner || sender.designer || sender.model || sender;
+      // The callback wrapper stores {sender, args, component} - we need the sender
+      // which contains GetDesignerModel() method
+      const sender = refValue.sender || refValue;
       
-      console.log('[ReportDesigner] Designer object type:', typeof designer);
-      console.log('[ReportDesigner] Designer object keys:', designer ? Object.keys(designer).slice(0, 30) : 'null');
+      console.log('[ReportDesigner] Sender type:', typeof sender);
+      console.log('[ReportDesigner] Sender keys:', sender ? Object.keys(sender).slice(0, 30) : 'null');
+      console.log('[ReportDesigner] sender.GetDesignerModel:', typeof sender.GetDesignerModel);
 
-      // The DevExpress Report Designer's save method is typically accessed via the model
+      // The DevExpress Report Designer's save method is accessed via GetDesignerModel()
       // Try different approaches to trigger save
       
-      // Method 1: Use commands.save.execute() - preferred DevExpress React way
-      if (designer.commands && designer.commands.save && typeof designer.commands.save.execute === 'function') {
-        console.log('[ReportDesigner] Using designer.commands.save.execute()');
-        if (saveAs && newName) {
-          // Update report URL for SaveAs
-          if (designer.reportUrl && typeof designer.reportUrl === 'function') {
-            designer.reportUrl(newName);
-          } else if (designer.reportUrl !== undefined) {
-            designer.reportUrl = newName;
+      // Method 1: Use sender.GetDesignerModel().SaveReport() - the correct DevExpress way
+      if (sender.GetDesignerModel && typeof sender.GetDesignerModel === 'function') {
+        const designerModel = sender.GetDesignerModel();
+        console.log('[ReportDesigner] Got designerModel from GetDesignerModel()');
+        console.log('[ReportDesigner] designerModel keys:', designerModel ? Object.keys(designerModel).slice(0, 30) : 'null');
+        
+        if (designerModel) {
+          // For SaveAs, we need to update the reportUrl on the model
+          if (saveAs && newName) {
+            console.log('[ReportDesigner] SaveAs mode - setting new reportUrl:', newName);
+            // The reportUrl is typically a knockout observable
+            if (designerModel.reportUrl && typeof designerModel.reportUrl === 'function') {
+              designerModel.reportUrl(newName);
+            } else if (designerModel.reportUrl !== undefined) {
+              designerModel.reportUrl = newName;
+            }
           }
-        }
-        designer.commands.save.execute();
-      }
-      // Method 2: Check for designer property with commands
-      else if (sender.designer && sender.designer.commands && sender.designer.commands.save) {
-        console.log('[ReportDesigner] Using sender.designer.commands.save.execute()');
-        if (saveAs && newName && sender.designer.reportUrl) {
-          if (typeof sender.designer.reportUrl === 'function') {
-            sender.designer.reportUrl(newName);
+          
+          // Call SaveReport
+          if (typeof designerModel.SaveReport === 'function') {
+            console.log('[ReportDesigner] Calling designerModel.SaveReport()');
+            await designerModel.SaveReport();
+            console.log('[ReportDesigner] SaveReport completed successfully');
+          } else if (typeof designerModel.saveReport === 'function') {
+            console.log('[ReportDesigner] Calling designerModel.saveReport()');
+            await designerModel.saveReport();
+            console.log('[ReportDesigner] saveReport completed successfully');
           } else {
-            sender.designer.reportUrl = newName;
+            console.log('[ReportDesigner] designerModel methods:', Object.keys(designerModel).filter(k => typeof designerModel[k] === 'function'));
+            throw new Error('SaveReport method not found on designerModel');
           }
-        }
-        sender.designer.commands.save.execute();
-      }
-      // Method 3: Direct SaveReport method
-      else if (typeof designer.SaveReport === 'function') {
-        console.log('[ReportDesigner] Using designer.SaveReport()');
-        if (saveAs && newName) {
-          // Update report URL for SaveAs
-          if (typeof designer.reportUrl === 'function') {
-            designer.reportUrl(newName);
-          } else {
-            designer.reportUrl = newName;
-          }
-        }
-        await designer.SaveReport();
-      } 
-      // Method 4: saveReport (lowercase)
-      else if (typeof designer.saveReport === 'function') {
-        console.log('[ReportDesigner] Using designer.saveReport()');
-        if (saveAs && newName) {
-          if (typeof designer.reportUrl === 'function') {
-            designer.reportUrl(newName);
-          } else {
-            designer.reportUrl = newName;
-          }
-        }
-        await designer.saveReport();
-      }
-      // Method 5: GetAction to find save action
-      else if (typeof designer.GetAction === 'function') {
-        console.log('[ReportDesigner] Using designer.GetAction("dxxrd-save")');
-        const saveAction = designer.GetAction('dxxrd-save');
-        if (saveAction && saveAction.clickAction) {
-          if (saveAs && newName && designer.model?.reportUrl) {
-            designer.model.reportUrl(newName);
-          }
-          saveAction.clickAction();
         } else {
-          throw new Error('Save action not found');
+          throw new Error('GetDesignerModel() returned null');
         }
       }
-      // Method 6: Look for save in the actions array
-      else if (designer.actions && typeof designer.actions === 'function') {
-        console.log('[ReportDesigner] Looking in designer.actions()');
-        const actionsArray = designer.actions();
-        const saveAction = actionsArray.find((a: any) => 
-          a.id?.toLowerCase().includes('save') && !a.id?.toLowerCase().includes('saveas')
-        );
-        if (saveAction && saveAction.clickAction) {
-          if (saveAs && newName && designer.model?.reportUrl) {
-            designer.model.reportUrl(newName);
+      // Method 2: Direct SaveReport method on sender
+      else if (typeof sender.SaveReport === 'function') {
+        console.log('[ReportDesigner] Using sender.SaveReport()');
+        if (saveAs && newName) {
+          if (typeof sender.reportUrl === 'function') {
+            sender.reportUrl(newName);
+          } else if (sender.reportUrl !== undefined) {
+            sender.reportUrl = newName;
           }
-          saveAction.clickAction();
-        } else {
-          throw new Error('Save action not found in actions');
         }
+        await sender.SaveReport();
       }
-      // Method 7: Try accessing via global DevExpress object
-      else if ((window as any).DevExpress?.Reporting?.Designer?.saveReport) {
-        console.log('[ReportDesigner] Using global DevExpress.Reporting.Designer.saveReport');
-        (window as any).DevExpress.Reporting.Designer.saveReport();
+      // Method 3: Check for model property with SaveReport
+      else if (sender.model && typeof sender.model.SaveReport === 'function') {
+        console.log('[ReportDesigner] Using sender.model.SaveReport()');
+        if (saveAs && newName && sender.model.reportUrl) {
+          if (typeof sender.model.reportUrl === 'function') {
+            sender.model.reportUrl(newName);
+          } else {
+            sender.model.reportUrl = newName;
+          }
+        }
+        await sender.model.SaveReport();
+      }
+      // Method 4: Try accessing via global DevExpress object
+      else if ((window as any).DevExpress?.Reporting?.Designer) {
+        const globalDesigner = (window as any).DevExpress.Reporting.Designer;
+        console.log('[ReportDesigner] Checking global DevExpress.Reporting.Designer');
+        console.log('[ReportDesigner] Global designer keys:', Object.keys(globalDesigner).slice(0, 20));
+        
+        if (typeof globalDesigner.saveReport === 'function') {
+          console.log('[ReportDesigner] Using global DevExpress.Reporting.Designer.saveReport');
+          globalDesigner.saveReport();
+        } else {
+          throw new Error('No save method found on global DevExpress object');
+        }
       }
       // If nothing works, log what we have for debugging
       else {
-        console.error('[ReportDesigner] Could not find save method. Available on designer:', 
-          typeof designer === 'object' ? Object.keys(designer) : typeof designer);
-        console.error('[ReportDesigner] sender structure:', {
-          hasModel: !!sender.model,
-          hasReportDesigner: !!sender.reportDesigner,
-          hasDesigner: !!sender.designer,
-          hasCommands: !!designer.commands,
-          senderType: typeof sender,
-          senderKeys: typeof sender === 'object' ? Object.keys(sender).slice(0, 30) : []
+        console.error('[ReportDesigner] Could not find save method.');
+        console.error('[ReportDesigner] refValue structure:', {
+          refValueKeys: typeof refValue === 'object' ? Object.keys(refValue) : typeof refValue,
+          hasSender: !!refValue.sender,
+          senderKeys: refValue.sender ? Object.keys(refValue.sender).slice(0, 30) : 'N/A',
+          hasGetDesignerModel: !!(refValue.sender?.GetDesignerModel || sender?.GetDesignerModel)
         });
         throw new Error('Save functionality not available. Please check browser console for details.');
       }
@@ -516,13 +502,34 @@ const ReportDesigner: React.FC = () => {
    */
   const onCustomizeMenuActions = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeMenuActions callback triggered');
-    console.log('[ReportDesigner] CustomizeMenuActions sender:', sender ? Object.keys(sender).slice(0, 20) : 'null');
+    console.log('[ReportDesigner] CustomizeMenuActions sender type:', typeof sender);
+    console.log('[ReportDesigner] CustomizeMenuActions sender keys:', sender ? Object.keys(sender).slice(0, 30) : 'null');
+    console.log('[ReportDesigner] CustomizeMenuActions sender.GetDesignerModel:', typeof sender?.GetDesignerModel);
+    console.log('[ReportDesigner] CustomizeMenuActions args keys:', args ? Object.keys(args).slice(0, 20) : 'null');
     
-    // Store the sender as it contains the designer model - this callback definitely fires
-    if (sender && !designerRef.current) {
-      designerRef.current = sender;
-      setDesignerInitialized(true);
-      console.log('[ReportDesigner] Stored designer reference from CustomizeMenuActions');
+    // Store the sender as it contains GetDesignerModel method for saving
+    // In DevExpress React, the sender should have GetDesignerModel() method
+    if (sender) {
+      // Check if this sender has the GetDesignerModel method we need
+      if (typeof sender.GetDesignerModel === 'function') {
+        console.log('[ReportDesigner] Storing sender with GetDesignerModel');
+        designerRef.current = sender;
+        setDesignerInitialized(true);
+        
+        // Log the designer model structure for debugging
+        try {
+          const model = sender.GetDesignerModel();
+          console.log('[ReportDesigner] GetDesignerModel() result keys:', model ? Object.keys(model).slice(0, 30) : 'null');
+          console.log('[ReportDesigner] GetDesignerModel().SaveReport:', typeof model?.SaveReport);
+        } catch (e) {
+          console.log('[ReportDesigner] Error calling GetDesignerModel():', e);
+        }
+      } else if (!designerRef.current) {
+        // Fallback: store the sender even if it doesn't have GetDesignerModel
+        console.log('[ReportDesigner] Storing sender without GetDesignerModel (fallback)');
+        designerRef.current = sender;
+        setDesignerInitialized(true);
+      }
     }
     
     // args.Actions contains the array of menu actions
