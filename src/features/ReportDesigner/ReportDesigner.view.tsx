@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useEffect, useState, useRef } from 'react';
 import ko from 'knockout';
 import 'devextreme/dist/css/dx.light.css';
 import DxReportDesigner, {
@@ -6,9 +6,11 @@ import DxReportDesigner, {
   RequestOptions
 } from 'devexpress-reporting-react/dx-report-designer';
 import { fetchSetup } from '@devexpress/analytics-core/analytics-utils';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { authService } from '@essnextgen/auth-ui';
 import { envConfig } from '../../shared/utils';
+import { reportingService } from '../../shared/services/reportingService';
+import { ReportState } from '../../types/Report';
 import './ReportDesigner.scss';
 
 // Make knockout available globally for DevExpress
@@ -16,35 +18,194 @@ import './ReportDesigner.scss';
 
 // Height constants for the designer component
 const NAVBAR_HEIGHT = 56; // Main navbar height in pixels (standard Bootstrap)
+const CUSTOM_TOOLBAR_HEIGHT = 60; // Custom toolbar height
+
+/**
+ * Actions to disable in the DevExpress toolbar
+ * These will be hidden to restrict the designer to design-only mode
+ */
+const ACTIONS_TO_DISABLE = [
+  'dxxrd-preview',           // Preview button
+  'dxxrd-save',              // Save button
+  'dxxrd-saveas',            // Save As button
+  'dxxrd-newreport',         // New Report
+  'dxxrd-newreport-via-wizard', // New Report via Wizard
+  'dxxrd-open',              // Open button
+  'dxxrd-exit',              // Exit button
+  'dxxrd-menu',              // Main menu (hamburger/overflow)
+];
+
+/**
+ * Save Modal Component for Save/SaveAs functionality
+ */
+interface SaveModalProps {
+  isOpen: boolean;
+  isPredefined: boolean;
+  currentReportName: string;
+  onSave: (saveAs: boolean, newName?: string) => void;
+  onCancel: () => void;
+  isSaving: boolean;
+}
+
+const SaveModal: React.FC<SaveModalProps> = ({
+  isOpen,
+  isPredefined,
+  currentReportName,
+  onSave,
+  onCancel,
+  isSaving
+}) => {
+  const [saveMode, setSaveMode] = useState<'save' | 'saveAs'>(isPredefined ? 'saveAs' : 'save');
+  const [newReportName, setNewReportName] = useState<string>('');
+  const [error, setError] = useState<string>('');
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setSaveMode(isPredefined ? 'saveAs' : 'save');
+      setNewReportName('');
+      setError('');
+    }
+  }, [isOpen, isPredefined]);
+
+  const handleSave = () => {
+    if (saveMode === 'saveAs') {
+      if (!newReportName.trim()) {
+        setError('Please enter a report name');
+        return;
+      }
+      if (!/^[a-zA-Z0-9_-]+$/.test(newReportName.trim())) {
+        setError('Report name can only contain letters, numbers, underscores and hyphens');
+        return;
+      }
+      onSave(true, newReportName.trim());
+    } else {
+      onSave(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="save-modal-overlay">
+      <div className="save-modal">
+        <h2 className="save-modal-title">Save Report</h2>
+        
+        {isPredefined ? (
+          <div className="save-modal-notice">
+            <span className="notice-icon">ℹ️</span>
+            <p>
+              This is a predefined template report. 
+              It can only be saved as a new report.
+            </p>
+          </div>
+        ) : (
+          <div className="save-mode-selector">
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="saveMode"
+                value="save"
+                checked={saveMode === 'save'}
+                onChange={() => setSaveMode('save')}
+                disabled={isSaving}
+              />
+              <span>Save (overwrite &quot;{currentReportName}&quot;)</span>
+            </label>
+            <label className="radio-label">
+              <input
+                type="radio"
+                name="saveMode"
+                value="saveAs"
+                checked={saveMode === 'saveAs'}
+                onChange={() => setSaveMode('saveAs')}
+                disabled={isSaving}
+              />
+              <span>Save As (create new report)</span>
+            </label>
+          </div>
+        )}
+
+        {(saveMode === 'saveAs' || isPredefined) && (
+          <div className="save-as-input">
+            <label htmlFor="new-report-name">New Report Name:</label>
+            <input
+              id="new-report-name"
+              type="text"
+              value={newReportName}
+              onChange={(e) => {
+                setNewReportName(e.target.value);
+                setError('');
+              }}
+              placeholder="Enter new report name"
+              disabled={isSaving}
+              autoFocus
+            />
+            {error && <span className="input-error">{error}</span>}
+          </div>
+        )}
+
+        <div className="save-modal-buttons">
+          <button
+            className="cancel-button"
+            onClick={onCancel}
+            disabled={isSaving}
+          >
+            Cancel
+          </button>
+          <button
+            className="save-button"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /**
  * ReportDesigner component wraps the DevExpress Report Designer.
  * 
- * All data connections are configured to use APIs rather than direct file access.
- * The backend API provides JSON data sources via /api/v1/data endpoints.
+ * In restricted mode:
+ * - DevExpress toolbar actions (Preview, Save, Open, etc.) are disabled
+ * - Custom Back and Save buttons are provided
+ * - Save behavior differs based on whether report is predefined:
+ *   - Predefined reports: Save As only (create new report)
+ *   - User reports: Save (overwrite) or Save As options
  */
 const ReportDesigner: React.FC = () => {
-  const location = useLocation();
+  const location = useLocation<ReportState>();
+  const history = useHistory();
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Reference to the designer instance for accessing report data
+  const designerRef = useRef<any>(null);
   
   // Parse query parameters for report configuration
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const reportUrl: string = queryParams.get('reportUrl') ?? 'TestReport';
   
+  // Get report metadata from location state (passed from ReportSelection screen)
+  const isPredefined: boolean = location.state?.isPredefined ?? false;
+  
   // Get the reporting API base URL from environment config
-  // Ensure the URL has a trailing slash for proper URL construction
   const rawHostUrl: string = envConfig.REPORTING_API_URL || envConfig.BASE_URL || '';
   const hostUrl: string = rawHostUrl.endsWith('/') ? rawHostUrl.slice(0, -1) : rawHostUrl;
   
-  // DevExpress endpoint paths (no leading slash - DevExpress adds it)
+  // DevExpress endpoint paths
   const getDesignerModelAction = '/DXXRD/GetDesignerModel';
   const getLocalizationAction = '/DXXRD/GetLocalization';
 
   /**
-   * Calculate designer height to fit the viewport minus navigation
+   * Calculate designer height to fit the viewport minus navigation and custom toolbar
    */
-  const designerHeight = `calc(100vh - ${NAVBAR_HEIGHT}px)`;
+  const designerHeight = `calc(100vh - ${NAVBAR_HEIGHT + CUSTOM_TOOLBAR_HEIGHT}px)`;
 
   /**
    * Initialize fetch settings with auth token before component renders
@@ -64,31 +225,99 @@ const ReportDesigner: React.FC = () => {
       // Log configuration for debugging
       console.log('[ReportDesigner] Initializing with config:', {
         hostUrl,
-        rawHostUrl,
         reportUrl,
-        hasToken: !!token,
-        getDesignerModelAction,
-        getLocalizationAction
+        isPredefined,
+        hasToken: !!token
       });
-      
-      // Note: DevExpress handles the API calls internally.
-      // With empty hostUrl, requests go through webpack proxy to avoid CORS issues.
       
       setIsReady(true);
     } catch (err) {
       console.error('[ReportDesigner] Initialization error:', err);
       setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [hostUrl, rawHostUrl, reportUrl, getDesignerModelAction, getLocalizationAction]);
+  }, [hostUrl, reportUrl, isPredefined]);
+
+  /**
+   * Handle Back button - return to report selection
+   */
+  const handleBack = useCallback(() => {
+    history.push('/reports');
+  }, [history]);
+
+  /**
+   * Handle Save button - open save modal
+   */
+  const handleSaveClick = useCallback(() => {
+    setShowSaveModal(true);
+  }, []);
+
+  /**
+   * Handle actual save operation from modal
+   */
+  const handleSave = useCallback(async (saveAs: boolean, newName?: string) => {
+    try {
+      setIsSaving(true);
+      
+      // Get the report layout data from the designer
+      // The designer instance is accessible through the designerRef
+      let reportData = '';
+      
+      if (designerRef.current) {
+        // Try to get the report layout as XML/JSON
+        const designer = designerRef.current;
+        if (designer.GetReportLayoutJson) {
+          reportData = designer.GetReportLayoutJson();
+        } else if (designer.GetCurrentReport) {
+          const report = designer.GetCurrentReport();
+          if (report && report.serialize) {
+            reportData = report.serialize();
+          }
+        }
+      }
+
+      console.log('[ReportDesigner] Saving report:', {
+        reportUrl,
+        saveAs,
+        newName,
+        hasReportData: !!reportData
+      });
+
+      // Call the save API
+      const response = await reportingService.saveReportWithOptions({
+        reportUrl,
+        newReportName: saveAs ? newName : undefined,
+        reportData,
+        saveAs
+      });
+
+      console.log('[ReportDesigner] Save successful:', response);
+
+      // Close modal
+      setShowSaveModal(false);
+      setIsSaving(false);
+
+      // Navigate to preview screen
+      const savedReportName = saveAs && newName ? newName : reportUrl;
+      history.push({
+        pathname: '/reportpreview',
+        search: `?reportUrl=${encodeURIComponent(savedReportName)}`,
+        state: {
+          reportName: savedReportName,
+          isPredefined: false // Saved reports are never predefined
+        }
+      });
+    } catch (err) {
+      console.error('[ReportDesigner] Save error:', err);
+      setIsSaving(false);
+      setError(`Failed to save report: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }, [reportUrl, history]);
 
   /**
    * BeforeRender callback - fires before the DevExpress designer makes any HTTP requests.
-   * This is the correct place to ensure the Authorization header is set for all API calls.
    */
   const onBeforeRender = useCallback((sender: any) => {
     console.log('[ReportDesigner] BeforeRender callback triggered');
-    console.log('[ReportDesigner] Sender type:', sender?.constructor?.name);
-    console.log('[ReportDesigner] Sender GetCurrentTab:', sender?.GetCurrentTab?.());
     
     const token = authService.getAuthTokens();
     fetchSetup.fetchSettings = {
@@ -97,32 +326,30 @@ const ReportDesigner: React.FC = () => {
         'Content-Type': 'application/json'
       }
     };
-    console.log('[ReportDesigner] Fetch settings configured with token:', !!token);
   }, []);
 
   /**
    * Init callback - fires when the designer model is fully initialized
+   * Store reference to designer for accessing report data later
    */
-  const onInit = useCallback((sender: any, args: any) => {
+  const onInit = useCallback((sender: any) => {
     console.log('[ReportDesigner] Init callback triggered - Designer model is ready');
-    console.log('[ReportDesigner] Init sender:', sender);
-    console.log('[ReportDesigner] Init args:', args);
+    designerRef.current = sender;
   }, []);
 
   /**
    * CustomizeLocalization callback - can be used to override localization strings.
    */
-  const onCustomizeLocalization = useCallback((sender: any, args: any) => {
+  const onCustomizeLocalization = useCallback(() => {
     console.log('[ReportDesigner] CustomizeLocalization callback triggered');
-    console.log('[ReportDesigner] Localization args:', args);
   }, []);
 
   /**
    * ComponentDidMount callback - fires when the designer component is fully mounted
    */
-  const onComponentDidMount = useCallback((sender: any, args: any) => {
+  const onComponentDidMount = useCallback((sender: any) => {
     console.log('[ReportDesigner] ComponentDidMount - Designer loaded successfully');
-    console.log('[ReportDesigner] ComponentDidMount sender:', sender);
+    designerRef.current = sender;
   }, []);
 
   /**
@@ -138,39 +365,57 @@ const ReportDesigner: React.FC = () => {
   }, []);
 
   /**
-   * CustomizeMenuActions callback - fires when menu is being configured
+   * CustomizeMenuActions callback - CRITICAL for disabling toolbar buttons
+   * This hides Preview, Save, SaveAs, New, Open, Exit, and menu buttons
    */
   const onCustomizeMenuActions = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeMenuActions callback triggered');
-  }, []);
-
-  /**
-   * Error callback - handles errors from the designer
-   */
-  const onError = useCallback((sender: any, args: any) => {
-    console.error('[ReportDesigner] Error callback triggered:', args);
-    setError(`Designer error: ${JSON.stringify(args)}`);
+    
+    // args.Actions contains the array of menu actions
+    if (args && args.Actions) {
+      const actions = args.Actions;
+      
+      // Log all available actions for debugging
+      console.log('[ReportDesigner] Available actions:', actions.map((a: any) => ({
+        id: a.id,
+        text: a.text,
+        visible: a.visible
+      })));
+      
+      // Disable/hide specified actions
+      actions.forEach((action: any) => {
+        if (ACTIONS_TO_DISABLE.some(disableId => 
+          action.id?.toLowerCase().includes(disableId.toLowerCase().replace('dxxrd-', ''))
+        )) {
+          console.log('[ReportDesigner] Disabling action:', action.id);
+          action.visible = false;
+          action.disabled = true;
+        }
+      });
+    }
   }, []);
 
   if (error) {
     return (
-      <div className="report-designer-container" style={{ padding: '20px' }}>
-        <div style={{ 
-          backgroundColor: '#ffebee', 
-          color: '#c62828', 
-          padding: '20px', 
-          borderRadius: '4px',
-          border: '1px solid #ef9a9a'
-        }}>
-          <h3>Report Designer Error</h3>
-          <p>{error}</p>
-          <p>Please check the console for more details.</p>
-          <button 
-            onClick={() => { setError(null); setIsReady(false); }}
-            style={{ marginTop: '10px', padding: '8px 16px', cursor: 'pointer' }}
-          >
-            Retry
+      <div className="report-designer-container">
+        <div className="custom-toolbar">
+          <button className="back-button" onClick={handleBack}>
+            ← Back
           </button>
+          <h2 className="toolbar-title">{reportUrl}</h2>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <h3>Report Designer Error</h3>
+            <p>{error}</p>
+            <p>Please check the console for more details.</p>
+            <button 
+              onClick={() => { setError(null); setIsReady(false); }}
+              className="retry-button"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -178,38 +423,68 @@ const ReportDesigner: React.FC = () => {
 
   if (!isReady) {
     return (
-      <div className="report-designer-container" style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        height: designerHeight
-      }}>
-        <div>Loading Report Designer...</div>
+      <div className="report-designer-container">
+        <div className="custom-toolbar">
+          <button className="back-button" onClick={handleBack}>
+            ← Back
+          </button>
+          <h2 className="toolbar-title">Loading...</h2>
+        </div>
+        <div className="loading-container">
+          <div>Loading Report Designer...</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="report-designer-container">
-      <DxReportDesigner
-        reportUrl={reportUrl}
-        height={designerHeight}
-        developmentMode={true}
-      >
-        <RequestOptions
-          host={hostUrl}
-          getLocalizationAction={getLocalizationAction}
-          getDesignerModelAction={getDesignerModelAction}
-        />
-        <Callbacks
-          BeforeRender={onBeforeRender}
-          Init={onInit}
-          CustomizeLocalization={onCustomizeLocalization}
-          CustomizeMenuActions={onCustomizeMenuActions}
-          ComponentDidMount={onComponentDidMount}
-          OnServerError={onServerError}
-        />
-      </DxReportDesigner>
+      {/* Custom Toolbar with Back and Save buttons */}
+      <div className="custom-toolbar">
+        <button className="back-button" onClick={handleBack}>
+          ← Back
+        </button>
+        <h2 className="toolbar-title">
+          {reportUrl}
+          {isPredefined && <span className="predefined-badge">Template</span>}
+        </h2>
+        <button className="save-button" onClick={handleSaveClick}>
+          Save
+        </button>
+      </div>
+
+      {/* DevExpress Report Designer */}
+      <div className="designer-wrapper">
+        <DxReportDesigner
+          reportUrl={reportUrl}
+          height={designerHeight}
+          developmentMode={true}
+        >
+          <RequestOptions
+            host={hostUrl}
+            getLocalizationAction={getLocalizationAction}
+            getDesignerModelAction={getDesignerModelAction}
+          />
+          <Callbacks
+            BeforeRender={onBeforeRender}
+            Init={onInit}
+            CustomizeLocalization={onCustomizeLocalization}
+            CustomizeMenuActions={onCustomizeMenuActions}
+            ComponentDidMount={onComponentDidMount}
+            OnServerError={onServerError}
+          />
+        </DxReportDesigner>
+      </div>
+
+      {/* Save Modal */}
+      <SaveModal
+        isOpen={showSaveModal}
+        isPredefined={isPredefined}
+        currentReportName={reportUrl}
+        onSave={handleSave}
+        onCancel={() => setShowSaveModal(false)}
+        isSaving={isSaving}
+      />
     </div>
   );
 };

@@ -72,6 +72,53 @@ export interface JsonDataConnectionDescription {
 }
 
 /**
+ * Report information including metadata about whether it's predefined
+ */
+export interface ReportInfo {
+  /** Report identifier/name used by DevExpress */
+  name: string;
+  /** Display name shown to users */
+  displayName?: string;
+  /** Whether this is a predefined report from the backend (cannot be overwritten) */
+  isPredefined: boolean;
+  /** Optional description of the report */
+  description?: string;
+  /** When the report was last modified */
+  lastModified?: string;
+}
+
+/**
+ * Response from the reports list API
+ */
+export interface ReportsListResponse {
+  reports: ReportInfo[];
+}
+
+/**
+ * Save report request payload
+ */
+export interface SaveReportRequest {
+  /** The original report name (for Save operation) */
+  reportUrl: string;
+  /** The new report name (for Save As operation) */
+  newReportName?: string;
+  /** The report layout data (XML) */
+  reportData: string;
+  /** Whether this is a Save As operation */
+  saveAs: boolean;
+}
+
+/**
+ * Save report response
+ */
+export interface SaveReportResponse {
+  /** The saved report name */
+  reportName: string;
+  /** Success message */
+  message: string;
+}
+
+/**
  * Reporting service configuration
  */
 interface ReportingServiceConfig {
@@ -220,11 +267,52 @@ class ReportingService {
   }
 
   /**
+   * Saves a report with Save/SaveAs logic
+   * @param request - Save report request with optional new name for SaveAs
+   */
+  async saveReportWithOptions(request: SaveReportRequest): Promise<SaveReportResponse> {
+    const instance = this.ensureInitialized();
+    const response = await instance.post<SaveReportResponse>('/api/v1/reporting/save', request);
+    return response.data;
+  }
+
+  /**
    * Gets a list of available reports
    */
   async getReportsList(): Promise<string[]> {
     const instance = this.ensureInitialized();
     const response = await instance.get<string[]>('/api/v1/reporting/list');
+    return response.data;
+  }
+
+  /**
+   * Gets a list of available reports with metadata (including isPredefined flag)
+   */
+  async getReportsWithMetadata(): Promise<ReportsListResponse> {
+    const instance = this.ensureInitialized();
+    try {
+      const response = await instance.get<ReportsListResponse>('/api/v1/reporting/list-with-metadata');
+      return response.data;
+    } catch (error) {
+      // Fallback to basic list if metadata endpoint not available
+      const basicList = await this.getReportsList();
+      return {
+        reports: basicList.map(name => ({
+          name,
+          isPredefined: false // Default to false if we can't determine
+        }))
+      };
+    }
+  }
+
+  /**
+   * Gets the report layout data for a specific report
+   */
+  async getReportLayout(reportName: string): Promise<string> {
+    const instance = this.ensureInitialized();
+    const response = await instance.get<string>(
+      `/api/v1/reporting/layout?reportName=${encodeURIComponent(reportName)}`
+    );
     return response.data;
   }
 }

@@ -74,6 +74,12 @@ const AdminConsole: LazyExoticComponent<FC<{}>> = lazy(
 const ReportDesigner: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./features/ReportDesigner")
 );
+const ReportSelection: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./features/ReportSelection")
+);
+const ReportPreview: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./features/ReportPreview")
+);
 
 const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pages/SIMSIDAdminPage/SIMSIDAdminPage.view"));
 
@@ -436,10 +442,21 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               )
             }
           />
+          {/* Report workflow routes - Screen 1: Selection, Screen 2: Designer, Screen 3: Preview */}
+          <ProtectedRoute
+            exact
+            path="/reports"
+            component={ReportSelection}
+          />
           <ProtectedRoute
             exact
             path="/reportdesigner"
             component={ReportDesigner}
+          />
+          <ProtectedRoute
+            exact
+            path="/reportpreview"
+            component={ReportPreview}
           />
           <AdminConsoleandSystemStatusRoutes
             hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}
