@@ -211,8 +211,16 @@ const ReportDesigner: React.FC = () => {
 
   /**
    * Initialize fetch settings with auth token before component renders
+   * Only mark as ready when we have a valid hostUrl (required for API calls)
    */
   useEffect(() => {
+    // Guard: Don't proceed if hostUrl is not yet available
+    // This prevents the designer from rendering before config is loaded
+    if (!hostUrl) {
+      console.log('[ReportDesigner] Waiting for hostUrl to be available...');
+      return;
+    }
+
     try {
       const token = authService.getAuthTokens();
       
@@ -238,6 +246,16 @@ const ReportDesigner: React.FC = () => {
       setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, [hostUrl, reportUrl, isPredefined]);
+
+  /**
+   * Reset designer state when reportUrl changes
+   * This ensures fresh initialization for each report
+   */
+  useEffect(() => {
+    console.log('[ReportDesigner] Report URL changed, resetting designer state:', reportUrl);
+    setDesignerInitialized(false);
+    designerRef.current = null;
+  }, [reportUrl]);
 
   /**
    * Handle Back button - return to report selection
@@ -546,7 +564,9 @@ const ReportDesigner: React.FC = () => {
           <h2 className="toolbar-title">Loading...</h2>
         </div>
         <div className="loading-container">
-          <div>Loading Report Designer...</div>
+          <div>
+            {hostUrl ? 'Loading Report Designer...' : 'Initializing configuration...'}
+          </div>
         </div>
       </div>
     );
@@ -571,6 +591,7 @@ const ReportDesigner: React.FC = () => {
       {/* DevExpress Report Designer */}
       <div className="designer-wrapper">
         <DxReportDesigner
+          key={`${hostUrl}-${reportUrl}`}  // Force remount when reportUrl or hostUrl changes
           reportUrl={reportUrl}
           height={designerHeight}
           developmentMode={true}
