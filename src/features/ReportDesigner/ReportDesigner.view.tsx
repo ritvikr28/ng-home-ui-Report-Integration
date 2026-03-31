@@ -75,7 +75,7 @@ const SaveModal: React.FC<SaveModalProps> = ({
         return;
       }
       if (!/^[a-zA-Z0-9_-]+$/.test(newReportName.trim())) {
-        setError('Report name can only contain letters, numbers, underscores and hyphens');
+        setError('Report name can only contain letters, numbers, underscores and hyphens (no spaces)');
         return;
       }
       onSave(true, newReportName.trim());
@@ -258,12 +258,8 @@ const ReportDesigner: React.FC = () => {
     try {
       setIsSaving(true);
       
-      // Get the report layout data from the designer
-      // The designer instance is accessible through the designerRef
-      let reportData = '';
-      
+      // Try to get the report layout as XML/JSON
       if (designerRef.current) {
-        // Try to get the report layout as XML/JSON
         const designer = designerRef.current;
         if (designer.GetReportLayoutJson) {
           reportData = designer.GetReportLayoutJson();
@@ -273,6 +269,13 @@ const ReportDesigner: React.FC = () => {
             reportData = report.serialize();
           }
         }
+      }
+
+      // Validate that we have report data
+      if (!reportData) {
+        setIsSaving(false);
+        setError('Unable to retrieve report data. Please try again.');
+        return;
       }
 
       console.log('[ReportDesigner] Saving report:', {
@@ -375,6 +378,11 @@ const ReportDesigner: React.FC = () => {
     if (args && args.Actions) {
       const actions = args.Actions;
       
+      // Pre-compute normalized action IDs to disable for performance
+      const normalizedDisableIds = ACTIONS_TO_DISABLE.map(id => 
+        id.toLowerCase().replace('dxxrd-', '')
+      );
+      
       // Log all available actions for debugging
       console.log('[ReportDesigner] Available actions:', actions.map((a: any) => ({
         id: a.id,
@@ -384,9 +392,8 @@ const ReportDesigner: React.FC = () => {
       
       // Disable/hide specified actions
       actions.forEach((action: any) => {
-        if (ACTIONS_TO_DISABLE.some(disableId => 
-          action.id?.toLowerCase().includes(disableId.toLowerCase().replace('dxxrd-', ''))
-        )) {
+        const actionIdLower = action.id?.toLowerCase() || '';
+        if (normalizedDisableIds.some(disableId => actionIdLower.includes(disableId))) {
           console.log('[ReportDesigner] Disabling action:', action.id);
           action.visible = false;
           action.disabled = true;

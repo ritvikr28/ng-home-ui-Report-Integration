@@ -163,8 +163,8 @@ const ReportPreview: React.FC = () => {
           <div className="placeholder-content">
             <div className="placeholder-icon">📊</div>
             <h2>Report Ready</h2>
-            <p>Your report &quot;{reportName}&quot; has been saved successfully.</p>
-            <p>Click the &quot;Preview Report&quot; button above to view it with data.</p>
+            <p>Your report "{reportName}" has been saved successfully.</p>
+            <p>Click the "Preview Report" button above to view it with data.</p>
             <button className="preview-button-large" onClick={handlePreview}>
               Preview Report
             </button>

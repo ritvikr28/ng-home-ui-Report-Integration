@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Loader, LoaderType } from '@essnextgen/ui-kit';
 import { reportingService, ReportInfo } from '../../shared/services/reportingService';
@@ -16,6 +16,14 @@ const ReportSelection: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * Memoized selected report info to avoid redundant lookups
+   */
+  const selectedReportInfo = useMemo(() => {
+    if (!selectedReport) return null;
+    return reports.find(r => r.name === selectedReport) || null;
+  }, [selectedReport, reports]);
 
   /**
    * Fetch available reports on component mount
@@ -49,12 +57,7 @@ const ReportSelection: React.FC = () => {
    * Handle "Open Report" button click - navigate to designer
    */
   const handleOpenReport = useCallback(() => {
-    if (!selectedReport) {
-      return;
-    }
-
-    const report = reports.find(r => r.name === selectedReport);
-    if (!report) {
+    if (!selectedReport || !selectedReportInfo) {
       return;
     }
 
@@ -64,10 +67,10 @@ const ReportSelection: React.FC = () => {
       search: `?reportUrl=${encodeURIComponent(selectedReport)}`,
       state: {
         reportName: selectedReport,
-        isPredefined: report.isPredefined
+        isPredefined: selectedReportInfo.isPredefined
       }
     });
-  }, [selectedReport, reports, history]);
+  }, [selectedReport, selectedReportInfo, history]);
 
   /**
    * Retry loading reports
@@ -146,14 +149,14 @@ const ReportSelection: React.FC = () => {
             ))}
           </select>
 
-          {selectedReport && (
+          {selectedReportInfo && (
             <div className="report-info">
-              {reports.find(r => r.name === selectedReport)?.description && (
+              {selectedReportInfo.description && (
                 <p className="report-description">
-                  {reports.find(r => r.name === selectedReport)?.description}
+                  {selectedReportInfo.description}
                 </p>
               )}
-              {reports.find(r => r.name === selectedReport)?.isPredefined && (
+              {selectedReportInfo.isPredefined && (
                 <p className="report-predefined-notice">
                   ℹ️ This is a template report. Changes will be saved as a new report.
                 </p>
