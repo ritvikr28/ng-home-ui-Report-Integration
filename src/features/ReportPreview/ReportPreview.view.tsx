@@ -8,7 +8,6 @@ import DxReportViewer, {
 } from 'devexpress-reporting-react/dx-report-viewer';
 import { fetchSetup } from '@devexpress/analytics-core/analytics-utils';
 import { authService } from '@essnextgen/auth-ui';
-import { envConfig } from '../../shared/utils';
 import { ReportState } from '../../types/Report';
 import './ReportPreview.scss';
 
@@ -49,19 +48,15 @@ const ReportPreview: React.FC = () => {
   const viewerHeight = `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT}px)`;
 
   /**
-   * Helper function to get the host URL from available sources
-   * Tries envConfig first, then falls back to window variables directly
+   * Helper function to get the host URL from window directly
+   * IMPORTANT: Must read from window directly every time, not from envConfig
+   * because config.js loads with defer attribute
    */
-  const getHostUrl = useCallback((): string => {
-    let rawUrl = envConfig.REPORTING_API_URL || envConfig.BASE_URL;
-    
-    // If envConfig values are empty, read directly from window
-    if (!rawUrl) {
-      rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
-    }
-    
+  const getHostUrl = (): string => {
+    const rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
+    if (!rawUrl) return '';
     return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
-  }, []);
+  };
 
   /**
    * Poll for config availability since config.js may load with defer
@@ -101,7 +96,7 @@ const ReportPreview: React.FC = () => {
         clearInterval(pollInterval);
       }
     };
-  }, [getHostUrl]);
+  }, []); // Empty deps - only run on mount, polling handles the rest
 
   /**
    * Initialize fetch settings with auth token

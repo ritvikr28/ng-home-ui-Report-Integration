@@ -8,7 +8,6 @@ import DxReportDesigner, {
 import { fetchSetup } from '@devexpress/analytics-core/analytics-utils';
 import { useLocation, useHistory } from 'react-router-dom';
 import { authService } from '@essnextgen/auth-ui';
-import { envConfig } from '../../shared/utils';
 import { ReportState } from '../../types/Report';
 import './ReportDesigner.scss';
 
@@ -209,23 +208,19 @@ const ReportDesigner: React.FC = () => {
   const designerHeight = `calc(100vh - ${NAVBAR_HEIGHT + CUSTOM_TOOLBAR_HEIGHT}px)`;
 
   /**
-   * Helper function to get the host URL from available sources
-   * Tries envConfig first, then falls back to window variables directly
-   * This handles the case where config.js loads with defer attribute
+   * Helper function to get the host URL from window directly
+   * IMPORTANT: Must read from window directly every time, not from envConfig
+   * because config.js loads with defer attribute and envConfig captures values
+   * at module import time (before config.js has executed)
    */
-  const getHostUrl = useCallback((): string => {
-    // Try envConfig first (may be stale if captured before config.js loaded)
-    let rawUrl = envConfig.REPORTING_API_URL || envConfig.BASE_URL;
-    
-    // If envConfig values are empty, read directly from window
-    // (config.js with defer may have set these after module import)
-    if (!rawUrl) {
-      rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
-    }
+  const getHostUrl = (): string => {
+    // Read directly from window - config.js sets these variables
+    const rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
     
     // Remove trailing slash for consistency
+    if (!rawUrl) return '';
     return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
-  }, []);
+  };
 
   /**
    * Poll for config availability since config.js may load with defer
@@ -268,7 +263,7 @@ const ReportDesigner: React.FC = () => {
         clearInterval(pollInterval);
       }
     };
-  }, [getHostUrl]);
+  }, []); // Empty deps - only run on mount, polling handles the rest
 
   /**
    * Initialize fetch settings with auth token before component renders
