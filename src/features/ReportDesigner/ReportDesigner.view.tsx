@@ -655,10 +655,9 @@ const ReportDesigner: React.FC = () => {
   }, []);
 
   /**
-   * CustomizeElements callback - Hide field list only, allow everything else
-   * The designer needs most elements visible to render properly.
-   * CSS will hide the UI elements we don't want shown.
-   * Only hide field list explicitly here.
+   * CustomizeElements callback - Log available elements for debugging
+   * Don't hide any elements - let the designer render normally
+   * CSS will hide the toolbox and toolbar only
    */
   const onCustomizeElements = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeElements callback triggered');
@@ -671,28 +670,8 @@ const ReportDesigner: React.FC = () => {
         templateName: e.templateName,
         visible: e.visible
       })));
-      
-      // Only hide field list explicitly, let everything else render
-      // CSS will hide the UI panels we don't need
-      elements.forEach((element: any) => {
-        const elementId = (element.id || '').toLowerCase();
-        const elementTemplate = (element.templateName || '').toLowerCase();
-        
-        // Check if this is a field list element - if so, HIDE it
-        const isFieldList = 
-          elementId.includes('fieldlist') || 
-          elementId.includes('field-list') || 
-          elementId.includes('field_list') ||
-          elementTemplate.includes('fieldlist') ||
-          elementTemplate.includes('field-list') ||
-          elementTemplate.includes('field_list');
-        
-        if (isFieldList) {
-          console.log(`[ReportDesigner] Hiding field list element: ${element.id}`);
-          element.visible = false;
-        }
-        // Keep everything else visible - designer needs most elements to render
-      });
+      // Don't hide any elements - let the designer render normally
+      // CSS handles hiding the toolbox and toolbar
     }
   }, []);
 
