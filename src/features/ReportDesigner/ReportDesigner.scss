@@ -373,124 +373,418 @@
 
 /**
  * RESTRICTED MODE STYLES
- * Hide/disable various UI elements to restrict the designer to only show data sources
- * and allow column selection while disabling all other editing features.
+ * Hide/disable ALL UI elements to restrict the designer.
+ * ONLY the Field List (data source columns selection) should remain visible and interactive.
  */
 
-/* Hide the entire toolbox panel */
+/* ============================================
+   TOOLBOX - HIDE COMPLETELY
+   ============================================ */
 .dxrd-toolbox-item,
 .dx-toolbox,
 .dxrd-toolbox,
+.dxrd-toolbox-panel,
+.dxrd-toolbox-wrapper,
 [class*="toolbox-item"],
-[class*="dxrd-toolbox"] {
+[class*="dxrd-toolbox"],
+[class*="dx-toolbox"],
+.dx-designer-toolbox {
   display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden !important;
 }
 
-/* Hide the main designer toolbar (we use custom toolbar instead) */
+/* ============================================
+   TOOLBAR AND MENU - HIDE COMPLETELY
+   ============================================ */
 .dxrd-toolbar,
 .dx-toolbar.dxrd-toolbar-main,
-.dxrd-menu-toolbar {
+.dxrd-menu-toolbar,
+.dxrd-main-toolbar,
+.dx-designer-toolbar,
+.dxrd-toolbar-wrapper,
+[class*="dxrd-toolbar"],
+[class*="dxrd-menu-toolbar"] {
   display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
 }
 
-/* Hide zoom controls */
+/* ============================================
+   ZOOM CONTROLS - HIDE COMPLETELY
+   ============================================ */
 .dxrd-zoom,
+.dxrd-zoom-editor,
+.dx-zoom-editor,
+.dxrd-zoom-autofit,
 [class*="zoom-editor"],
 [class*="zoom-autofit"],
-.dx-zoom-editor {
+[class*="dxrd-zoom"] {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* Hide the main menu (hamburger menu) */
+/* ============================================
+   MAIN MENU / HAMBURGER MENU - HIDE COMPLETELY
+   ============================================ */
 .dxrd-menu,
 .dxrd-menu-button,
-[class*="dxrd-menu"] {
+.dxrd-hamburger-menu,
+.dx-designer-menu,
+[class*="dxrd-menu"]:not(.dx-context-menu),
+[class*="hamburger-menu"] {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* Hide scripting/expressions editor button */
+/* ============================================
+   SCRIPTS AND EXPRESSIONS EDITOR - HIDE COMPLETELY
+   ============================================ */
 .dxrd-scripts-panel,
 .dxrd-expression-editor,
+.dxrd-scripts-wrapper,
+.dxrd-expressions-wrapper,
 [class*="scripts-panel"],
-[class*="expression-editor"] {
-  pointer-events: none;
-  opacity: 0.3;
-}
-
-/* Hide report explorer/structure panel */
-.dxrd-report-explorer,
-.dxrd-reportexplorer-wrapper {
+[class*="expression-editor"],
+[class*="dxrd-scripts"],
+[class*="dxrd-expression"] {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* Disable report surface editing - make it view-only except for drag-drop from field list */
-.dxrd-surface {
-  /* Allow viewing but restrict some interactions */
-  .dxrd-surface-selection-wrapper {
-    pointer-events: none;
-  }
+/* ============================================
+   REPORT EXPLORER/STRUCTURE PANEL - HIDE COMPLETELY
+   ============================================ */
+.dxrd-report-explorer,
+.dxrd-reportexplorer-wrapper,
+.dxrd-report-structure,
+.dx-report-explorer,
+[class*="report-explorer"],
+[class*="reportexplorer"] {
+  display: none !important;
+  visibility: hidden !important;
 }
 
-/* Keep the field list visible and interactive - this is the data source panel */
-.dxrd-field-list,
-.dxrd-fieldlist-wrapper,
-[class*="field-list"],
-.dx-field-list {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-/* Hide the property panel (right side properties editor) */
+/* ============================================
+   PROPERTY PANEL (RIGHT SIDE) - HIDE COMPLETELY
+   ============================================ */
 .dxrd-properties-panel,
 .dx-property-grid,
 .dx-propertygrid,
 .dxrd-right-panel,
+.dxrd-property-panel,
+.dx-right-panel,
+.dxrd-properties-wrapper,
 [class*="property-panel"],
-[class*="propertygrid"] {
+[class*="propertygrid"],
+[class*="dxrd-properties"],
+[class*="dx-property"] {
   display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden !important;
 }
 
-/* Hide page/zoom navigation controls in the designer */
+/* ============================================
+   NAVIGATION AND PAGE CONTROLS - HIDE COMPLETELY
+   ============================================ */
 .dxrd-navigation-panel,
-.dxrd-page-navigator {
+.dxrd-page-navigator,
+.dxrd-page-controls,
+.dx-page-navigator,
+[class*="navigation-panel"],
+[class*="page-navigator"] {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* Hide the bottom status bar */
+/* ============================================
+   STATUS BAR - HIDE COMPLETELY
+   ============================================ */
 .dxrd-statusbar,
-.dxrd-designer-statusbar {
+.dxrd-designer-statusbar,
+.dx-designer-statusbar,
+.dxrd-status-wrapper,
+[class*="statusbar"],
+[class*="status-bar"] {
   display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
 }
 
-/* Hide watermarks and preview elements */
+/* ============================================
+   PREVIEW AND WATERMARK - HIDE COMPLETELY
+   ============================================ */
 .dxrd-preview-button-container,
-.dxrd-watermark-element {
+.dxrd-watermark-element,
+.dxrd-preview-wrapper,
+.dx-preview-button,
+[class*="preview-button"],
+[class*="watermark"] {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* Hide context menus that appear on right-click */
+/* ============================================
+   CONTEXT MENUS - HIDE COMPLETELY
+   ============================================ */
 .dx-context-menu.dxrd-menu,
-.dxrd-context-menu {
+.dxrd-context-menu,
+.dx-context-menu.dxrd-context-menu,
+.dx-popup.dxrd-context-menu,
+[class*="dxrd-context-menu"] {
   display: none !important;
+  visibility: hidden !important;
 }
 
-/* Disable drag-drop for controls (but keep field list drag-drop) */
-.dxrd-drag-overlay:not(.dxrd-field-list-drag) {
-  pointer-events: none;
+/* ============================================
+   WIZARD CONTROLS - HIDE COMPLETELY
+   ============================================ */
+.dxrd-wizard-container,
+.dxrd-wizard-panel,
+.dxrd-wizard-wrapper,
+.dx-wizard-panel,
+[class*="wizard-container"],
+[class*="wizard-panel"] {
+  display: none !important;
+  visibility: hidden !important;
 }
 
-/* Make the report design surface mostly read-only */
+/* ============================================
+   BAND CONTROLS AND ADD BUTTONS - HIDE COMPLETELY
+   ============================================ */
 .dxrd-band-container {
-  /* Prevent adding new bands */
-  .dx-add-band-button {
+  .dx-add-band-button,
+  .dxrd-add-band,
+  [class*="add-band"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+/* ============================================
+   SPLITTERS AND RESIZE HANDLES - HIDE
+   ============================================ */
+.dx-splitter,
+.dxrd-splitter,
+.dx-resize-handle,
+.dxrd-resize-handle,
+[class*="splitter"],
+[class*="resize-handle"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ============================================
+   TAB PANELS (except field list) - HIDE
+   ============================================ */
+.dxrd-tab-panel:not(.dxrd-fieldlist-tab),
+.dx-tab-panel:not(.dx-fieldlist-tab),
+.dxrd-left-panel-tabs,
+.dx-tabpanel-tabs,
+[class*="tab-panel"]:not([class*="field-list"]) {
+  /* Hide tab headers but keep the content if it's field list */
+}
+
+/* ============================================
+   DESIGN SURFACE - MAKE MOSTLY READ-ONLY
+   ============================================ */
+.dxrd-surface {
+  .dxrd-surface-selection-wrapper {
+    pointer-events: none !important;
+  }
+  
+  .dxrd-surface-handle,
+  .dxrd-resize-handle,
+  .dxrd-drag-handle {
+    display: none !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Disable all drag overlays except field list drag */
+.dxrd-drag-overlay:not(.dxrd-field-list-drag) {
+  pointer-events: none !important;
+}
+
+/* ============================================
+   REPORT SURFACE EDITING - DISABLE INTERACTIONS
+   ============================================ */
+.dxrd-report-surface,
+.dxrd-designer-surface {
+  /* Disable selection and editing on the surface */
+  .dxrd-selectable {
+    pointer-events: none !important;
+  }
+  
+  .dxrd-editable,
+  .dxrd-resizable {
+    pointer-events: none !important;
+  }
+}
+
+/* ============================================
+   LEFT PANEL - KEEP ONLY FIELD LIST VISIBLE
+   ============================================ */
+.dxrd-left-panel,
+.dxrd-left-panel-wrapper,
+.dx-left-panel {
+  /* Hide everything in left panel except field list */
+  > *:not([class*="field-list"]):not([class*="fieldlist"]) {
     display: none !important;
   }
 }
 
-/* Hide the wizard/new report controls */
-.dxrd-wizard-container,
-.dxrd-wizard-panel {
+/* ============================================
+   ACCORDION PANELS - HIDE ALL EXCEPT FIELD LIST
+   ============================================ */
+.dx-accordion-item:not(.dx-accordion-item-opened):not([class*="field"]),
+.dxrd-accordion-item:not([class*="field"]) {
   display: none !important;
+}
+
+/* ============================================
+   POPUP DIALOGS - HIDE ALL
+   ============================================ */
+.dx-popup.dxrd-popup,
+.dxrd-dialog,
+.dx-overlay.dxrd-overlay,
+[class*="dxrd-dialog"],
+[class*="dxrd-popup"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================
+   BUTTON GROUPS AND ACTION BUTTONS - HIDE
+   ============================================ */
+.dxrd-button-group,
+.dx-buttongroup.dxrd-buttongroup,
+.dxrd-action-buttons,
+[class*="dxrd-button"],
+[class*="action-button"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================
+   FORMAT PAINTERS AND COPY/PASTE - HIDE
+   ============================================ */
+.dxrd-format-painter,
+.dxrd-clipboard-actions,
+[class*="format-painter"],
+[class*="clipboard"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================
+   REPORT GALLERY AND TEMPLATES - HIDE
+   ============================================ */
+.dxrd-report-gallery,
+.dxrd-template-gallery,
+[class*="report-gallery"],
+[class*="template-gallery"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================
+   SNAPLINES AND GUIDES - HIDE
+   ============================================ */
+.dxrd-snapline,
+.dxrd-guideline,
+[class*="snapline"],
+[class*="guideline"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================
+   UNDO/REDO BUTTONS - HIDE
+   ============================================ */
+.dxrd-undo,
+.dxrd-redo,
+[class*="dxrd-undo"],
+[class*="dxrd-redo"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================
+   FIELD LIST - KEEP VISIBLE AND INTERACTIVE
+   This is the ONLY element that should remain
+   ============================================ */
+.dxrd-field-list,
+.dxrd-fieldlist-wrapper,
+.dxrd-fieldlist-panel,
+.dx-field-list,
+.dxrd-field-list-panel,
+[class*="field-list"],
+[class*="fieldlist"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  width: auto !important;
+  min-width: 200px !important;
+  max-width: none !important;
+}
+
+/* Ensure field list items are clickable and expandable */
+.dxrd-field-list-item,
+.dx-field-list-item,
+.dxrd-fieldlist-item,
+[class*="field-list-item"],
+[class*="fieldlist-item"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Ensure treeview in field list is interactive */
+.dxrd-field-list .dx-treeview,
+.dxrd-field-list .dx-treeview-item,
+.dxrd-field-list .dx-treeview-node,
+[class*="field-list"] .dx-treeview,
+[class*="field-list"] .dx-treeview-item,
+[class*="field-list"] .dx-treeview-node {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Field list expand/collapse toggles */
+.dxrd-field-list .dx-treeview-toggle-item-visibility,
+[class*="field-list"] .dx-treeview-toggle-item-visibility {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* ============================================
+   GLOBAL OVERRIDES - CATCH ANY REMAINING ELEMENTS
+   ============================================ */
+
+/* Hide any remaining DevExpress menu items */
+.dx-menu-item[class*="dxrd"],
+.dx-submenu[class*="dxrd"],
+[class*="dxrd-menu-item"] {
+  display: none !important;
+}
+
+/* Disable all designer interactions except field list */
+.dx-reportdesigner {
+  /* Allow the container but restrict child elements */
+  
+  .dx-designer-viewport {
+    /* Hide scrollbars and navigation except for field list area */
+    overflow: hidden;
+  }
 }

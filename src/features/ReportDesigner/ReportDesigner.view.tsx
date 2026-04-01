@@ -21,6 +21,7 @@ const CUSTOM_TOOLBAR_HEIGHT = 60; // Custom toolbar height
 /**
  * Actions to disable in the DevExpress toolbar
  * These will be hidden to restrict the designer to design-only mode
+ * NOTE: We now disable ALL actions for maximum restriction
  */
 const ACTIONS_TO_DISABLE = [
   'dxxrd-preview',           // Preview button
@@ -31,6 +32,34 @@ const ACTIONS_TO_DISABLE = [
   'dxxrd-open',              // Open button
   'dxxrd-exit',              // Exit button
   'dxxrd-menu',              // Main menu (hamburger/overflow)
+  'dxxrd-undo',              // Undo
+  'dxxrd-redo',              // Redo
+  'dxxrd-cut',               // Cut
+  'dxxrd-copy',              // Copy
+  'dxxrd-paste',             // Paste
+  'dxxrd-delete',            // Delete
+  'dxxrd-selectall',         // Select All
+  'dxxrd-zoomin',            // Zoom In
+  'dxxrd-zoomout',           // Zoom Out
+  'dxxrd-fittopage',         // Fit to Page
+  'dxxrd-fittowidth',        // Fit to Width
+  'dxxrd-actualsize',        // Actual Size
+  'dxxrd-pagesetup',         // Page Setup
+  'dxxrd-print',             // Print
+  'dxxrd-export',            // Export
+  'dxxrd-scripts',           // Scripts Editor
+  'dxxrd-addband',           // Add Band
+  'dxxrd-insertband',        // Insert Band
+  'dxxrd-deleteband',        // Delete Band
+  'dxxrd-bringtofront',      // Bring to Front
+  'dxxrd-sendtoback',        // Send to Back
+  'dxxrd-align',             // Align
+  'dxxrd-sizing',            // Sizing
+  'dxxrd-horizontal',        // Horizontal Spacing
+  'dxxrd-vertical',          // Vertical Spacing
+  'dxxrd-center',            // Center
+  'dxxrd-localization',      // Localization
+  'dxxrd-formatpainter',     // Format Painter
 ];
 
 /**
@@ -660,8 +689,8 @@ const ReportDesigner: React.FC = () => {
 
   /**
    * CustomizeElements callback - CRITICAL for hiding/disabling UI elements
-   * This hides property panel, toolbox panel, and other UI elements
-   * Only the Field List (data source) should remain visible
+   * This hides ALL panels and UI elements EXCEPT the Field List (data source panel)
+   * Only the Field List should remain visible for data column selection
    */
   const onCustomizeElements = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeElements callback triggered');
@@ -671,23 +700,30 @@ const ReportDesigner: React.FC = () => {
       const elements = args.Elements;
       console.log('[ReportDesigner] Available elements:', elements.map((e: any) => ({
         id: e.id,
+        templateName: e.templateName,
         type: e.type || e.constructor?.name
       })));
       
-      // Find and process elements to hide/disable
+      // Hide ALL elements except those related to field list
       elements.forEach((element: any) => {
-        const elementId = element.id?.toLowerCase() || '';
-        const elementTemplate = element.templateName?.toLowerCase() || '';
+        const elementId = (element.id || '').toLowerCase();
+        const elementTemplate = (element.templateName || '').toLowerCase();
         
-        // Hide toolbox-related elements
-        if (elementId.includes('toolbox') || elementTemplate.includes('toolbox')) {
-          console.log(`[ReportDesigner] Hiding toolbox element: ${element.id}`);
-          element.visible = false;
-        }
+        // Check if this is a field list element - if so, KEEP it visible
+        const isFieldList = 
+          elementId.includes('fieldlist') || 
+          elementId.includes('field-list') || 
+          elementId.includes('field_list') ||
+          elementTemplate.includes('fieldlist') ||
+          elementTemplate.includes('field-list') ||
+          elementTemplate.includes('field_list');
         
-        // Hide zoom controls
-        if (elementId.includes('zoom') || elementTemplate.includes('zoom')) {
-          console.log(`[ReportDesigner] Hiding zoom element: ${element.id}`);
+        if (isFieldList) {
+          console.log(`[ReportDesigner] KEEPING field list element visible: ${element.id}`);
+          element.visible = true;
+        } else {
+          // Hide ALL other elements
+          console.log(`[ReportDesigner] Hiding element: ${element.id}`);
           element.visible = false;
         }
       });
@@ -751,11 +787,6 @@ const ReportDesigner: React.FC = () => {
     if (args && args.Actions) {
       const actions = args.Actions;
       
-      // Pre-compute normalized action IDs to disable for performance
-      const normalizedDisableIds = ACTIONS_TO_DISABLE.map(id => 
-        id.toLowerCase().replace('dxxrd-', '')
-      );
-      
       // Log all available actions for debugging
       console.log('[ReportDesigner] Available actions:', actions.map((a: any) => ({
         id: a.id,
@@ -763,14 +794,12 @@ const ReportDesigner: React.FC = () => {
         visible: a.visible
       })));
       
-      // Disable/hide specified actions
+      // DISABLE ALL ACTIONS - we want maximum restriction
+      // Only the Field List should be functional, and that's controlled separately
       actions.forEach((action: any) => {
-        const actionIdLower = action.id?.toLowerCase() || '';
-        if (normalizedDisableIds.some(disableId => actionIdLower.includes(disableId))) {
-          console.log('[ReportDesigner] Disabling action:', action.id);
-          action.visible = false;
-          action.disabled = true;
-        }
+        console.log('[ReportDesigner] Disabling action:', action.id);
+        action.visible = false;
+        action.disabled = true;
       });
     }
   }, []);
