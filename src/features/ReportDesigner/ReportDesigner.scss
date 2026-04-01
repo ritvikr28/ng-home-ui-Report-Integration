@@ -465,3 +465,35 @@
   pointer-events: auto !important;
 }
 
+/* ============================================
+   FIELD LIST - DISABLE "ADD DATA SOURCE" OPTION
+   ============================================ */
+
+/* Hide the "Add Data Source" button/action inside the Field List header */
+.dxrd-field-list-add-datasource,
+.dxrd-field-list-actions .dxrd-field-list-add,
+.dxrd-fieldlist-add-datasource,
+[data-bind*="addDataSource"],
+[data-bind*="AddDataSource"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Hide context menu items related to adding/managing data sources in the Field List */
+.dx-menu-item[aria-label*="Add"],
+.dx-menu-item[title*="Add Data Source"],
+.dx-context-menu .dx-menu-item-text:not([class*="field"]) {
+  /* Targeted below via more specific selectors */
+}
+
+/* Hide "Add Data Source" context menu option in Field List */
+.dxrd-field-list .dxrd-actions-button,
+.dxrd-fieldlist .dxrd-actions-button,
+.dxrd-field-list [data-action*="addDataSource"],
+.dxrd-field-list [data-action*="add-datasource"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+

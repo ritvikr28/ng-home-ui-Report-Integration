@@ -655,13 +655,11 @@ const ReportDesigner: React.FC = () => {
   }, []);
 
   /**
-   * CustomizeElements callback - Log available elements for debugging
-   * Don't hide any elements - let the designer render normally
-   * CSS will hide the toolbox and toolbar only
+   * CustomizeElements callback - Hide Properties, ReportExplorer, and Expressions panels.
+   * Field List remains visible. Toolbox and toolbar are handled via CSS.
    */
   const onCustomizeElements = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeElements callback triggered');
-    console.log('[ReportDesigner] CustomizeElements args:', args ? Object.keys(args) : 'null');
     
     if (args && args.Elements) {
       const elements = args.Elements;
@@ -670,8 +668,23 @@ const ReportDesigner: React.FC = () => {
         templateName: e.templateName,
         visible: e.visible
       })));
-      // Don't hide any elements - let the designer render normally
-      // CSS handles hiding the toolbox and toolbar
+
+      // Keywords that identify panels we want to hide
+      const PANELS_TO_HIDE = [
+        'properties', 'propertygrid', 'property',
+        'reportexplorer', 'explorer',
+        'expressions', 'expression',
+      ];
+
+      elements.forEach((element: any) => {
+        const id = (element.id || '').toLowerCase();
+        const template = (element.templateName || '').toLowerCase();
+        const shouldHide = PANELS_TO_HIDE.some(keyword => id.includes(keyword) || template.includes(keyword));
+        if (shouldHide) {
+          console.log(`[ReportDesigner] Hiding element: id="${element.id}" template="${element.templateName}"`);
+          element.visible = false;
+        }
+      });
     }
   }, []);
 
@@ -683,6 +696,39 @@ const ReportDesigner: React.FC = () => {
     // Disable all parameter editors to prevent parameter modifications
     if (args && args.editor) {
       args.editor.disabled = true;
+    }
+  }, []);
+
+  /**
+   * CustomizeFieldListActions callback - disable "Add Data Source" and other
+   * data source management actions in the Field List panel.
+   */
+  const onCustomizeFieldListActions = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] CustomizeFieldListActions callback triggered');
+    if (args && args.Actions) {
+      const actions = args.Actions;
+      console.log('[ReportDesigner] Field list actions:', actions.map((a: any) => ({
+        id: a.id,
+        text: a.text,
+        visible: a.visible
+      })));
+      // Hide actions related to adding or managing data sources
+      actions.forEach((action: any) => {
+        const id = (action.id || '').toLowerCase();
+        const text = (action.text || '').toLowerCase();
+        if (
+          id.includes('adddatasource') ||
+          id.includes('add-datasource') ||
+          id.includes('addsource') ||
+          text.includes('add data source') ||
+          text.includes('add datasource') ||
+          text.includes('add source')
+        ) {
+          console.log(`[ReportDesigner] Disabling Field List action: id="${action.id}" text="${action.text}"`);
+          action.visible = false;
+          action.disabled = true;
+        }
+      });
     }
   }, []);
 
@@ -839,6 +885,7 @@ const ReportDesigner: React.FC = () => {
             CustomizeToolbox={onCustomizeToolbox}
             CustomizeElements={onCustomizeElements}
             CustomizeParameterEditors={onCustomizeParameterEditors}
+            CustomizeFieldListActions={onCustomizeFieldListActions}
             ComponentDidMount={onComponentDidMount}
             OnServerError={onServerError}
           />
