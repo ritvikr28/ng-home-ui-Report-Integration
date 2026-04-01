@@ -28,11 +28,19 @@ const ReportPreview: React.FC = () => {
   const location = useLocation<ReportState>();
   const history = useHistory();
   const [showViewer, setShowViewer] = useState<boolean>(false);
-  const [isReady, setIsReady] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   
-  // State to track the resolved host URL (handles deferred config.js loading)
-  const [resolvedHostUrl, setResolvedHostUrl] = useState<string>('');
+  // Combined state for initialization - tracks both config availability and auth setup
+  // Using a single state object prevents race conditions between separate state updates
+  const [initState, setInitState] = useState<{
+    hostUrl: string;
+    isReady: boolean;
+    authConfigured: boolean;
+  }>({
+    hostUrl: '',
+    isReady: false,
+    authConfigured: false
+  });
 
   // Get report info from location state or query params
   const queryParams = new URLSearchParams(location.search);
@@ -59,76 +67,93 @@ const ReportPreview: React.FC = () => {
   };
 
   /**
-   * Poll for config availability since config.js may load with defer
+   * Single useEffect that handles ALL initialization in one atomic operation:
+   * 1. Poll for config availability
+   * 2. Configure auth headers
+   * 3. Set isReady state
+   * 
+   * This prevents race conditions from separate useEffects with dependencies on each other
    */
   useEffect(() => {
     let pollInterval: NodeJS.Timeout | null = null;
     let pollCount = 0;
     const maxPolls = 50;
+    let isMounted = true;
+    
+    const initializeViewer = (url: string) => {
+      if (!isMounted) return;
+      
+      try {
+        const token = authService.getAuthTokens();
+        
+        fetchSetup.fetchSettings = {
+          headers: {
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            'Content-Type': 'application/json'
+          }
+        };
+
+        console.log('[ReportPreview] Initialized with config:', {
+          hostUrl: url,
+          reportName,
+          hasToken: !!token
+        });
+
+        // Set all state atomically in a single update
+        setInitState({
+          hostUrl: url,
+          isReady: true,
+          authConfigured: true
+        });
+        
+        console.log('[ReportPreview] Initialization complete, isReady = true');
+      } catch (err) {
+        console.error('[ReportPreview] Initialization error:', err);
+        if (isMounted) {
+          setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+    };
     
     const checkConfig = () => {
       const url = getHostUrl();
       if (url) {
         console.log('[ReportPreview] Host URL resolved:', url);
-        setResolvedHostUrl(url);
         if (pollInterval) {
           clearInterval(pollInterval);
+          pollInterval = null;
         }
+        initializeViewer(url);
       } else if (pollCount >= maxPolls) {
         console.error('[ReportPreview] Config not available after timeout');
-        setError('Configuration not available. Please refresh the page.');
+        if (isMounted) {
+          setError('Configuration not available. Please refresh the page.');
+        }
         if (pollInterval) {
           clearInterval(pollInterval);
+          pollInterval = null;
         }
       }
       pollCount++;
     };
     
-    checkConfig();
-    
-    if (!getHostUrl()) {
+    // Check immediately
+    const immediateUrl = getHostUrl();
+    if (immediateUrl) {
+      console.log('[ReportPreview] Config available immediately:', immediateUrl);
+      initializeViewer(immediateUrl);
+    } else {
       console.log('[ReportPreview] Config not yet available, starting polling...');
       pollInterval = setInterval(checkConfig, 100);
     }
     
     return () => {
+      isMounted = false;
       if (pollInterval) {
         clearInterval(pollInterval);
       }
     };
-  }, []); // Empty deps - only run on mount, polling handles the rest
-
-  /**
-   * Initialize fetch settings with auth token
-   */
-  useEffect(() => {
-    if (!resolvedHostUrl) {
-      console.log('[ReportPreview] Waiting for hostUrl to be available...');
-      return;
-    }
-
-    try {
-      const token = authService.getAuthTokens();
-      
-      fetchSetup.fetchSettings = {
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-          'Content-Type': 'application/json'
-        }
-      };
-
-      console.log('[ReportPreview] Initialized with config:', {
-        hostUrl: resolvedHostUrl,
-        reportName,
-        hasToken: !!token
-      });
-
-      setIsReady(true);
-    } catch (err) {
-      console.error('[ReportPreview] Initialization error:', err);
-      setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
-    }
-  }, [resolvedHostUrl, reportName]);
+  }, [reportName]); // Re-run when report changes
 
   /**
    * Handle back button - return to report selection
@@ -188,7 +213,7 @@ const ReportPreview: React.FC = () => {
     );
   }
 
-  if (!isReady) {
+  if (!initState.isReady) {
     return (
       <div className="report-preview-container">
         <div className="report-preview-loading">
@@ -227,12 +252,12 @@ const ReportPreview: React.FC = () => {
       ) : (
         <div className="report-viewer-wrapper">
           <DxReportViewer
-            key={`${resolvedHostUrl}-${reportName}`}
+            key={`${initState.hostUrl}-${reportName}`}
             reportUrl={reportName}
             height={viewerHeight}
           >
             <RequestOptions
-              host={resolvedHostUrl}
+              host={initState.hostUrl}
               getLocalizationAction={getLocalizationAction}
               getViewerModelAction={getViewerModelAction}
             />

@@ -177,7 +177,6 @@ const SaveModal: React.FC<SaveModalProps> = ({
 const ReportDesigner: React.FC = () => {
   const location = useLocation<ReportState>();
   const history = useHistory();
-  const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -195,8 +194,17 @@ const ReportDesigner: React.FC = () => {
   // Get report metadata from location state (passed from ReportSelection screen)
   const isPredefined: boolean = location.state?.isPredefined ?? false;
   
-  // State to track the resolved host URL (handles deferred config.js loading)
-  const [resolvedHostUrl, setResolvedHostUrl] = useState<string>('');
+  // Combined state for initialization - tracks both config availability and auth setup
+  // Using a single state object prevents race conditions between separate state updates
+  const [initState, setInitState] = useState<{
+    hostUrl: string;
+    isReady: boolean;
+    authConfigured: boolean;
+  }>({
+    hostUrl: '',
+    isReady: false,
+    authConfigured: false
+  });
   
   // DevExpress endpoint paths
   const getDesignerModelAction = '/DXXRD/GetDesignerModel';
@@ -223,85 +231,98 @@ const ReportDesigner: React.FC = () => {
   };
 
   /**
-   * Poll for config availability since config.js may load with defer
-   * This ensures we wait for the configuration to be available before rendering
+   * Single useEffect that handles ALL initialization in one atomic operation:
+   * 1. Poll for config availability
+   * 2. Configure auth headers
+   * 3. Set isReady state
+   * 
+   * This prevents race conditions from separate useEffects with dependencies on each other
    */
   useEffect(() => {
     let pollInterval: NodeJS.Timeout | null = null;
     let pollCount = 0;
     const maxPolls = 50; // Max 5 seconds (50 * 100ms)
+    let isMounted = true;
+    
+    const initializeDesigner = (url: string) => {
+      if (!isMounted) return;
+      
+      try {
+        const token = authService.getAuthTokens();
+        
+        // Configure fetchSetup for DevExpress API calls
+        fetchSetup.fetchSettings = {
+          headers: {
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            'Content-Type': 'application/json'
+          }
+        };
+        
+        // Log configuration for debugging
+        console.log('[ReportDesigner] Initializing with config:', {
+          hostUrl: url,
+          reportUrl,
+          isPredefined,
+          hasToken: !!token
+        });
+        
+        // Set all state atomically in a single update
+        setInitState({
+          hostUrl: url,
+          isReady: true,
+          authConfigured: true
+        });
+        
+        console.log('[ReportDesigner] Initialization complete, isReady = true');
+      } catch (err) {
+        console.error('[ReportDesigner] Initialization error:', err);
+        if (isMounted) {
+          setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+    };
     
     const checkConfig = () => {
       const url = getHostUrl();
       if (url) {
         console.log('[ReportDesigner] Host URL resolved:', url);
-        setResolvedHostUrl(url);
         if (pollInterval) {
           clearInterval(pollInterval);
+          pollInterval = null;
         }
+        // Initialize designer with the resolved URL
+        initializeDesigner(url);
       } else if (pollCount >= maxPolls) {
         console.error('[ReportDesigner] Config not available after timeout');
-        setError('Configuration not available. Please refresh the page.');
+        if (isMounted) {
+          setError('Configuration not available. Please refresh the page.');
+        }
         if (pollInterval) {
           clearInterval(pollInterval);
+          pollInterval = null;
         }
       }
       pollCount++;
     };
     
     // Check immediately
-    checkConfig();
-    
-    // If not available, start polling
-    if (!getHostUrl()) {
+    const immediateUrl = getHostUrl();
+    if (immediateUrl) {
+      console.log('[ReportDesigner] Config available immediately:', immediateUrl);
+      initializeDesigner(immediateUrl);
+    } else {
+      // If not available, start polling
       console.log('[ReportDesigner] Config not yet available, starting polling...');
       pollInterval = setInterval(checkConfig, 100);
     }
     
     return () => {
+      isMounted = false;
       if (pollInterval) {
         clearInterval(pollInterval);
       }
     };
-  }, []); // Empty deps - only run on mount, polling handles the rest
-
-  /**
-   * Initialize fetch settings with auth token before component renders
-   * Only mark as ready when we have a valid hostUrl (required for API calls)
-   */
-  useEffect(() => {
-    // Guard: Don't proceed if hostUrl is not yet available
-    // This prevents the designer from rendering before config is loaded
-    if (!resolvedHostUrl) {
-      console.log('[ReportDesigner] Waiting for hostUrl to be available...');
-      return;
-    }
-
-    try {
-      const token = authService.getAuthTokens();
-      
-      // Configure fetchSetup for DevExpress API calls
-      fetchSetup.fetchSettings = {
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-          'Content-Type': 'application/json'
-        }
-      };
-      
-      // Log configuration for debugging
-      console.log('[ReportDesigner] Initializing with config:', {
-        hostUrl: resolvedHostUrl,
-        reportUrl,
-        isPredefined,
-        hasToken: !!token
-      });
-      
-      setIsReady(true);
-    } catch (err) {
-      console.error('[ReportDesigner] Initialization error:', err);
-      setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
-    }
-  }, [resolvedHostUrl, reportUrl, isPredefined]);
+  }, [reportUrl, isPredefined]); // Re-run when report changes
 
   /**
    * Reset designer state when reportUrl changes
@@ -599,7 +620,10 @@ const ReportDesigner: React.FC = () => {
             <p>{error}</p>
             <p>Please check the console for more details.</p>
             <button 
-              onClick={() => { setError(null); setIsReady(false); }}
+              onClick={() => { 
+                setError(null); 
+                setInitState({ hostUrl: '', isReady: false, authConfigured: false }); 
+              }}
               className="retry-button"
             >
               Retry
@@ -610,7 +634,7 @@ const ReportDesigner: React.FC = () => {
     );
   }
 
-  if (!isReady) {
+  if (!initState.isReady) {
     return (
       <div className="report-designer-container">
         <div className="custom-toolbar">
@@ -621,7 +645,7 @@ const ReportDesigner: React.FC = () => {
         </div>
         <div className="loading-container">
           <div>
-            {resolvedHostUrl ? 'Loading Report Designer...' : 'Initializing configuration...'}
+            {initState.hostUrl ? 'Loading Report Designer...' : 'Initializing configuration...'}
           </div>
         </div>
       </div>
@@ -647,13 +671,13 @@ const ReportDesigner: React.FC = () => {
       {/* DevExpress Report Designer */}
       <div className="designer-wrapper">
         <DxReportDesigner
-          key={`${resolvedHostUrl}-${reportUrl}`}  // Force remount when reportUrl or hostUrl changes
+          key={`${initState.hostUrl}-${reportUrl}`}  // Force remount when reportUrl or hostUrl changes
           reportUrl={reportUrl}
           height={designerHeight}
           developmentMode={true}
         >
           <RequestOptions
-            host={resolvedHostUrl}
+            host={initState.hostUrl}
             getLocalizationAction={getLocalizationAction}
             getDesignerModelAction={getDesignerModelAction}
           />
