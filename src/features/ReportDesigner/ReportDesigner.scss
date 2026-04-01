@@ -411,3 +411,28 @@
   overflow: hidden !important;
 }
 
+/* ============================================
+   HAMBURGER MENU (MAIN MENU) - HIDE COMPLETELY
+   ============================================ */
+.dxrd-menu,
+.dxrd-menu-button,
+.dx-menu,
+.dx-menu-horizontal,
+.dxrd-hamburger-menu,
+.dxrd-main-menu,
+.dx-designer-menu,
+.dxrd-menu-container,
+[class*="dxrd-menu"],
+[class*="hamburger-menu"],
+.dx-menu-base {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
