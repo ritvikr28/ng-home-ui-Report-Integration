@@ -414,17 +414,11 @@
 /* ============================================
    HAMBURGER MENU (MAIN MENU) - HIDE COMPLETELY
    ============================================ */
-.dxrd-menu,
 .dxrd-menu-button,
-.dx-menu,
-.dx-menu-horizontal,
 .dxrd-hamburger-menu,
 .dxrd-main-menu,
 .dx-designer-menu,
-.dxrd-menu-container,
-[class*="dxrd-menu"],
-[class*="hamburger-menu"],
-.dx-menu-base {
+.dxrd-menu-container {
   display: none !important;
   visibility: hidden !important;
   width: 0 !important;
@@ -437,111 +431,37 @@
 }
 
 /* ============================================
-   RIGHT PANEL - HIDE EVERYTHING EXCEPT FIELD LIST
-   Hide Properties, Expressions, ReportExplorer tabs/panels
+   RIGHT PANEL - HIDE PROPERTIES, EXPRESSIONS, REPORT EXPLORER
+   Keep Field List visible and functional
    ============================================ */
 
-/* Hide Properties Panel/Grid */
-.dxrd-properties-panel,
+/* Hide Properties Panel - using specific class names only */
 .dx-propertygrid,
 .dxrd-propertygrid,
-.dx-properties-panel,
-[class*="properties-panel"],
-[class*="propertygrid"],
-.dxrd-right-panel .dx-propertygrid,
-.dx-designer-properties {
+.dxrd-properties-panel {
   display: none !important;
   visibility: hidden !important;
-  width: 0 !important;
-  height: 0 !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
 
-/* Hide Expressions Panel */
-.dxrd-expressions-panel,
-.dx-expressions-panel,
-.dxrd-expression-editor,
-.dx-expression-editor,
-[class*="expressions-panel"],
-[class*="expression-panel"],
-[class*="dxrd-expression"] {
-  display: none !important;
-  visibility: hidden !important;
-  width: 0 !important;
-  height: 0 !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Hide ReportExplorer Panel */
+/* Hide Report Explorer Panel - using specific class names only */
 .dxrd-report-explorer,
-.dx-report-explorer,
-.dxrd-reportexplorer,
-.dx-reportexplorer,
-[class*="report-explorer"],
-[class*="reportexplorer"] {
-  display: none !important;
-  visibility: hidden !important;
-  width: 0 !important;
-  height: 0 !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Hide the tabs/buttons that switch between panels (except Field List tab) */
-.dxrd-right-panel-switcher .dx-tab:not([data-bind*="fieldlist"]),
-.dxrd-tabbed-panel .dx-tab:not(.dxrd-field-list-tab),
-.dxrd-tab-panel .dx-tabs .dx-tab {
-  /* Selectively hide tabs - we'll override for field list */
-}
-
-/* Hide specific tab buttons by their typical content/role */
-.dx-tab[aria-label="Properties"],
-.dx-tab[aria-label="Expressions"],
-.dx-tab[aria-label="Report Explorer"],
-.dx-tab[title="Properties"],
-.dx-tab[title="Expressions"],
-.dx-tab[title="Report Explorer"],
-.dxrd-tab-properties,
-.dxrd-tab-expressions,
-.dxrd-tab-reportexplorer {
+.dxrd-reportexplorer {
   display: none !important;
   visibility: hidden !important;
 }
 
-/* KEEP FIELD LIST VISIBLE - Override any hiding rules */
+/* Hide Expressions Panel - using specific class names only */
+.dxrd-expressions-panel {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* KEEP FIELD LIST VISIBLE - This is the primary panel we want */
 .dxrd-field-list,
-.dx-field-list,
-.dxrd-fieldlist,
-.dx-fieldlist,
-[class*="field-list"]:not([class*="properties"]):not([class*="expression"]):not([class*="explorer"]),
-[class*="fieldlist"]:not([class*="properties"]):not([class*="expression"]):not([class*="explorer"]),
-.dxrd-right-panel .dxrd-field-list,
-.dx-tab[aria-label="Field List"],
-.dx-tab[title="Field List"],
-.dxrd-tab-fieldlist {
+.dxrd-fieldlist {
   display: block !important;
   visibility: visible !important;
-  width: auto !important;
-  height: auto !important;
   opacity: 1 !important;
   pointer-events: auto !important;
-}
-
-/* Ensure Field List tab is always shown */
-.dxrd-right-panel .dx-tabs .dx-tab:has([class*="fieldlist"]),
-.dxrd-right-panel .dx-tabs .dx-tab:has([class*="field-list"]) {
-  display: flex !important;
-  visibility: visible !important;
 }
 
