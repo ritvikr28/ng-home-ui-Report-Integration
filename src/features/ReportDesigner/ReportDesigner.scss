@@ -436,3 +436,112 @@
   pointer-events: none !important;
 }
 
+/* ============================================
+   RIGHT PANEL - HIDE EVERYTHING EXCEPT FIELD LIST
+   Hide Properties, Expressions, ReportExplorer tabs/panels
+   ============================================ */
+
+/* Hide Properties Panel/Grid */
+.dxrd-properties-panel,
+.dx-propertygrid,
+.dxrd-propertygrid,
+.dx-properties-panel,
+[class*="properties-panel"],
+[class*="propertygrid"],
+.dxrd-right-panel .dx-propertygrid,
+.dx-designer-properties {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide Expressions Panel */
+.dxrd-expressions-panel,
+.dx-expressions-panel,
+.dxrd-expression-editor,
+.dx-expression-editor,
+[class*="expressions-panel"],
+[class*="expression-panel"],
+[class*="dxrd-expression"] {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide ReportExplorer Panel */
+.dxrd-report-explorer,
+.dx-report-explorer,
+.dxrd-reportexplorer,
+.dx-reportexplorer,
+[class*="report-explorer"],
+[class*="reportexplorer"] {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide the tabs/buttons that switch between panels (except Field List tab) */
+.dxrd-right-panel-switcher .dx-tab:not([data-bind*="fieldlist"]),
+.dxrd-tabbed-panel .dx-tab:not(.dxrd-field-list-tab),
+.dxrd-tab-panel .dx-tabs .dx-tab {
+  /* Selectively hide tabs - we'll override for field list */
+}
+
+/* Hide specific tab buttons by their typical content/role */
+.dx-tab[aria-label="Properties"],
+.dx-tab[aria-label="Expressions"],
+.dx-tab[aria-label="Report Explorer"],
+.dx-tab[title="Properties"],
+.dx-tab[title="Expressions"],
+.dx-tab[title="Report Explorer"],
+.dxrd-tab-properties,
+.dxrd-tab-expressions,
+.dxrd-tab-reportexplorer {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* KEEP FIELD LIST VISIBLE - Override any hiding rules */
+.dxrd-field-list,
+.dx-field-list,
+.dxrd-fieldlist,
+.dx-fieldlist,
+[class*="field-list"]:not([class*="properties"]):not([class*="expression"]):not([class*="explorer"]),
+[class*="fieldlist"]:not([class*="properties"]):not([class*="expression"]):not([class*="explorer"]),
+.dxrd-right-panel .dxrd-field-list,
+.dx-tab[aria-label="Field List"],
+.dx-tab[title="Field List"],
+.dxrd-tab-fieldlist {
+  display: block !important;
+  visibility: visible !important;
+  width: auto !important;
+  height: auto !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure Field List tab is always shown */
+.dxrd-right-panel .dx-tabs .dx-tab:has([class*="fieldlist"]),
+.dxrd-right-panel .dx-tabs .dx-tab:has([class*="field-list"]) {
+  display: flex !important;
+  visibility: visible !important;
+}
+
