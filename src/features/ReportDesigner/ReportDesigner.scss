@@ -592,7 +592,14 @@
 .dxrd-left-panel-tabs,
 .dx-tabpanel-tabs,
 [class*="tab-panel"]:not([class*="field-list"]) {
-  /* Hide tab headers but keep the content if it's field list */
+  /* Hide tab headers/navigation but keep content if field list related */
+  > .dx-tabs,
+  > .dxrd-tabs,
+  > [class*="tab-header"],
+  > [class*="tab-navigation"] {
+    display: none !important;
+    visibility: hidden !important;
+  }
 }
 
 /* ============================================

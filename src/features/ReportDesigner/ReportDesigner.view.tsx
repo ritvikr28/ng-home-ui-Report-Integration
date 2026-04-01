@@ -19,52 +19,26 @@ const NAVBAR_HEIGHT = 56; // Main navbar height in pixels (standard Bootstrap)
 const CUSTOM_TOOLBAR_HEIGHT = 60; // Custom toolbar height
 
 /**
- * Actions to disable in the DevExpress toolbar
- * These will be hidden to restrict the designer to design-only mode
- * NOTE: We now disable ALL actions for maximum restriction
+ * NOTE: All menu actions are now disabled in onCustomizeMenuActions callback.
+ * These action IDs are kept for documentation purposes to understand what 
+ * DevExpress actions exist in case selective enabling is needed in the future.
  */
-const ACTIONS_TO_DISABLE = [
-  'dxxrd-preview',           // Preview button
-  'dxxrd-save',              // Save button
-  'dxxrd-saveas',            // Save As button
-  'dxxrd-newreport',         // New Report
-  'dxxrd-newreport-via-wizard', // New Report via Wizard
-  'dxxrd-open',              // Open button
-  'dxxrd-exit',              // Exit button
-  'dxxrd-menu',              // Main menu (hamburger/overflow)
-  'dxxrd-undo',              // Undo
-  'dxxrd-redo',              // Redo
-  'dxxrd-cut',               // Cut
-  'dxxrd-copy',              // Copy
-  'dxxrd-paste',             // Paste
-  'dxxrd-delete',            // Delete
-  'dxxrd-selectall',         // Select All
-  'dxxrd-zoomin',            // Zoom In
-  'dxxrd-zoomout',           // Zoom Out
-  'dxxrd-fittopage',         // Fit to Page
-  'dxxrd-fittowidth',        // Fit to Width
-  'dxxrd-actualsize',        // Actual Size
-  'dxxrd-pagesetup',         // Page Setup
-  'dxxrd-print',             // Print
-  'dxxrd-export',            // Export
-  'dxxrd-scripts',           // Scripts Editor
-  'dxxrd-addband',           // Add Band
-  'dxxrd-insertband',        // Insert Band
-  'dxxrd-deleteband',        // Delete Band
-  'dxxrd-bringtofront',      // Bring to Front
-  'dxxrd-sendtoback',        // Send to Back
-  'dxxrd-align',             // Align
-  'dxxrd-sizing',            // Sizing
-  'dxxrd-horizontal',        // Horizontal Spacing
-  'dxxrd-vertical',          // Vertical Spacing
-  'dxxrd-center',            // Center
-  'dxxrd-localization',      // Localization
-  'dxxrd-formatpainter',     // Format Painter
-];
+// const ACTIONS_TO_DISABLE = [
+//   'dxxrd-preview', 'dxxrd-save', 'dxxrd-saveas', 'dxxrd-newreport',
+//   'dxxrd-newreport-via-wizard', 'dxxrd-open', 'dxxrd-exit', 'dxxrd-menu',
+//   'dxxrd-undo', 'dxxrd-redo', 'dxxrd-cut', 'dxxrd-copy', 'dxxrd-paste',
+//   'dxxrd-delete', 'dxxrd-selectall', 'dxxrd-zoomin', 'dxxrd-zoomout',
+//   'dxxrd-fittopage', 'dxxrd-fittowidth', 'dxxrd-actualsize', 'dxxrd-pagesetup',
+//   'dxxrd-print', 'dxxrd-export', 'dxxrd-scripts', 'dxxrd-addband',
+//   'dxxrd-insertband', 'dxxrd-deleteband', 'dxxrd-bringtofront', 'dxxrd-sendtoback',
+//   'dxxrd-align', 'dxxrd-sizing', 'dxxrd-horizontal', 'dxxrd-vertical',
+//   'dxxrd-center', 'dxxrd-localization', 'dxxrd-formatpainter'
+// ];
 
 /**
- * Toolbox controls to hide - all controls except those needed for data source interaction
- * This list covers most standard report controls
+ * NOTE: These toolbox controls are explicitly hidden first in onCustomizeToolbox,
+ * then the callback attempts to hide any remaining controls found.
+ * This ensures both known and unknown toolbox controls are hidden.
  */
 const TOOLBOX_CONTROLS_TO_HIDE = [
   'XRLabel',
@@ -103,15 +77,8 @@ const TOOLBOX_CONTROLS_TO_HIDE = [
   'VerticalTotalBand',
 ];
 
-/**
- * UI Elements to hide/disable in the designer
- * These are the element IDs/identifiers used by DevExpress
- */
-const ELEMENTS_TO_HIDE = [
-  'dx-zoom-editor',          // Zoom control
-  'dx-zoom-autofit',         // Zoom autofit
-  'dxrd-toolbox-item',       // Toolbox items
-];
+// NOTE: ELEMENTS_TO_HIDE constant removed - onCustomizeElements now hides ALL 
+// elements except those containing "fieldlist" in their ID/templateName
 
 /**
  * Save Modal Component for Save/SaveAs functionality
