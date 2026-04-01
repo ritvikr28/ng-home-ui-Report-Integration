@@ -194,6 +194,17 @@ const ReportDesigner: React.FC = () => {
   // Get report metadata from location state (passed from ReportSelection screen)
   const isPredefined: boolean = location.state?.isPredefined ?? false;
   
+  // Debug log on mount
+  console.log('[ReportDesigner] Component render:', {
+    timestamp: new Date().toISOString(),
+    locationSearch: location.search,
+    reportUrl,
+    isPredefined,
+    locationState: location.state,
+    windowConfigAvailable: !!(window as any).REPORTING_API_URL,
+    windowConfig: (window as any).REPORTING_API_URL
+  });
+  
   // Combined state for initialization - tracks both config availability and auth setup
   // Using a single state object prevents race conditions between separate state updates
   const [initState, setInitState] = useState<{

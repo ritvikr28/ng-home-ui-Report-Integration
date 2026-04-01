@@ -58,8 +58,17 @@ const ReportSelection: React.FC = () => {
    */
   const handleOpenReport = useCallback(() => {
     if (!selectedReport || !selectedReportInfo) {
+      console.log('[ReportSelection] handleOpenReport called but no report selected');
       return;
     }
+
+    // Log navigation details for debugging
+    console.log('[ReportSelection] Navigating to ReportDesigner:', {
+      selectedReport,
+      isPredefined: selectedReportInfo.isPredefined,
+      timestamp: new Date().toISOString(),
+      windowConfigAvailable: !!(window as any).REPORTING_API_URL
+    });
 
     // Navigate to the report designer with report info
     history.push({

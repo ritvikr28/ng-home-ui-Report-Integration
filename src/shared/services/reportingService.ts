@@ -346,11 +346,25 @@ class ReportingService {
    * Gets a list of available reports with metadata (including isPredefined flag)
    */
   async getReportsWithMetadata(): Promise<ReportsListResponse> {
+    console.log('[ReportingService] getReportsWithMetadata called:', {
+      timestamp: new Date().toISOString(),
+      windowConfigAvailable: !!(window as any).REPORTING_API_URL,
+      lastBaseUrl: this.lastBaseUrl,
+      hasAxiosInstance: !!this.axiosInstance
+    });
+    
     const instance = await this.ensureInitialized();
+    
+    console.log('[ReportingService] ensureInitialized complete, making API call');
+    
     try {
       const response = await instance.get<ReportsListResponse>('/api/v1/reporting/list-with-metadata');
+      console.log('[ReportingService] getReportsWithMetadata success:', {
+        reportsCount: response.data?.reports?.length
+      });
       return response.data;
     } catch (error) {
+      console.log('[ReportingService] getReportsWithMetadata failed, falling back:', error);
       // Fallback to basic list if metadata endpoint not available
       const basicList = await this.getReportsList();
       return {
