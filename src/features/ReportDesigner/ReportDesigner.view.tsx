@@ -189,7 +189,16 @@ const ReportDesigner: React.FC = () => {
   
   // Parse query parameters for report configuration
   const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
-  const reportUrl: string = queryParams.get('reportUrl') ?? 'TestReport';
+  
+  // Extract reportUrl from query params with robust fallback handling
+  // Note: queryParams.get() returns null if key doesn't exist, or empty string if value is empty
+  const rawReportUrl = queryParams.get('reportUrl');
+  const reportUrl: string = rawReportUrl && rawReportUrl.trim() !== '' 
+    ? rawReportUrl 
+    : 'TestReport';
+  
+  // Track if we have a valid reportUrl (not the default fallback)
+  const hasValidReportUrl = rawReportUrl !== null && rawReportUrl.trim() !== '';
   
   // Get report metadata from location state (passed from ReportSelection screen)
   const isPredefined: boolean = location.state?.isPredefined ?? false;
@@ -198,7 +207,9 @@ const ReportDesigner: React.FC = () => {
   console.log('[ReportDesigner] Component render:', {
     timestamp: new Date().toISOString(),
     locationSearch: location.search,
+    rawReportUrl,
     reportUrl,
+    hasValidReportUrl,
     isPredefined,
     locationState: location.state,
     windowConfigAvailable: !!(window as any).REPORTING_API_URL,
@@ -645,7 +656,9 @@ const ReportDesigner: React.FC = () => {
     );
   }
 
-  if (!initState.isReady) {
+  // Don't render the designer until we have both config AND a valid reportUrl
+  // This prevents the GetDesignerModel API from being called with null/empty reportUrl
+  if (!initState.isReady || !hasValidReportUrl) {
     return (
       <div className="report-designer-container">
         <div className="custom-toolbar">
@@ -656,7 +669,11 @@ const ReportDesigner: React.FC = () => {
         </div>
         <div className="loading-container">
           <div>
-            {initState.hostUrl ? 'Loading Report Designer...' : 'Initializing configuration...'}
+            {!initState.hostUrl 
+              ? 'Initializing configuration...' 
+              : !hasValidReportUrl 
+                ? 'Waiting for report URL...'
+                : 'Loading Report Designer...'}
           </div>
         </div>
       </div>
