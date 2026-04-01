@@ -1,0 +1,275 @@
+import React, { useState, useCallback, useEffect } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
+import ko from 'knockout';
+import 'devextreme/dist/css/dx.light.css';
+import DxReportViewer, {
+  Callbacks,
+  RequestOptions
+} from 'devexpress-reporting-react/dx-report-viewer';
+import { fetchSetup } from '@devexpress/analytics-core/analytics-utils';
+import { authService } from '@essnextgen/auth-ui';
+import { ReportState } from '../../types/Report';
+import './ReportPreview.scss';
+
+// Make knockout available globally for DevExpress
+(window as any).ko = ko;
+
+// Height constants
+const NAVBAR_HEIGHT = 56;
+const TOOLBAR_HEIGHT = 60;
+
+/**
+ * ReportPreview Screen (Screen 3)
+ * 
+ * Shows a Preview button and when clicked, renders the DevExpress Report Viewer
+ * with actual data loaded.
+ */
+const ReportPreview: React.FC = () => {
+  const location = useLocation<ReportState>();
+  const history = useHistory();
+  const [showViewer, setShowViewer] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Combined state for initialization - tracks both config availability and auth setup
+  // Using a single state object prevents race conditions between separate state updates
+  const [initState, setInitState] = useState<{
+    hostUrl: string;
+    isReady: boolean;
+    authConfigured: boolean;
+  }>({
+    hostUrl: '',
+    isReady: false,
+    authConfigured: false
+  });
+
+  // Get report info from location state or query params
+  const queryParams = new URLSearchParams(location.search);
+  const reportName = location.state?.reportName || queryParams.get('reportUrl') || 'TestReport';
+
+  // DevExpress endpoint paths
+  const getViewerModelAction = '/DXXRDV/GetViewerModel';
+  const getLocalizationAction = '/DXXRDV/GetLocalization';
+
+  /**
+   * Calculate viewer height
+   */
+  const viewerHeight = `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT}px)`;
+
+  /**
+   * Helper function to get the host URL from window directly
+   * IMPORTANT: Must read from window directly every time, not from envConfig
+   * because config.js loads with defer attribute
+   */
+  const getHostUrl = (): string => {
+    const rawUrl = (window as any).REPORTING_API_URL || (window as any).REACT_API_URL || '';
+    if (!rawUrl) return '';
+    return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+  };
+
+  /**
+   * Single useEffect that handles ALL initialization in one atomic operation:
+   * 1. Poll for config availability
+   * 2. Configure auth headers
+   * 3. Set isReady state
+   * 
+   * This prevents race conditions from separate useEffects with dependencies on each other
+   */
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout | null = null;
+    let pollCount = 0;
+    const maxPolls = 50;
+    let isMounted = true;
+    
+    const initializeViewer = (url: string) => {
+      if (!isMounted) return;
+      
+      try {
+        const token = authService.getAuthTokens();
+        
+        fetchSetup.fetchSettings = {
+          headers: {
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            'Content-Type': 'application/json'
+          }
+        };
+
+        console.log('[ReportPreview] Initialized with config:', {
+          hostUrl: url,
+          reportName,
+          hasToken: !!token
+        });
+
+        // Set all state atomically in a single update
+        setInitState({
+          hostUrl: url,
+          isReady: true,
+          authConfigured: true
+        });
+        
+        console.log('[ReportPreview] Initialization complete, isReady = true');
+      } catch (err) {
+        console.error('[ReportPreview] Initialization error:', err);
+        if (isMounted) {
+          setError(`Initialization failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+    };
+    
+    const checkConfig = () => {
+      const url = getHostUrl();
+      if (url) {
+        console.log('[ReportPreview] Host URL resolved:', url);
+        if (pollInterval) {
+          clearInterval(pollInterval);
+          pollInterval = null;
+        }
+        initializeViewer(url);
+      } else if (pollCount >= maxPolls) {
+        console.error('[ReportPreview] Config not available after timeout');
+        if (isMounted) {
+          setError('Configuration not available. Please refresh the page.');
+        }
+        if (pollInterval) {
+          clearInterval(pollInterval);
+          pollInterval = null;
+        }
+      }
+      pollCount++;
+    };
+    
+    // Check immediately
+    const immediateUrl = getHostUrl();
+    if (immediateUrl) {
+      console.log('[ReportPreview] Config available immediately:', immediateUrl);
+      initializeViewer(immediateUrl);
+    } else {
+      console.log('[ReportPreview] Config not yet available, starting polling...');
+      pollInterval = setInterval(checkConfig, 100);
+    }
+    
+    return () => {
+      isMounted = false;
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [reportName]); // Re-run when report changes
+
+  /**
+   * Handle back button - return to report selection
+   */
+  const handleBack = useCallback(() => {
+    history.push('/reports');
+  }, [history]);
+
+  /**
+   * Handle preview button click - show the viewer
+   */
+  const handlePreview = useCallback(() => {
+    setShowViewer(true);
+  }, []);
+
+  /**
+   * BeforeRender callback for the viewer
+   */
+  const onBeforeRender = useCallback(() => {
+    console.log('[ReportPreview] BeforeRender callback triggered');
+    const token = authService.getAuthTokens();
+    fetchSetup.fetchSettings = {
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        'Content-Type': 'application/json'
+      }
+    };
+  }, []);
+
+  /**
+   * OnServerError callback
+   */
+  const onServerError = useCallback((sender: any, args: any) => {
+    console.error('[ReportPreview] Server Error:', args);
+    const errorMessage = args?.errorMessage || args?.message || 'Unknown server error';
+    setError(`Preview error: ${errorMessage}`);
+  }, []);
+
+  if (error) {
+    return (
+      <div className="report-preview-container">
+        <div className="report-preview-toolbar">
+          <button className="back-button" onClick={handleBack}>
+            ← Back to Reports
+          </button>
+          <h2 className="toolbar-title">{reportName}</h2>
+        </div>
+        <div className="report-preview-error">
+          <div className="error-icon">⚠️</div>
+          <h2>Error</h2>
+          <p>{error}</p>
+          <button className="retry-button" onClick={() => setError(null)}>
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!initState.isReady) {
+    return (
+      <div className="report-preview-container">
+        <div className="report-preview-loading">
+          Loading Preview...
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="report-preview-container">
+      <div className="report-preview-toolbar">
+        <button className="back-button" onClick={handleBack}>
+          ← Back to Reports
+        </button>
+        <h2 className="toolbar-title">{reportName}</h2>
+        {!showViewer && (
+          <button className="preview-button" onClick={handlePreview}>
+            Preview Report
+          </button>
+        )}
+      </div>
+
+      {!showViewer ? (
+        <div className="report-preview-placeholder">
+          <div className="placeholder-content">
+            <div className="placeholder-icon">📊</div>
+            <h2>Report Ready</h2>
+            <p>Your report "{reportName}" has been saved successfully.</p>
+            <p>Click the "Preview Report" button above to view it with data.</p>
+            <button className="preview-button-large" onClick={handlePreview}>
+              Preview Report
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="report-viewer-wrapper">
+          <DxReportViewer
+            key={`${initState.hostUrl}-${reportName}`}
+            reportUrl={reportName}
+            height={viewerHeight}
+          >
+            <RequestOptions
+              host={initState.hostUrl}
+              getLocalizationAction={getLocalizationAction}
+              getViewerModelAction={getViewerModelAction}
+            />
+            <Callbacks
+              BeforeRender={onBeforeRender}
+              OnServerError={onServerError}
+            />
+          </DxReportViewer>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ReportPreview;
