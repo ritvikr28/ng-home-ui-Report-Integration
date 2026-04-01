@@ -655,9 +655,9 @@ const ReportDesigner: React.FC = () => {
   }, []);
 
   /**
-   * CustomizeElements callback - CRITICAL for hiding/disabling UI elements
-   * This hides ALL panels and UI elements EXCEPT the Field List (data source panel)
-   * Only the Field List should remain visible for data column selection
+   * CustomizeElements callback - CRITICAL for showing only data source connections
+   * This hides ALL panels EXCEPT data sources panel. Field list is hidden.
+   * Only data source connections should remain visible.
    */
   const onCustomizeElements = useCallback((sender: any, args: any) => {
     console.log('[ReportDesigner] CustomizeElements callback triggered');
@@ -671,25 +671,39 @@ const ReportDesigner: React.FC = () => {
         type: e.type || e.constructor?.name
       })));
       
-      // Hide ALL elements except those related to field list
+      // Show only data sources panel, hide everything else including field list
       elements.forEach((element: any) => {
         const elementId = (element.id || '').toLowerCase();
         const elementTemplate = (element.templateName || '').toLowerCase();
         
-        // Check if this is a field list element - if so, KEEP it visible
-        const isFieldList = 
-          elementId.includes('fieldlist') || 
-          elementId.includes('field-list') || 
-          elementId.includes('field_list') ||
-          elementTemplate.includes('fieldlist') ||
-          elementTemplate.includes('field-list') ||
-          elementTemplate.includes('field_list');
+        // Check if this is a data source related element - if so, KEEP it visible
+        const isDataSource = 
+          elementId.includes('datasource') || 
+          elementId.includes('data-source') || 
+          elementId.includes('data_source') ||
+          elementId.includes('datasources') ||
+          elementTemplate.includes('datasource') ||
+          elementTemplate.includes('data-source') ||
+          elementTemplate.includes('data_source') ||
+          elementTemplate.includes('datasources');
         
-        if (isFieldList) {
-          console.log(`[ReportDesigner] KEEPING field list element visible: ${element.id}`);
+        // Check if this is a main surface/designer container - keep these visible for rendering
+        const isMainSurface = 
+          elementId.includes('surface') ||
+          elementId.includes('designer') ||
+          elementId.includes('main') ||
+          elementTemplate.includes('surface') ||
+          elementTemplate.includes('designer') ||
+          elementTemplate.includes('main');
+        
+        if (isDataSource) {
+          console.log(`[ReportDesigner] KEEPING data source element visible: ${element.id}`);
+          element.visible = true;
+        } else if (isMainSurface) {
+          console.log(`[ReportDesigner] KEEPING main surface element visible: ${element.id}`);
           element.visible = true;
         } else {
-          // Hide ALL other elements
+          // Hide ALL other elements including field list
           console.log(`[ReportDesigner] Hiding element: ${element.id}`);
           element.visible = false;
         }

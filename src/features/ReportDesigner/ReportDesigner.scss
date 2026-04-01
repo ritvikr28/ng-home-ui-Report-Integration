@@ -374,7 +374,8 @@
 /**
  * RESTRICTED MODE STYLES
  * Hide/disable ALL UI elements to restrict the designer.
- * ONLY the Field List (data source columns selection) should remain visible and interactive.
+ * ONLY the Data Sources panel should remain visible and interactive.
+ * Field List is now hidden as well.
  */
 
 /* ============================================
@@ -585,14 +586,14 @@
 }
 
 /* ============================================
-   TAB PANELS (except field list) - HIDE
+   TAB PANELS - HIDE
    ============================================ */
-.dxrd-tab-panel:not(.dxrd-fieldlist-tab),
-.dx-tab-panel:not(.dx-fieldlist-tab),
+.dxrd-tab-panel,
+.dx-tab-panel,
 .dxrd-left-panel-tabs,
 .dx-tabpanel-tabs,
-[class*="tab-panel"]:not([class*="field-list"]) {
-  /* Hide tab headers/navigation but keep content if field list related */
+[class*="tab-panel"] {
+  /* Hide tab headers/navigation */
   > .dx-tabs,
   > .dxrd-tabs,
   > [class*="tab-header"],
@@ -603,9 +604,34 @@
 }
 
 /* ============================================
-   DESIGN SURFACE - MAKE MOSTLY READ-ONLY
+   FIELD LIST - HIDE COMPLETELY
+   (User requested to hide field list)
    ============================================ */
-.dxrd-surface {
+.dxrd-field-list,
+.dxrd-fieldlist-wrapper,
+.dxrd-fieldlist-panel,
+.dx-field-list,
+.dxrd-field-list-panel,
+[class*="field-list"],
+[class*="fieldlist"] {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ============================================
+   DESIGN SURFACE - KEEP VISIBLE FOR RENDERING
+   ============================================ */
+.dxrd-surface,
+.dxrd-designer-surface,
+.dx-reportdesigner,
+.dxrd-report-surface {
+  display: block !important;
+  visibility: visible !important;
+  
   .dxrd-surface-selection-wrapper {
     pointer-events: none !important;
   }
@@ -618,8 +644,8 @@
   }
 }
 
-/* Disable all drag overlays except field list drag */
-.dxrd-drag-overlay:not(.dxrd-field-list-drag) {
+/* Disable all drag overlays */
+.dxrd-drag-overlay {
   pointer-events: none !important;
 }
 
@@ -640,22 +666,20 @@
 }
 
 /* ============================================
-   LEFT PANEL - KEEP ONLY FIELD LIST VISIBLE
+   LEFT PANEL - HIDE
    ============================================ */
 .dxrd-left-panel,
 .dxrd-left-panel-wrapper,
 .dx-left-panel {
-  /* Hide everything in left panel except field list */
-  > *:not([class*="field-list"]):not([class*="fieldlist"]) {
-    display: none !important;
-  }
+  display: none !important;
+  visibility: hidden !important;
 }
 
 /* ============================================
-   ACCORDION PANELS - HIDE ALL EXCEPT FIELD LIST
+   ACCORDION PANELS - HIDE ALL
    ============================================ */
-.dx-accordion-item:not(.dx-accordion-item-opened):not([class*="field"]),
-.dxrd-accordion-item:not([class*="field"]) {
+.dx-accordion-item,
+.dxrd-accordion-item {
   display: none !important;
 }
 
@@ -728,49 +752,38 @@
 }
 
 /* ============================================
-   FIELD LIST - KEEP VISIBLE AND INTERACTIVE
-   This is the ONLY element that should remain
+   DATA SOURCES PANEL - KEEP VISIBLE
+   This is the ONLY element that should remain visible
    ============================================ */
-.dxrd-field-list,
-.dxrd-fieldlist-wrapper,
-.dxrd-fieldlist-panel,
-.dx-field-list,
-.dxrd-field-list-panel,
-[class*="field-list"],
-[class*="fieldlist"] {
+.dxrd-datasource,
+.dxrd-datasources,
+.dxrd-datasource-panel,
+.dxrd-datasources-panel,
+.dx-datasource,
+.dx-datasources,
+[class*="datasource"],
+[class*="data-source"] {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
-  width: auto !important;
-  min-width: 200px !important;
-  max-width: none !important;
 }
 
-/* Ensure field list items are clickable and expandable */
-.dxrd-field-list-item,
-.dx-field-list-item,
-.dxrd-fieldlist-item,
-[class*="field-list-item"],
-[class*="fieldlist-item"] {
+/* Ensure data source items are clickable */
+.dxrd-datasource-item,
+.dx-datasource-item,
+[class*="datasource-item"] {
   pointer-events: auto !important;
   cursor: pointer !important;
 }
 
-/* Ensure treeview in field list is interactive */
-.dxrd-field-list .dx-treeview,
-.dxrd-field-list .dx-treeview-item,
-.dxrd-field-list .dx-treeview-node,
-[class*="field-list"] .dx-treeview,
-[class*="field-list"] .dx-treeview-item,
-[class*="field-list"] .dx-treeview-node {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-}
-
-/* Field list expand/collapse toggles */
-.dxrd-field-list .dx-treeview-toggle-item-visibility,
-[class*="field-list"] .dx-treeview-toggle-item-visibility {
+/* Ensure treeview in data sources is interactive */
+.dxrd-datasource .dx-treeview,
+.dxrd-datasource .dx-treeview-item,
+.dxrd-datasource .dx-treeview-node,
+[class*="datasource"] .dx-treeview,
+[class*="datasource"] .dx-treeview-item,
+[class*="datasource"] .dx-treeview-node {
   pointer-events: auto !important;
   cursor: pointer !important;
 }
@@ -786,12 +799,13 @@
   display: none !important;
 }
 
-/* Disable all designer interactions except field list */
+/* Keep the main designer container visible */
 .dx-reportdesigner {
-  /* Allow the container but restrict child elements */
+  display: block !important;
+  visibility: visible !important;
   
   .dx-designer-viewport {
-    /* Hide scrollbars and navigation except for field list area */
+    /* Hide scrollbars and navigation except for data sources area */
     overflow: hidden;
   }
 }
