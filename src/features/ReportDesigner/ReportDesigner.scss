@@ -370,3 +370,127 @@
 .dxrd-preview-wrapper {
   background-color: #f0f0f0;
 }
+
+/**
+ * RESTRICTED MODE STYLES
+ * Hide/disable various UI elements to restrict the designer to only show data sources
+ * and allow column selection while disabling all other editing features.
+ */
+
+/* Hide the entire toolbox panel */
+.dxrd-toolbox-item,
+.dx-toolbox,
+.dxrd-toolbox,
+[class*="toolbox-item"],
+[class*="dxrd-toolbox"] {
+  display: none !important;
+}
+
+/* Hide the main designer toolbar (we use custom toolbar instead) */
+.dxrd-toolbar,
+.dx-toolbar.dxrd-toolbar-main,
+.dxrd-menu-toolbar {
+  display: none !important;
+}
+
+/* Hide zoom controls */
+.dxrd-zoom,
+[class*="zoom-editor"],
+[class*="zoom-autofit"],
+.dx-zoom-editor {
+  display: none !important;
+}
+
+/* Hide the main menu (hamburger menu) */
+.dxrd-menu,
+.dxrd-menu-button,
+[class*="dxrd-menu"] {
+  display: none !important;
+}
+
+/* Hide scripting/expressions editor button */
+.dxrd-scripts-panel,
+.dxrd-expression-editor,
+[class*="scripts-panel"],
+[class*="expression-editor"] {
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Hide report explorer/structure panel */
+.dxrd-report-explorer,
+.dxrd-reportexplorer-wrapper {
+  display: none !important;
+}
+
+/* Disable report surface editing - make it view-only except for drag-drop from field list */
+.dxrd-surface {
+  /* Allow viewing but restrict some interactions */
+  .dxrd-surface-selection-wrapper {
+    pointer-events: none;
+  }
+}
+
+/* Keep the field list visible and interactive - this is the data source panel */
+.dxrd-field-list,
+.dxrd-fieldlist-wrapper,
+[class*="field-list"],
+.dx-field-list {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Hide the property panel (right side properties editor) */
+.dxrd-properties-panel,
+.dx-property-grid,
+.dx-propertygrid,
+.dxrd-right-panel,
+[class*="property-panel"],
+[class*="propertygrid"] {
+  display: none !important;
+}
+
+/* Hide page/zoom navigation controls in the designer */
+.dxrd-navigation-panel,
+.dxrd-page-navigator {
+  display: none !important;
+}
+
+/* Hide the bottom status bar */
+.dxrd-statusbar,
+.dxrd-designer-statusbar {
+  display: none !important;
+}
+
+/* Hide watermarks and preview elements */
+.dxrd-preview-button-container,
+.dxrd-watermark-element {
+  display: none !important;
+}
+
+/* Hide context menus that appear on right-click */
+.dx-context-menu.dxrd-menu,
+.dxrd-context-menu {
+  display: none !important;
+}
+
+/* Disable drag-drop for controls (but keep field list drag-drop) */
+.dxrd-drag-overlay:not(.dxrd-field-list-drag) {
+  pointer-events: none;
+}
+
+/* Make the report design surface mostly read-only */
+.dxrd-band-container {
+  /* Prevent adding new bands */
+  .dx-add-band-button {
+    display: none !important;
+  }
+}
+
+/* Hide the wizard/new report controls */
+.dxrd-wizard-container,
+.dxrd-wizard-panel {
+  display: none !important;
+}

@@ -34,6 +34,57 @@ const ACTIONS_TO_DISABLE = [
 ];
 
 /**
+ * Toolbox controls to hide - all controls except those needed for data source interaction
+ * This list covers most standard report controls
+ */
+const TOOLBOX_CONTROLS_TO_HIDE = [
+  'XRLabel',
+  'XRCheckBox',
+  'XRRichText',
+  'XRPictureBox',
+  'XRPanel',
+  'XRTable',
+  'XRLine',
+  'XRShape',
+  'XRBarCode',
+  'XRZipCode',
+  'XRChart',
+  'XRGauge',
+  'XRSparkline',
+  'XRPivotGrid',
+  'XRSubreport',
+  'XRPageInfo',
+  'XRPageBreak',
+  'XRCrossTab',
+  'XRCharacterComb',
+  'XRPdfContent',
+  'XRPdfSignature',
+  'DetailBand',
+  'TopMarginBand',
+  'BottomMarginBand',
+  'ReportHeaderBand',
+  'ReportFooterBand',
+  'PageHeaderBand',
+  'PageFooterBand',
+  'GroupHeaderBand',
+  'GroupFooterBand',
+  'DetailReportBand',
+  'VerticalHeaderBand',
+  'VerticalDetailBand',
+  'VerticalTotalBand',
+];
+
+/**
+ * UI Elements to hide/disable in the designer
+ * These are the element IDs/identifiers used by DevExpress
+ */
+const ELEMENTS_TO_HIDE = [
+  'dx-zoom-editor',          // Zoom control
+  'dx-zoom-autofit',         // Zoom autofit
+  'dxrd-toolbox-item',       // Toolbox items
+];
+
+/**
  * Save Modal Component for Save/SaveAs functionality
  */
 interface SaveModalProps {
@@ -254,13 +305,21 @@ const ReportDesigner: React.FC = () => {
 
   /**
    * Single useEffect that handles ALL initialization in one atomic operation:
-   * 1. Poll for config availability
-   * 2. Configure auth headers
-   * 3. Set isReady state
+   * 1. Check that we have a valid reportUrl from query params
+   * 2. Poll for config availability
+   * 3. Configure auth headers
+   * 4. Set isReady state
    * 
    * This prevents race conditions from separate useEffects with dependencies on each other
    */
   useEffect(() => {
+    // Don't start initialization until we have a valid reportUrl from the URL
+    // This prevents the API being called with null/TestReport on first render
+    if (!hasValidReportUrl) {
+      console.log('[ReportDesigner] Waiting for valid reportUrl from query params...');
+      return;
+    }
+    
     let pollInterval: NodeJS.Timeout | null = null;
     let pollCount = 0;
     const maxPolls = 50; // Max 5 seconds (50 * 100ms)
@@ -284,6 +343,7 @@ const ReportDesigner: React.FC = () => {
         console.log('[ReportDesigner] Initializing with config:', {
           hostUrl: url,
           reportUrl,
+          hasValidReportUrl,
           isPredefined,
           hasToken: !!token
         });
@@ -344,7 +404,7 @@ const ReportDesigner: React.FC = () => {
         clearInterval(pollInterval);
       }
     };
-  }, [reportUrl, isPredefined]); // Re-run when report changes
+  }, [reportUrl, isPredefined, hasValidReportUrl]); // Re-run when report changes or valid URL becomes available
 
   /**
    * Reset designer state when reportUrl changes
@@ -558,6 +618,94 @@ const ReportDesigner: React.FC = () => {
   }, []);
 
   /**
+   * CustomizeToolbox callback - CRITICAL for hiding toolbox controls
+   * This hides all standard report controls so users can only work with data sources
+   */
+  const onCustomizeToolbox = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] CustomizeToolbox callback triggered');
+    
+    if (args && args.ControlsFactory) {
+      const controlsFactory = args.ControlsFactory;
+      
+      // Hide all toolbox controls listed in TOOLBOX_CONTROLS_TO_HIDE
+      TOOLBOX_CONTROLS_TO_HIDE.forEach(controlName => {
+        try {
+          const controlInfo = controlsFactory.getControlInfo(controlName);
+          if (controlInfo) {
+            controlInfo.isToolboxItem = false;
+            console.log(`[ReportDesigner] Hidden toolbox control: ${controlName}`);
+          }
+        } catch (e) {
+          // Control may not exist, that's OK
+          console.log(`[ReportDesigner] Control not found: ${controlName}`);
+        }
+      });
+
+      // Try to hide any remaining controls we didn't explicitly list
+      try {
+        const allControls = controlsFactory.registeredControls || [];
+        if (Array.isArray(allControls)) {
+          allControls.forEach((control: any) => {
+            if (control && control.name && control.isToolboxItem !== false) {
+              console.log(`[ReportDesigner] Hiding additional control: ${control.name}`);
+              control.isToolboxItem = false;
+            }
+          });
+        }
+      } catch (e) {
+        console.log('[ReportDesigner] Could not iterate registered controls:', e);
+      }
+    }
+  }, []);
+
+  /**
+   * CustomizeElements callback - CRITICAL for hiding/disabling UI elements
+   * This hides property panel, toolbox panel, and other UI elements
+   * Only the Field List (data source) should remain visible
+   */
+  const onCustomizeElements = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] CustomizeElements callback triggered');
+    console.log('[ReportDesigner] CustomizeElements args:', args ? Object.keys(args) : 'null');
+    
+    if (args && args.Elements) {
+      const elements = args.Elements;
+      console.log('[ReportDesigner] Available elements:', elements.map((e: any) => ({
+        id: e.id,
+        type: e.type || e.constructor?.name
+      })));
+      
+      // Find and process elements to hide/disable
+      elements.forEach((element: any) => {
+        const elementId = element.id?.toLowerCase() || '';
+        const elementTemplate = element.templateName?.toLowerCase() || '';
+        
+        // Hide toolbox-related elements
+        if (elementId.includes('toolbox') || elementTemplate.includes('toolbox')) {
+          console.log(`[ReportDesigner] Hiding toolbox element: ${element.id}`);
+          element.visible = false;
+        }
+        
+        // Hide zoom controls
+        if (elementId.includes('zoom') || elementTemplate.includes('zoom')) {
+          console.log(`[ReportDesigner] Hiding zoom element: ${element.id}`);
+          element.visible = false;
+        }
+      });
+    }
+  }, []);
+
+  /**
+   * CustomizeParameterEditors callback - disable parameter editing
+   */
+  const onCustomizeParameterEditors = useCallback((sender: any, args: any) => {
+    console.log('[ReportDesigner] CustomizeParameterEditors callback triggered');
+    // Disable all parameter editors to prevent parameter modifications
+    if (args && args.editor) {
+      args.editor.disabled = true;
+    }
+  }, []);
+
+  /**
    * CustomizeMenuActions callback - CRITICAL for disabling toolbar buttons
    * This hides Preview, Save, SaveAs, New, Open, Exit, and menu buttons
    * Also stores reference to designer for save functionality
@@ -714,6 +862,9 @@ const ReportDesigner: React.FC = () => {
             Init={onInit}
             CustomizeLocalization={onCustomizeLocalization}
             CustomizeMenuActions={onCustomizeMenuActions}
+            CustomizeToolbox={onCustomizeToolbox}
+            CustomizeElements={onCustomizeElements}
+            CustomizeParameterEditors={onCustomizeParameterEditors}
             ComponentDidMount={onComponentDidMount}
             OnServerError={onServerError}
           />
