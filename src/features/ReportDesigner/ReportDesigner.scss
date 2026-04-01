@@ -666,20 +666,21 @@
 }
 
 /* ============================================
-   LEFT PANEL - HIDE
+   LEFT PANEL - KEEP VISIBLE FOR DATA SOURCES
+   Only hide specific content within, not the whole panel
    ============================================ */
 .dxrd-left-panel,
 .dxrd-left-panel-wrapper,
 .dx-left-panel {
-  display: none !important;
-  visibility: hidden !important;
+  display: block !important;
+  visibility: visible !important;
 }
 
 /* ============================================
-   ACCORDION PANELS - HIDE ALL
+   ACCORDION PANELS - HIDE ALL EXCEPT DATA SOURCES
    ============================================ */
-.dx-accordion-item,
-.dxrd-accordion-item {
+.dx-accordion-item:not([class*="datasource"]):not([class*="data-source"]),
+.dxrd-accordion-item:not([class*="datasource"]):not([class*="data-source"]) {
   display: none !important;
 }
 
