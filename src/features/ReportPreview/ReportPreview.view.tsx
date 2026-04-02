@@ -21,19 +21,26 @@ const NAVBAR_HEIGHT = 56;
 const TOOLBAR_HEIGHT = 60;
 
 /**
- * Maps each data source name to the corresponding DevExpress report parameter.
- * These parameters are declared in TestReport.cs and control which columns are
- * fetched by the {?PupilColumns}/{?StaffColumns}/{?AssessmentColumns} URI placeholders
- * in api-connections.json.
+ * Maps each data source name to the DevExpress report parameter that carries the
+ * comma-separated list of selected row IDs.
+ * e.g. Pupil → PupilIds → "1,3,7" (only those pupil records are rendered)
  */
-const DATA_SOURCE_PARAM_MAP: Record<string, string> = {
-  Pupil: 'PupilColumns',
-  Staff: 'StaffColumns',
-  Assessment: 'AssessmentColumns',
+const DATA_SOURCE_ID_PARAM_MAP: Record<string, string> = {
+  Pupil: 'PupilIds',
+  Staff: 'StaffIds',
+  Assessment: 'AssessmentIds',
 };
 
 /**
- * State shape for the data-loading / data-selection step
+ * Finds the primary-key field name for a data source.
+ * Prefers the first column whose name ends with "Id" / "ID"; falls back to
+ * the first column.  Returns undefined if the column list is empty.
+ */
+const findIdField = (columns: { name: string; type: string }[]): string | undefined =>
+  columns.find((c) => /id$/i.test(c.name))?.name ?? columns[0]?.name;
+
+/**
+ * State shape for the data-loading / row-selection step
  */
 interface DataState {
   loading: boolean;
@@ -48,11 +55,11 @@ interface DataState {
  *
  * Workflow:
  *  1. Poll for config → configure auth → isReady = true
- *  2. Load schemas + actual data rows from every data source
- *  3. Show data-selection screen: tabs per source, column checkboxes, data preview table
- *  4. On "Render Report", build column-parameter strings, store in ref
- *  5. Open DevExpress viewer; CustomizeParameterEditors pre-fills the parameters
- *     so the backend fetches only the selected columns when rendering
+ *  2. Load all data rows from every data source
+ *  3. Show row-selection screen: tabs per source, search filter, checkable data table
+ *  4. On "Render Report", collect selected row IDs per source → store in ref
+ *  5. Open DevExpress viewer; CustomizeParameterEditors pre-fills PupilIds/StaffIds/AssessmentIds
+ *     so the backend filters data to only the records the user selected
  */
 const ReportPreview: React.FC = () => {
   const location = useLocation<ReportState>();
@@ -81,9 +88,12 @@ const ReportPreview: React.FC = () => {
     loadError: null,
   });
   const [activeTab, setActiveTab] = useState<string>('');
-  // columnSelection[sourceName][columnName] = true/false
-  const [columnSelection, setColumnSelection] = useState<Record<string, Record<string, boolean>>>({});
-  // Holds built parameter strings; written just before showViewer=true so the
+  // rowSelection[sourceName][rowIndex] = true (selected) | false (deselected)
+  // All rows start as selected (true); user unchecks the ones they don't want.
+  const [rowSelection, setRowSelection] = useState<Record<string, Record<number, boolean>>>({});
+  // searchQuery[sourceName] = current filter text for that tab
+  const [searchQuery, setSearchQuery] = useState<Record<string, string>>({});
+  // Holds built ID-parameter strings; written just before showViewer=true so the
   // CustomizeParameterEditors callback can read them without stale closure issues
   const selectedParamsRef = useRef<Record<string, string>>({});
 
@@ -201,8 +211,8 @@ const ReportPreview: React.FC = () => {
   }, [reportName]); // Re-run when report changes
 
   /**
-   * Once initialization is complete, load the schemas and actual data rows from
-   * every available data source so the user can inspect and select columns.
+   * Once initialization is complete, load the schemas and all data rows from every
+   * available data source so the user can inspect and choose which records to render.
    */
   useEffect(() => {
     if (!initState.isReady) return;
@@ -215,7 +225,7 @@ const ReportPreview: React.FC = () => {
         const sourcesResponse = await reportingService.getDataSources();
         const sources = sourcesResponse.dataSources;
 
-        // Fetch actual data rows for every source in parallel
+        // Fetch all data rows for every source in parallel
         const sourceData: Record<string, Record<string, unknown>[]> = {};
         await Promise.all(
           sources.map(async (src) => {
@@ -230,17 +240,18 @@ const ReportPreview: React.FC = () => {
 
         if (!isMounted) return;
 
-        // Default: all columns selected for every source
-        const initSelection: Record<string, Record<string, boolean>> = {};
+        // Default: all rows selected for every source
+        const initRowSel: Record<string, Record<number, boolean>> = {};
         sources.forEach((src) => {
-          initSelection[src.name] = {};
-          src.columns.forEach((col) => {
-            initSelection[src.name][col.name] = true;
+          initRowSel[src.name] = {};
+          (sourceData[src.name] || []).forEach((_, idx) => {
+            initRowSel[src.name][idx] = true;
           });
         });
 
         setDataState({ loading: false, loaded: true, sources, sourceData, loadError: null });
-        setColumnSelection(initSelection);
+        setRowSelection(initRowSel);
+        setSearchQuery({});
         if (sources.length > 0) setActiveTab(sources[0].name);
       } catch (err) {
         if (!isMounted) return;
@@ -256,51 +267,92 @@ const ReportPreview: React.FC = () => {
     };
   }, [initState.isReady]);
 
-  /** Toggle a single column checkbox */
-  const toggleColumn = useCallback((sourceName: string, columnName: string, checked: boolean) => {
-    setColumnSelection((prev) => ({
+  /**
+   * Returns the rows for `sourceName` filtered by the current searchQuery for
+   * that source, together with each row's original index (used for checkbox state).
+   */
+  const getFilteredRows = useCallback(
+    (sourceName: string): { row: Record<string, unknown>; originalIdx: number }[] => {
+      const rows = dataState.sourceData[sourceName] || [];
+      const q = (searchQuery[sourceName] || '').toLowerCase().trim();
+      return rows
+        .map((row, idx) => ({ row, originalIdx: idx }))
+        .filter(({ row }) => {
+          if (!q) return true;
+          return Object.values(row).some((v) => String(v ?? '').toLowerCase().includes(q));
+        });
+    },
+    [dataState.sourceData, searchQuery]
+  );
+
+  /** Toggle a single row checkbox */
+  const toggleRow = useCallback((sourceName: string, rowIdx: number, checked: boolean) => {
+    setRowSelection((prev) => ({
       ...prev,
-      [sourceName]: { ...prev[sourceName], [columnName]: checked },
+      [sourceName]: { ...prev[sourceName], [rowIdx]: checked },
     }));
   }, []);
 
-  /** Select / deselect all columns for a source */
-  const setAllColumns = useCallback((sourceName: string, selected: boolean) => {
-    setColumnSelection((prev) => {
-      const updated: Record<string, boolean> = {};
-      Object.keys(prev[sourceName] || {}).forEach((col) => {
-        updated[col] = selected;
+  /**
+   * Select or deselect all currently visible (filtered) rows for a source.
+   * When no search filter is active this equals "select/deselect all".
+   */
+  const setAllVisibleRows = useCallback(
+    (sourceName: string, selected: boolean) => {
+      const visible = getFilteredRows(sourceName);
+      setRowSelection((prev) => {
+        const updated = { ...(prev[sourceName] || {}) };
+        visible.forEach(({ originalIdx }) => {
+          updated[originalIdx] = selected;
+        });
+        return { ...prev, [sourceName]: updated };
       });
-      return { ...prev, [sourceName]: updated };
-    });
-  }, []);
+    },
+    [getFilteredRows]
+  );
 
-  /** True when at least one column is selected across all sources */
-  const hasAnyColumnSelected = Object.values(columnSelection).some((cols) =>
-    Object.values(cols).some(Boolean)
+  /** True when at least one row is selected across all sources */
+  const hasAnyRowSelected = Object.values(rowSelection).some((sel) =>
+    Object.values(sel).some(Boolean)
   );
 
   /**
-   * Build DevExpress parameter strings from the current column selection,
+   * Build DevExpress ID-parameter strings from the current row selection,
    * store them in the ref so CustomizeParameterEditors can read them, then
    * open the viewer.
+   *
+   * For each source, finds the primary-key field (first column whose name ends in
+   * "Id" / "ID") and emits a comma-separated list of those values for every
+   * selected row.  If ALL rows in a source are selected we skip emitting the
+   * parameter entirely so the backend returns the full unfiltered dataset.
    */
   const handleRenderReport = useCallback(() => {
     const params: Record<string, string> = {};
-    Object.entries(columnSelection).forEach(([sourceName, cols]) => {
-      const paramName = DATA_SOURCE_PARAM_MAP[sourceName];
+    dataState.sources.forEach((src) => {
+      const paramName = DATA_SOURCE_ID_PARAM_MAP[src.name];
       if (!paramName) return;
-      const selected = Object.entries(cols)
-        .filter(([, isSelected]) => isSelected)
-        .map(([colName]) => colName);
-      if (selected.length > 0) {
-        params[paramName] = selected.join(',');
+      const rows = dataState.sourceData[src.name] || [];
+      const sel = rowSelection[src.name] || {};
+
+      const selectedRows = rows.filter((_, idx) => sel[idx] === true);
+
+      // Only add the parameter when the user has deselected at least one row;
+      // if everything is selected there is no need to filter
+      if (selectedRows.length > 0 && selectedRows.length < rows.length) {
+        const idField = findIdField(src.columns);
+        if (!idField) return; // No usable key field — skip this source
+        const ids = selectedRows
+          .map((row) => String(row[idField] ?? ''))
+          .filter((id) => id !== ''); // Exclude rows where the ID resolved to empty
+        if (ids.length > 0) {
+          params[paramName] = ids.join(',');
+        }
       }
     });
     selectedParamsRef.current = params;
-    console.log('[ReportPreview] Rendering with parameters:', params);
+    console.log('[ReportPreview] Rendering with row-filter parameters:', params);
     setShowViewer(true);
-  }, [columnSelection]);
+  }, [rowSelection, dataState]);
 
   /**
    * Handle back button - return to report selection
@@ -326,9 +378,8 @@ const ReportPreview: React.FC = () => {
   /**
    * CustomizeParameterEditors — DevExpress internal callback.
    * Fires when the viewer builds its parameter editor panel. We use it to
-   * pre-fill each parameter value with the column selections made by the user
-   * on the data-selection screen, so the backend receives the correct column
-   * list when it fetches data for the report.
+   * pre-fill each parameter with the row-ID strings built by handleRenderReport,
+   * so the backend filters data to only the records the user selected.
    */
   const onCustomizeParameterEditors = useCallback((_sender: any, args: any) => {
     const params = selectedParamsRef.current;
@@ -440,11 +491,14 @@ const ReportPreview: React.FC = () => {
 
   // ── Data-selection screen ─────────────────────────────────────────────────
   const activeSource = dataState.sources.find((s) => s.name === activeTab);
-  const activeRows = dataState.sourceData[activeTab] || [];
-  const activeColSel = columnSelection[activeTab] || {};
-  const visibleColumns = (activeSource?.columns || []).filter((c) => activeColSel[c.name]);
-  const allSelected = (activeSource?.columns || []).every((c) => activeColSel[c.name]);
-  const noneSelected = (activeSource?.columns || []).every((c) => !activeColSel[c.name]);
+  const allRows = dataState.sourceData[activeTab] || [];
+  const filteredRows = getFilteredRows(activeTab);
+  const activeSel = rowSelection[activeTab] || {};
+
+  // Counts for the active tab
+  const totalSelected = allRows.filter((_, idx) => activeSel[idx] === true).length;
+  const allVisibleSelected = filteredRows.length > 0 && filteredRows.every(({ originalIdx }) => activeSel[originalIdx] === true);
+  const noneVisibleSelected = filteredRows.every(({ originalIdx }) => !activeSel[originalIdx]);
 
   return (
     <div className="report-preview-container">
@@ -466,131 +520,149 @@ const ReportPreview: React.FC = () => {
           </div>
         )}
 
-        <div className="data-selection-content">
-          {/* Left panel: column selector */}
-          <div className="column-selector-panel">
-            <div className="panel-heading">Configure Columns</div>
-            <p className="panel-subheading">
-              Select the columns to include from each data source. These are passed as
-              parameters to the report before rendering.
-            </p>
-
-            {/* Source tabs */}
-            <div className="source-tabs">
-              {dataState.sources.map((src) => {
-                const selCount = Object.values(columnSelection[src.name] || {}).filter(Boolean).length;
-                const totalCount = src.columns.length;
-                return (
-                  <button
-                    key={src.name}
-                    className={`source-tab${activeTab === src.name ? ' active' : ''}`}
-                    onClick={() => setActiveTab(src.name)}
-                  >
-                    <span className="tab-name">{src.name}</span>
-                    <span className="tab-badge">{selCount}/{totalCount}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Column checkboxes for active source */}
-            {activeSource && (
-              <div className="column-list">
-                <div className="column-list-actions">
-                  <button
-                    className="link-btn"
-                    disabled={allSelected}
-                    onClick={() => setAllColumns(activeTab, true)}
-                  >
-                    Select all
-                  </button>
-                  <span className="separator">·</span>
-                  <button
-                    className="link-btn"
-                    disabled={noneSelected}
-                    onClick={() => setAllColumns(activeTab, false)}
-                  >
-                    Deselect all
-                  </button>
-                </div>
-                {activeSource.columns.map((col) => (
-                  <label key={col.name} className="column-item">
-                    <input
-                      type="checkbox"
-                      checked={activeColSel[col.name] ?? true}
-                      onChange={(e) => toggleColumn(activeTab, col.name, e.target.checked)}
-                    />
-                    <span className="col-name">{col.name}</span>
-                    <span className="col-type">{col.type}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {/* Render button */}
-            <div className="render-action">
+        {/* Source tabs */}
+        <div className="source-tabs-bar">
+          {dataState.sources.map((src) => {
+            const total = (dataState.sourceData[src.name] || []).length;
+            const sel = rowSelection[src.name] || {};
+            const selCount = Object.values(sel).filter(Boolean).length;
+            return (
               <button
-                className="render-button"
-                disabled={!hasAnyColumnSelected}
-                onClick={handleRenderReport}
+                key={src.name}
+                className={`source-tab${activeTab === src.name ? ' active' : ''}`}
+                onClick={() => setActiveTab(src.name)}
               >
-                Render Report →
+                <span className="tab-name">{src.name}</span>
+                <span className="tab-badge">{selCount}/{total}</span>
               </button>
-              {!hasAnyColumnSelected && (
-                <p className="render-hint">Select at least one column to render.</p>
+            );
+          })}
+        </div>
+
+        {/* Table area */}
+        <div className="row-selection-area">
+          {/* Controls bar */}
+          <div className="row-controls-bar">
+            {/* Search */}
+            <input
+              className="row-search-input"
+              type="text"
+              placeholder={`Search ${activeTab || 'records'}…`}
+              value={searchQuery[activeTab] || ''}
+              onChange={(e) =>
+                setSearchQuery((prev) => ({ ...prev, [activeTab]: e.target.value }))
+              }
+            />
+
+            {/* Selection actions */}
+            <div className="row-selection-actions">
+              <span className="selection-count">
+                {totalSelected} of {allRows.length} selected
+              </span>
+              <button
+                className="link-btn"
+                disabled={allVisibleSelected}
+                onClick={() => setAllVisibleRows(activeTab, true)}
+              >
+                {searchQuery[activeTab] ? 'Select visible' : 'Select all'}
+              </button>
+              <span className="separator">·</span>
+              <button
+                className="link-btn"
+                disabled={noneVisibleSelected}
+                onClick={() => setAllVisibleRows(activeTab, false)}
+              >
+                {searchQuery[activeTab] ? 'Deselect visible' : 'Deselect all'}
+              </button>
+              {filteredRows.length !== allRows.length && (
+                <>
+                  <span className="separator">·</span>
+                  <span className="filter-count">{filteredRows.length} visible</span>
+                </>
               )}
             </div>
           </div>
 
-          {/* Right panel: data preview table */}
-          <div className="data-preview-panel">
-            <div className="panel-heading">
-              Data Preview
-              {activeSource && (
-                <span className="row-count-badge">
-                  {activeRows.length} record{activeRows.length !== 1 ? 's' : ''}
-                </span>
-              )}
-            </div>
-
-            {activeRows.length === 0 ? (
-              <div className="no-data-message">
-                {dataState.loadError
+          {/* Data table */}
+          {filteredRows.length === 0 ? (
+            <div className="no-data-message">
+              {allRows.length === 0
+                ? dataState.loadError
                   ? 'Data could not be loaded.'
-                  : 'No records found for this data source.'}
-              </div>
-            ) : (
-              <div className="data-table-scroll">
-                <table className="data-preview-table">
-                  <thead>
-                    <tr>
-                      {visibleColumns.map((col) => (
-                        <th key={col.name}>{col.name}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeRows.map((row, idx) => {
-                      // Use the first "Id"-like field as a stable key if available
-                      const idField = Object.keys(row).find((k) => /id$/i.test(k));
-                      const rowKey = idField ? String(row[idField]) : String(idx);
-                      return (
-                        <tr key={rowKey}>
-                          {visibleColumns.map((col) => (
-                            <td key={col.name}>
-                              {row[col.name] !== null && row[col.name] !== undefined
-                                ? String(row[col.name])
-                                : '—'}
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                  : 'No records found for this data source.'
+                : 'No records match your search.'}
+            </div>
+          ) : (
+            <div className="data-table-scroll">
+              <table className="data-preview-table">
+                <thead>
+                  <tr>
+                    <th className="checkbox-col">
+                      <input
+                        type="checkbox"
+                        title="Toggle visible rows"
+                        checked={allVisibleSelected}
+                        onChange={(e) => setAllVisibleRows(activeTab, e.target.checked)}
+                      />
+                    </th>
+                    {(activeSource?.columns || []).map((col) => (
+                      <th key={col.name}>{col.name}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRows.map(({ row, originalIdx }) => {
+                    const isChecked = activeSel[originalIdx] === true;
+                    // Use the shared helper for a stable, consistent React key
+                    const idField = findIdField(activeSource?.columns || []);
+                    const rowKey = idField ? String(row[idField] ?? originalIdx) : String(originalIdx);
+                    return (
+                      <tr
+                        key={rowKey}
+                        className={isChecked ? 'row-selected' : ''}
+                        onClick={() => toggleRow(activeTab, originalIdx, !isChecked)}
+                      >
+                        <td className="checkbox-col" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => toggleRow(activeTab, originalIdx, e.target.checked)}
+                          />
+                        </td>
+                        {(activeSource?.columns || []).map((col) => (
+                          <td key={col.name}>
+                            {row[col.name] !== null && row[col.name] !== undefined
+                              ? String(row[col.name])
+                              : '—'}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Sticky render footer */}
+        <div className="render-footer">
+          <span className="render-footer-summary">
+            {Object.entries(rowSelection)
+              .map(([src, sel]) => {
+                const total = (dataState.sourceData[src] || []).length;
+                const count = Object.values(sel).filter(Boolean).length;
+                return `${src}: ${count}/${total}`;
+              })
+              .join('  ·  ')}
+          </span>
+          <button
+            className="render-button"
+            disabled={!hasAnyRowSelected}
+            onClick={handleRenderReport}
+          >
+            Render Report →
+          </button>
         </div>
       </div>
     </div>
