@@ -17,18 +17,43 @@ import './ReportPreview.scss';
 // Height constants
 const NAVBAR_HEIGHT = 56;
 const TOOLBAR_HEIGHT = 60;
+const SEARCH_PANEL_HEIGHT = 54;
+
+/**
+ * Encodes learner IDs as a base64url token for stateless URL encoding.
+ * Uses pipe delimiter — safe for both integers and GUIDs.
+ * Works across k8s pods without shared state.
+ * 
+ * @param ids - Array of learner ID strings (can be integers, GUIDs, etc.)
+ * @returns Encoded token string with 'b64_' prefix
+ */
+const encodeIds = (ids: string[]): string => {
+  const bytes = new TextEncoder().encode(ids.join('|'));
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  // Convert to base64url: replace + with -, / with _, remove padding =
+  return 'b64_' + btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+};
 
 /**
  * ReportPreview Screen (Screen 3)
  * 
  * Shows a Preview button and when clicked, renders the DevExpress Report Viewer
- * with actual data loaded.
+ * with actual data loaded. Includes a search panel for entering learner IDs to
+ * inject live data into the report.
  */
 const ReportPreview: React.FC = () => {
   const location = useLocation<ReportState>();
   const history = useHistory();
   const [showViewer, setShowViewer] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Search panel state for learner ID input
+  const [learnerIdsInput, setLearnerIdsInput] = useState<string>('');
+  const [activeToken, setActiveToken] = useState<string>('');
+  const [searchError, setSearchError] = useState<string>('');
   
   // Combined state for initialization - tracks both config availability and auth setup
   // Using a single state object prevents race conditions between separate state updates
@@ -51,9 +76,22 @@ const ReportPreview: React.FC = () => {
   const getLocalizationAction = '/DXXRDV/GetLocalization';
 
   /**
-   * Calculate viewer height
+   * Calculate viewer height - accounts for search panel when viewer is shown
    */
-  const viewerHeight = `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT}px)`;
+  const viewerHeight = showViewer
+    ? `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT + SEARCH_PANEL_HEIGHT}px)`
+    : `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT}px)`;
+
+  /**
+   * Generate the report URL with optional learner ID token.
+   * Format: "ReportName" or "ReportName__b64_encodedIds"
+   */
+  const getReportUrl = (): string => {
+    if (activeToken) {
+      return `${reportName}__${activeToken}`;
+    }
+    return reportName;
+  };
 
   /**
    * Helper function to get the host URL from window directly
@@ -170,6 +208,53 @@ const ReportPreview: React.FC = () => {
   }, []);
 
   /**
+   * Handle generate button click - parse and encode learner IDs, then refresh viewer
+   */
+  const handleGenerateReport = useCallback(() => {
+    const trimmed = learnerIdsInput.trim();
+    
+    if (!trimmed) {
+      setSearchError('Enter at least one Learner ID');
+      return;
+    }
+    
+    // Parse comma-separated IDs, strip surrounding quotes (handles pasted JSON arrays)
+    const ids = trimmed
+      .split(',')
+      .map(x => x.trim().replace(/^["'\s]+|["'\s]+$/g, ''))
+      .filter(x => x.length > 0);
+    
+    if (ids.length === 0) {
+      setSearchError('Enter at least one valid Learner ID');
+      return;
+    }
+    
+    // Clear any previous search error
+    setSearchError('');
+    
+    // Encode IDs and update active token - this will trigger viewer re-render
+    const token = encodeIds(ids);
+    console.log('[ReportPreview] Generated token for IDs:', { count: ids.length, token });
+    setActiveToken(token);
+    
+    // Ensure viewer is shown
+    if (!showViewer) {
+      setShowViewer(true);
+    }
+  }, [learnerIdsInput, showViewer]);
+
+  /**
+   * Handle Enter key press in search input
+   */
+  const handleSearchKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Stop propagation to prevent DevExpress from capturing keyboard events
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      handleGenerateReport();
+    }
+  }, [handleGenerateReport]);
+
+  /**
    * BeforeRender callback for the viewer
    */
   const onBeforeRender = useCallback(() => {
@@ -237,6 +322,34 @@ const ReportPreview: React.FC = () => {
         )}
       </div>
 
+      {/* Search Panel for Learner IDs - always visible when viewer is shown */}
+      {showViewer && (
+        <div className="search-panel">
+          <div className="search-row">
+            <label className="search-label" htmlFor="learner-ids-input">
+              Learner IDs
+            </label>
+            <input
+              id="learner-ids-input"
+              type="text"
+              className="search-input"
+              value={learnerIdsInput}
+              onChange={(e) => setLearnerIdsInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              onKeyUp={(e) => e.stopPropagation()}
+              placeholder="e.g. guid1, guid2, guid3"
+              autoFocus
+            />
+            <button className="generate-button" onClick={handleGenerateReport}>
+              Generate
+            </button>
+          </div>
+          {searchError && (
+            <div className="search-error">{searchError}</div>
+          )}
+        </div>
+      )}
+
       {!showViewer ? (
         <div className="report-preview-placeholder">
           <div className="placeholder-content">
@@ -252,8 +365,8 @@ const ReportPreview: React.FC = () => {
       ) : (
         <div className="report-viewer-wrapper">
           <DxReportViewer
-            key={`${initState.hostUrl}-${reportName}`}
-            reportUrl={reportName}
+            key={`${initState.hostUrl}-${reportName}-${activeToken}`}
+            reportUrl={getReportUrl()}
             height={viewerHeight}
           >
             <RequestOptions
