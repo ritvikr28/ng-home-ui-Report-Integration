@@ -479,6 +479,10 @@ class ReportingService {
     });
     
     // Extract filename from content-disposition header if available
+    // Regex pattern explanation:
+    // - filename[^;=\n]*= : matches 'filename' followed by optional spaces/attributes and '='
+    // - ((['"]).*?\2|[^;\n]*) : matches either a quoted string (single or double quotes) 
+    //   or an unquoted string terminated by semicolon or newline
     const contentDisposition = response.headers['content-disposition'];
     let filename = `report_${reportId}.pdf`;
     if (contentDisposition) {

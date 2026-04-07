@@ -536,10 +536,10 @@ const ReportPreview: React.FC = () => {
     e.stopPropagation();
     if (e.key === 'Escape') {
       setShowDropdown(false);
-    } else if (e.key === 'Enter' && selectedPupils.length > 0) {
+    } else if (e.key === 'Enter' && selectedPupils.length > 0 && !isGenerating) {
       handleGenerateReport();
     }
-  }, [selectedPupils.length, handleGenerateReport]);
+  }, [selectedPupils.length, handleGenerateReport, isGenerating]);
 
   /**
    * BeforeRender callback for the viewer
