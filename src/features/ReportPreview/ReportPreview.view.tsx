@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import ko from 'knockout';
 import 'devextreme/dist/css/dx.light.css';
@@ -9,6 +9,8 @@ import DxReportViewer, {
 import { fetchSetup } from '@devexpress/analytics-core/analytics-utils';
 import { authService } from '@essnextgen/auth-ui';
 import { ReportState } from '../../types/Report';
+import { service, envConfig } from '../../shared/utils';
+import { ISearchSuggestionsResultsApiResponse } from '../../shared/model/SearchSuggestions/SearchResultsApiResponse';
 import './ReportPreview.scss';
 
 // Make knockout available globally for DevExpress
@@ -17,7 +19,15 @@ import './ReportPreview.scss';
 // Height constants
 const NAVBAR_HEIGHT = 56;
 const TOOLBAR_HEIGHT = 60;
-const SEARCH_PANEL_HEIGHT = 54;
+const SEARCH_PANEL_HEIGHT = 80; // Increased to accommodate tags
+
+/**
+ * Interface for selected pupil to display as tag
+ */
+interface SelectedPupil {
+  id: string;
+  name: string;
+}
 
 /**
  * Encodes learner IDs as a base64url token for stateless URL encoding.
@@ -38,11 +48,36 @@ const encodeIds = (ids: string[]): string => {
 };
 
 /**
+ * Fetches pupil suggestions from the API
+ * @param query - Search query string
+ * @param n - Number of results to fetch
+ * @returns Promise with array of pupil suggestions
+ */
+const fetchPupilSuggestions = async (query: string, n: number = 8): Promise<ISearchSuggestionsResultsApiResponse[]> => {
+  const learnerApiUrl = (window as any).LEARNER_API_URL || envConfig.LEARNER_API_URL;
+  if (!learnerApiUrl) {
+    console.warn('[ReportPreview] LEARNER_API_URL not configured');
+    return [];
+  }
+  
+  try {
+    const response = await service.get(`/suggestions?q=${encodeURIComponent(query)}&n=${n}`, learnerApiUrl);
+    return response.data.payload || [];
+  } catch (error) {
+    console.error('[ReportPreview] Failed to fetch pupil suggestions:', error);
+    return [];
+  }
+};
+
+// Debounce delay for search in milliseconds
+const SEARCH_DEBOUNCE_MS = 300;
+
+/**
  * ReportPreview Screen (Screen 3)
  * 
  * Shows a Preview button and when clicked, renders the DevExpress Report Viewer
- * with actual data loaded. Includes a search panel for entering learner IDs to
- * inject live data into the report.
+ * with actual data loaded. Includes a pupil search panel for selecting pupils
+ * and generating reports based on their IDs.
  */
 const ReportPreview: React.FC = () => {
   const location = useLocation<ReportState>();
@@ -50,10 +85,18 @@ const ReportPreview: React.FC = () => {
   const [showViewer, setShowViewer] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Search panel state for learner ID input
-  const [learnerIdsInput, setLearnerIdsInput] = useState<string>('');
+  // Pupil search state
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [suggestions, setSuggestions] = useState<ISearchSuggestionsResultsApiResponse[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [selectedPupils, setSelectedPupils] = useState<SelectedPupil[]>([]);
   const [activeToken, setActiveToken] = useState<string>('');
   const [searchError, setSearchError] = useState<string>('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const latestQueryRef = useRef<string>(''); // Track latest query to prevent race conditions
   
   // Combined state for initialization - tracks both config availability and auth setup
   // Using a single state object prevents race conditions between separate state updates
@@ -208,24 +251,88 @@ const ReportPreview: React.FC = () => {
   }, []);
 
   /**
-   * Handle generate button click - parse and encode learner IDs, then refresh viewer
+   * Handle pupil search input change - debounced search with race condition protection
    */
-  const handleGenerateReport = useCallback(() => {
-    const trimmed = learnerIdsInput.trim();
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    latestQueryRef.current = query;
     
-    if (!trimmed) {
-      setSearchError('Enter at least one Learner ID');
+    // Clear any pending debounce timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      setIsSearching(false);
       return;
     }
     
-    // Parse comma-separated IDs, strip surrounding quotes (handles pasted JSON arrays)
-    const ids = trimmed
-      .split(',')
-      .map(x => x.trim().replace(/^["'\s]+|["'\s]+$/g, ''))
-      .filter(x => x.length > 0);
+    setIsSearching(true);
+    setShowDropdown(true);
     
-    if (ids.length === 0) {
-      setSearchError('Enter at least one valid Learner ID');
+    // Debounce the API call
+    debounceTimerRef.current = setTimeout(async () => {
+      const results = await fetchPupilSuggestions(query, 8);
+      
+      // Only update suggestions if this query is still the latest one (race condition protection)
+      if (latestQueryRef.current === query) {
+        setSuggestions(results);
+        setIsSearching(false);
+      }
+    }, SEARCH_DEBOUNCE_MS);
+  }, []);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  /**
+   * Handle selecting a pupil from dropdown
+   */
+  const handleSelectPupil = useCallback((pupil: ISearchSuggestionsResultsApiResponse) => {
+    // Check if already selected
+    if (selectedPupils.some(p => p.id === pupil.learnerExternalId)) {
+      return;
+    }
+    
+    const displayName = `${pupil.preferredForename || pupil.legalForename} ${pupil.preferredSurname || pupil.legalSurname}`;
+    
+    setSelectedPupils(prev => [...prev, {
+      id: pupil.learnerExternalId,
+      name: displayName
+    }]);
+    
+    // Clear search
+    setSearchQuery('');
+    setSuggestions([]);
+    setShowDropdown(false);
+    setSearchError('');
+    
+    // Focus back on input for more selections
+    searchInputRef.current?.focus();
+  }, [selectedPupils]);
+
+  /**
+   * Handle removing a selected pupil tag
+   */
+  const handleRemovePupil = useCallback((pupilId: string) => {
+    setSelectedPupils(prev => prev.filter(p => p.id !== pupilId));
+  }, []);
+
+  /**
+   * Handle generate button click - encode selected pupil IDs and refresh viewer
+   */
+  const handleGenerateReport = useCallback(() => {
+    if (selectedPupils.length === 0) {
+      setSearchError('Select at least one pupil');
       return;
     }
     
@@ -233,26 +340,42 @@ const ReportPreview: React.FC = () => {
     setSearchError('');
     
     // Encode IDs and update active token - this will trigger viewer re-render
+    const ids = selectedPupils.map(p => p.id);
     const token = encodeIds(ids);
-    console.log('[ReportPreview] Generated token for IDs:', { count: ids.length, token });
+    console.log('[ReportPreview] Generated token for pupil IDs:', { count: ids.length, token });
     setActiveToken(token);
     
     // Ensure viewer is shown
     if (!showViewer) {
       setShowViewer(true);
     }
-  }, [learnerIdsInput, showViewer]);
+  }, [selectedPupils, showViewer]);
 
   /**
-   * Handle Enter key press in search input
+   * Handle click outside dropdown to close it
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  /**
+   * Handle keyboard navigation in search
    */
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Stop propagation to prevent DevExpress from capturing keyboard events
     e.stopPropagation();
-    if (e.key === 'Enter') {
+    if (e.key === 'Escape') {
+      setShowDropdown(false);
+    } else if (e.key === 'Enter' && selectedPupils.length > 0) {
       handleGenerateReport();
     }
-  }, [handleGenerateReport]);
+  }, [selectedPupils.length, handleGenerateReport]);
 
   /**
    * BeforeRender callback for the viewer
@@ -322,25 +445,92 @@ const ReportPreview: React.FC = () => {
         )}
       </div>
 
-      {/* Search Panel for Learner IDs - always visible when viewer is shown */}
+      {/* Pupil Search Panel - always visible when viewer is shown */}
       {showViewer && (
         <div className="search-panel">
           <div className="search-row">
-            <label className="search-label" htmlFor="learner-ids-input">
-              Learner IDs
+            <label className="search-label" htmlFor="pupil-search-input">
+              Pupil Search
             </label>
-            <input
-              id="learner-ids-input"
-              type="text"
-              className="search-input"
-              value={learnerIdsInput}
-              onChange={(e) => setLearnerIdsInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              onKeyUp={(e) => e.stopPropagation()}
-              placeholder="e.g. guid1, guid2, guid3"
-              autoFocus
-            />
-            <button className="generate-button" onClick={handleGenerateReport}>
+            <div className="pupil-search-container" ref={dropdownRef}>
+              <div className="search-input-wrapper">
+                {/* Selected Pupils Tags */}
+                {selectedPupils.map(pupil => (
+                  <span key={pupil.id} className="pupil-tag">
+                    {pupil.name}
+                    <button 
+                      className="pupil-tag-remove" 
+                      onClick={() => handleRemovePupil(pupil.id)}
+                      type="button"
+                      aria-label={`Remove ${pupil.name}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                <input
+                  id="pupil-search-input"
+                  ref={searchInputRef}
+                  type="text"
+                  className="pupil-search-input"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={handleSearchKeyDown}
+                  onKeyUp={(e) => e.stopPropagation()}
+                  onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                  placeholder={selectedPupils.length === 0 ? "Type pupil name to search..." : "Add more pupils..."}
+                />
+              </div>
+              
+              {/* Suggestions Dropdown */}
+              {showDropdown && (
+                <div className="pupil-suggestions-dropdown">
+                  {isSearching ? (
+                    <div className="suggestion-item suggestion-loading">Searching...</div>
+                  ) : suggestions.length > 0 ? (
+                    suggestions.map(pupil => {
+                      const isSelected = selectedPupils.some(p => p.id === pupil.learnerExternalId);
+                      const displayName = `${pupil.preferredForename || pupil.legalForename} ${pupil.preferredSurname || pupil.legalSurname}`;
+                      const legalName = pupil.legalForename !== pupil.preferredForename 
+                        ? ` (${pupil.legalForename} ${pupil.legalSurname})`
+                        : '';
+                      
+                      return (
+                        <div
+                          key={pupil.learnerExternalId}
+                          className={`suggestion-item ${isSelected ? 'suggestion-selected' : ''}`}
+                          onClick={() => !isSelected && handleSelectPupil(pupil)}
+                        >
+                          <div className="suggestion-avatar">
+                            {pupil.imagePath ? (
+                              <img src={pupil.imagePath} alt={`${displayName} avatar`} className="suggestion-avatar-img" />
+                            ) : (
+                              <span className="suggestion-avatar-placeholder" role="img" aria-label="Default avatar">👤</span>
+                            )}
+                          </div>
+                          <div className="suggestion-details">
+                            <span className="suggestion-name">{displayName}{legalName}</span>
+                            <span className="suggestion-info">
+                              {pupil.yearGroup && `Year ${pupil.yearGroup}`}
+                              {pupil.yearGroup && pupil.classGroup && ' • '}
+                              {pupil.classGroup}
+                            </span>
+                          </div>
+                          {isSelected && <span className="suggestion-check">✓</span>}
+                        </div>
+                      );
+                    })
+                  ) : searchQuery.length >= 2 ? (
+                    <div className="suggestion-item suggestion-empty">No pupils found</div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+            <button 
+              className="generate-button" 
+              onClick={handleGenerateReport}
+              disabled={selectedPupils.length === 0}
+            >
               Generate
             </button>
           </div>
