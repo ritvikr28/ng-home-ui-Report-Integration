@@ -200,14 +200,32 @@ const createReportingAxiosInstance = (config: ReportingServiceConfig): AxiosInst
   instance.interceptors.request.use(
     (axiosConfig: AxiosRequestConfig) => {
       const token = config.getAuthToken();
+      
+      // Debug logging for authentication issues
+      console.log('[ReportingService] Request interceptor:', {
+        url: axiosConfig.url,
+        hasToken: !!token,
+        tokenLength: token?.length || 0
+      });
+      
       if (token && axiosConfig.headers) {
         axiosConfig.headers.Authorization = `Bearer ${token}`;
+      } else {
+        console.warn('[ReportingService] No auth token available for request:', axiosConfig.url);
       }
+      
       // Add Organisation-Id header if available
       const orgId = sessionStorage.getItem('OrganizationId');
       if (orgId && axiosConfig.headers) {
         axiosConfig.headers['Organisation-Id'] = orgId;
       }
+      
+      console.log('[ReportingService] Request headers:', {
+        hasAuthHeader: !!axiosConfig.headers?.Authorization,
+        hasOrgIdHeader: !!axiosConfig.headers?.['Organisation-Id'],
+        orgId
+      });
+      
       return axiosConfig;
     },
     (error) => Promise.reject(error)
@@ -217,7 +235,16 @@ const createReportingAxiosInstance = (config: ReportingServiceConfig): AxiosInst
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
+      console.error('[ReportingService] API Error:', {
+        url: error.config?.url,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        hasAuthHeader: !!error.config?.headers?.Authorization
+      });
+      
       if (error.response?.status === 401) {
+        console.error('[ReportingService] 401 Unauthorized - Token may be missing, expired, or invalid');
         sessionStorage.removeItem('auth');
         // Optionally trigger logout
       }
