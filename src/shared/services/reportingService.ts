@@ -91,6 +91,62 @@ export interface ReportInfo {
 }
 
 /**
+ * Learner information for per-pupil report generation
+ */
+export interface LearnerForReport {
+  learnerExternalId: string;
+  learnerName: string;
+}
+
+/**
+ * Request to generate per-pupil reports
+ */
+export interface GeneratePerPupilRequest {
+  reportName: string;
+  learners: LearnerForReport[];
+  format?: 'pdf' | 'xlsx';
+}
+
+/**
+ * Information about a generated report
+ */
+export interface GeneratedReportInfo {
+  id: string;
+  reportName: string;
+  learnerExternalId: string;
+  learnerName: string;
+  format: string;
+  generatedAt: string;
+  fileSizeBytes: number;
+}
+
+/**
+ * Error information for failed report generation
+ */
+export interface GenerationError {
+  learnerExternalId: string;
+  learnerName: string;
+  error: string;
+}
+
+/**
+ * Response from per-pupil report generation
+ */
+export interface GeneratePerPupilResponse {
+  generatedReports: GeneratedReportInfo[];
+  errors: GenerationError[];
+  totalRequested: number;
+  totalGenerated: number;
+}
+
+/**
+ * Response from my-reports endpoint
+ */
+export interface MyReportsResponse {
+  reports: GeneratedReportInfo[];
+}
+
+/**
  * Response from the reports list API
  */
 export interface ReportsListResponse {
@@ -385,6 +441,64 @@ class ReportingService {
       `/api/v1/reporting/layout?reportName=${encodeURIComponent(reportName)}`
     );
     return response.data;
+  }
+
+  /**
+   * Generates per-pupil reports for the specified learners.
+   * Each learner gets their own individual PDF/Excel file stored in Azure Blob Storage.
+   */
+  async generatePerPupilReports(request: GeneratePerPupilRequest): Promise<GeneratePerPupilResponse> {
+    const instance = await this.ensureInitialized();
+    const response = await instance.post<GeneratePerPupilResponse>(
+      '/api/v1/reporting/generated/generate-per-pupil',
+      request
+    );
+    return response.data;
+  }
+
+  /**
+   * Gets the list of generated reports for the current user.
+   */
+  async getMyGeneratedReports(): Promise<MyReportsResponse> {
+    const instance = await this.ensureInitialized();
+    const response = await instance.get<MyReportsResponse>(
+      '/api/v1/reporting/generated/my-reports'
+    );
+    return response.data;
+  }
+
+  /**
+   * Downloads a specific generated report.
+   * Returns a blob URL that can be used for download.
+   */
+  async downloadGeneratedReport(reportId: string): Promise<{ blob: Blob; filename: string }> {
+    const instance = await this.ensureInitialized();
+    const response = await instance.get(`/api/v1/reporting/generated/download`, {
+      params: { reportId },
+      responseType: 'blob'
+    });
+    
+    // Extract filename from content-disposition header if available
+    const contentDisposition = response.headers['content-disposition'];
+    let filename = `report_${reportId}.pdf`;
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1].replace(/['"]/g, '');
+      }
+    }
+    
+    return { blob: response.data, filename };
+  }
+
+  /**
+   * Deletes a specific generated report.
+   */
+  async deleteGeneratedReport(reportId: string): Promise<void> {
+    const instance = await this.ensureInitialized();
+    await instance.delete('/api/v1/reporting/generated/delete', {
+      params: { reportId }
+    });
   }
 }
 

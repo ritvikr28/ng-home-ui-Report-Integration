@@ -11,6 +11,11 @@ import { authService } from '@essnextgen/auth-ui';
 import { ReportState } from '../../types/Report';
 import { service, envConfig } from '../../shared/utils';
 import { ISearchSuggestionsResultsApiResponse } from '../../shared/model/SearchSuggestions/SearchResultsApiResponse';
+import { 
+  reportingService, 
+  GeneratedReportInfo, 
+  GeneratePerPupilRequest 
+} from '../../shared/services/reportingService';
 import './ReportPreview.scss';
 
 // Make knockout available globally for DevExpress
@@ -20,6 +25,7 @@ import './ReportPreview.scss';
 const NAVBAR_HEIGHT = 56;
 const TOOLBAR_HEIGHT = 60;
 const SEARCH_PANEL_HEIGHT = 80; // Increased to accommodate tags
+const REPORTS_TABLE_HEIGHT = 250; // Height for generated reports table
 
 /**
  * Interface for selected pupil to display as tag
@@ -77,7 +83,8 @@ const SEARCH_DEBOUNCE_MS = 300;
  * 
  * Shows a Preview button and when clicked, renders the DevExpress Report Viewer
  * with actual data loaded. Includes a pupil search panel for selecting pupils
- * and generating reports based on their IDs.
+ * and generating reports based on their IDs. Also displays generated reports
+ * that can be viewed, downloaded, or deleted.
  */
 const ReportPreview: React.FC = () => {
   const location = useLocation<ReportState>();
@@ -97,6 +104,13 @@ const ReportPreview: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const latestQueryRef = useRef<string>(''); // Track latest query to prevent race conditions
+  
+  // Generated reports state
+  const [generatedReports, setGeneratedReports] = useState<GeneratedReportInfo[]>([]);
+  const [selectedReportIds, setSelectedReportIds] = useState<Set<string>>(new Set());
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [isLoadingReports, setIsLoadingReports] = useState<boolean>(false);
+  const [viewingReport, setViewingReport] = useState<GeneratedReportInfo | null>(null);
   
   // Combined state for initialization - tracks both config availability and auth setup
   // Using a single state object prevents race conditions between separate state updates
@@ -119,10 +133,10 @@ const ReportPreview: React.FC = () => {
   const getLocalizationAction = '/DXXRDV/GetLocalization';
 
   /**
-   * Calculate viewer height - accounts for search panel when viewer is shown
+   * Calculate viewer height - accounts for search panel and reports table when viewer is shown
    */
   const viewerHeight = showViewer
-    ? `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT + SEARCH_PANEL_HEIGHT}px)`
+    ? `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT + SEARCH_PANEL_HEIGHT + (generatedReports.length > 0 ? REPORTS_TABLE_HEIGHT : 0)}px)`
     : `calc(100vh - ${NAVBAR_HEIGHT + TOOLBAR_HEIGHT}px)`;
 
   /**
@@ -130,6 +144,11 @@ const ReportPreview: React.FC = () => {
    * Format: "ReportName" or "ReportName__b64_encodedIds"
    */
   const getReportUrl = (): string => {
+    if (viewingReport) {
+      // When viewing a specific generated report, use single learner ID
+      const token = encodeIds([viewingReport.learnerExternalId]);
+      return `${reportName}__${token}`;
+    }
     if (activeToken) {
       return `${reportName}__${activeToken}`;
     }
@@ -328,9 +347,35 @@ const ReportPreview: React.FC = () => {
   }, []);
 
   /**
-   * Handle generate button click - encode selected pupil IDs and refresh viewer
+   * Fetch user's generated reports
    */
-  const handleGenerateReport = useCallback(() => {
+  const fetchGeneratedReports = useCallback(async () => {
+    setIsLoadingReports(true);
+    try {
+      const response = await reportingService.getMyGeneratedReports();
+      // Filter to only show reports for the current report template
+      const filteredReports = response.reports.filter(r => r.reportName === reportName);
+      setGeneratedReports(filteredReports);
+    } catch (err) {
+      console.error('[ReportPreview] Failed to fetch generated reports:', err);
+    } finally {
+      setIsLoadingReports(false);
+    }
+  }, [reportName]);
+
+  /**
+   * Load generated reports on mount and when viewer is shown
+   */
+  useEffect(() => {
+    if (showViewer && initState.isReady) {
+      fetchGeneratedReports();
+    }
+  }, [showViewer, initState.isReady, fetchGeneratedReports]);
+
+  /**
+   * Handle generate button click - generate per-pupil reports and store them
+   */
+  const handleGenerateReport = useCallback(async () => {
     if (selectedPupils.length === 0) {
       setSearchError('Select at least one pupil');
       return;
@@ -338,18 +383,137 @@ const ReportPreview: React.FC = () => {
     
     // Clear any previous search error
     setSearchError('');
+    setIsGenerating(true);
     
-    // Encode IDs and update active token - this will trigger viewer re-render
-    const ids = selectedPupils.map(p => p.id);
-    const token = encodeIds(ids);
-    console.log('[ReportPreview] Generated token for pupil IDs:', { count: ids.length, token });
-    setActiveToken(token);
-    
-    // Ensure viewer is shown
-    if (!showViewer) {
-      setShowViewer(true);
+    try {
+      const request: GeneratePerPupilRequest = {
+        reportName,
+        learners: selectedPupils.map(p => ({
+          learnerExternalId: p.id,
+          learnerName: p.name
+        })),
+        format: 'pdf'
+      };
+      
+      console.log('[ReportPreview] Generating per-pupil reports:', request);
+      const response = await reportingService.generatePerPupilReports(request);
+      
+      console.log('[ReportPreview] Generated reports response:', response);
+      
+      if (response.errors.length > 0) {
+        const errorMsg = response.errors.map(e => `${e.learnerName}: ${e.error}`).join(', ');
+        setSearchError(`Some reports failed: ${errorMsg}`);
+      }
+      
+      // Refresh the generated reports list
+      await fetchGeneratedReports();
+      
+      // Clear selected pupils after successful generation
+      setSelectedPupils([]);
+      
+      // Ensure viewer is shown
+      if (!showViewer) {
+        setShowViewer(true);
+      }
+    } catch (err) {
+      console.error('[ReportPreview] Failed to generate reports:', err);
+      setSearchError('Failed to generate reports. Please try again.');
+    } finally {
+      setIsGenerating(false);
     }
-  }, [selectedPupils, showViewer]);
+  }, [selectedPupils, reportName, showViewer, fetchGeneratedReports]);
+
+  /**
+   * Handle clicking on a generated report to view it
+   */
+  const handleViewReport = useCallback((report: GeneratedReportInfo) => {
+    console.log('[ReportPreview] Viewing report:', report);
+    setViewingReport(report);
+    setActiveToken(''); // Clear any previous token
+  }, []);
+
+  /**
+   * Handle checkbox toggle for a report
+   */
+  const handleReportCheckboxChange = useCallback((reportId: string, checked: boolean) => {
+    setSelectedReportIds(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(reportId);
+      } else {
+        newSet.delete(reportId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  /**
+   * Handle select all checkbox
+   */
+  const handleSelectAllReports = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelectedReportIds(new Set(generatedReports.map(r => r.id)));
+    } else {
+      setSelectedReportIds(new Set());
+    }
+  }, [generatedReports]);
+
+  /**
+   * Handle downloading selected reports
+   */
+  const handleDownloadSelected = useCallback(async () => {
+    if (selectedReportIds.size === 0) return;
+    
+    for (const reportId of selectedReportIds) {
+      try {
+        const { blob, filename } = await reportingService.downloadGeneratedReport(reportId);
+        
+        // Create download link and trigger download
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('[ReportPreview] Failed to download report:', reportId, err);
+      }
+    }
+  }, [selectedReportIds]);
+
+  /**
+   * Handle deleting selected reports
+   */
+  const handleDeleteSelected = useCallback(async () => {
+    if (selectedReportIds.size === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to delete ${selectedReportIds.size} report(s)?`)) {
+      return;
+    }
+    
+    const deletePromises = Array.from(selectedReportIds).map(async reportId => {
+      try {
+        await reportingService.deleteGeneratedReport(reportId);
+        return { reportId, success: true };
+      } catch (err) {
+        console.error('[ReportPreview] Failed to delete report:', reportId, err);
+        return { reportId, success: false };
+      }
+    });
+    
+    await Promise.all(deletePromises);
+    
+    // Clear selection and refresh list
+    setSelectedReportIds(new Set());
+    await fetchGeneratedReports();
+    
+    // If viewing a deleted report, clear the view
+    if (viewingReport && selectedReportIds.has(viewingReport.id)) {
+      setViewingReport(null);
+    }
+  }, [selectedReportIds, fetchGeneratedReports, viewingReport]);
 
   /**
    * Handle click outside dropdown to close it
@@ -399,6 +563,23 @@ const ReportPreview: React.FC = () => {
     const errorMessage = args?.errorMessage || args?.message || 'Unknown server error';
     setError(`Preview error: ${errorMessage}`);
   }, []);
+
+  /**
+   * Format file size for display
+   */
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  /**
+   * Format date for display
+   */
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
 
   if (error) {
     return (
@@ -529,14 +710,102 @@ const ReportPreview: React.FC = () => {
             <button 
               className="generate-button" 
               onClick={handleGenerateReport}
-              disabled={selectedPupils.length === 0}
+              disabled={selectedPupils.length === 0 || isGenerating}
             >
-              Generate
+              {isGenerating ? 'Generating...' : 'Generate'}
             </button>
           </div>
           {searchError && (
             <div className="search-error">{searchError}</div>
           )}
+        </div>
+      )}
+
+      {/* Generated Reports Table */}
+      {showViewer && generatedReports.length > 0 && (
+        <div className="generated-reports-section">
+          <div className="generated-reports-header">
+            <h3 className="generated-reports-title">
+              Generated Reports ({generatedReports.length})
+              {viewingReport && (
+                <span className="viewing-label"> - Viewing: {viewingReport.learnerName}</span>
+              )}
+            </h3>
+            <div className="generated-reports-actions">
+              {selectedReportIds.size > 0 && (
+                <>
+                  <button 
+                    className="action-button download-button"
+                    onClick={handleDownloadSelected}
+                  >
+                    📥 Download ({selectedReportIds.size})
+                  </button>
+                  <button 
+                    className="action-button delete-button"
+                    onClick={handleDeleteSelected}
+                  >
+                    🗑️ Delete ({selectedReportIds.size})
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="generated-reports-table-wrapper">
+            <table className="generated-reports-table">
+              <thead>
+                <tr>
+                  <th className="checkbox-cell">
+                    <input
+                      type="checkbox"
+                      checked={selectedReportIds.size === generatedReports.length && generatedReports.length > 0}
+                      onChange={(e) => handleSelectAllReports(e.target.checked)}
+                      aria-label="Select all reports"
+                    />
+                  </th>
+                  <th>Pupil Name</th>
+                  <th>Generated At</th>
+                  <th>Format</th>
+                  <th>Size</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {generatedReports.map(report => (
+                  <tr 
+                    key={report.id} 
+                    className={viewingReport?.id === report.id ? 'row-viewing' : ''}
+                  >
+                    <td className="checkbox-cell">
+                      <input
+                        type="checkbox"
+                        checked={selectedReportIds.has(report.id)}
+                        onChange={(e) => handleReportCheckboxChange(report.id, e.target.checked)}
+                        aria-label={`Select report for ${report.learnerName}`}
+                      />
+                    </td>
+                    <td 
+                      className="clickable-cell"
+                      onClick={() => handleViewReport(report)}
+                    >
+                      {report.learnerName}
+                    </td>
+                    <td>{formatDate(report.generatedAt)}</td>
+                    <td className="format-cell">{report.format.toUpperCase()}</td>
+                    <td>{formatFileSize(report.fileSizeBytes)}</td>
+                    <td className="actions-cell">
+                      <button
+                        className="row-action-button view-button"
+                        onClick={() => handleViewReport(report)}
+                        title="View report"
+                      >
+                        👁️
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -555,7 +824,7 @@ const ReportPreview: React.FC = () => {
       ) : (
         <div className="report-viewer-wrapper">
           <DxReportViewer
-            key={`${initState.hostUrl}-${reportName}-${activeToken}`}
+            key={`${initState.hostUrl}-${reportName}-${activeToken}-${viewingReport?.id || ''}`}
             reportUrl={getReportUrl()}
             height={viewerHeight}
           >
